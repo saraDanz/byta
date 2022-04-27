@@ -1,0 +1,58 @@
+.App {
+    font-family: sans-serif;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  .add-report-form-not form {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .add-report-form-not  label,
+  .add-report-form-not input,
+  .add-report-form-not select {
+    display: block;
+    width: 100%;
+  }
+  
+  .add-report-form-not label {
+    margin-bottom: 5px;
+    height: 22px;
+  }
+  
+  .add-report-form-not input,
+  .add-report-form-not select {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 3px;
+    border: 1px solid #777;
+  }
+  
+  .add-report-form-not input.error {
+    border-color: red;
+  }
+  
+  .add-report-form-not .input-feedback {
+    color: rgb(235, 54, 54);
+    margin-top: -15px;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .add-report-form-not button {
+    padding: 10px 15px;
+    background-color: rgb(70, 153, 179);
+    color: white;
+    border: 1px solid rgb(70, 153, 179);
+    transition: ease-in-out background-color 250ms, ease-in-out color 250ms;
+  }
+  
+  .add-report-form-not button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: rgb(70, 153, 179);
+  }

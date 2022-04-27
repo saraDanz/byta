@@ -1,0 +1,3 @@
+export const SAVE_USER = "SAVE_USER";
+export const LOG_OUT = "LOG_OUT";
+export const SAVE_COURSES_OF_CURRENT_USER = "SAVE_COURSES_OF_CURRENT_USER";

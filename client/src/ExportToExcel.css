@@ -1,0 +1,58 @@
+.App {
+    font-family: sans-serif;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  .excel form {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .excel  label,
+  .excel input ,
+  .excel select {
+    display: block;
+    width: 100%;
+  }
+  
+  .excel label {
+    margin-bottom: 5px;
+    height: 22px;
+  }
+  
+  .excel input,
+  .excel select {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 3px;
+    border: 1px solid #777;
+  }
+  
+  .excel input.error {
+    border-color: red;
+  }
+  
+  .excel .input-feedback {
+    color: rgb(235, 54, 54);
+    margin-top: -15px;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .excel button {
+    padding: 10px 15px;
+    background-color: rgb(70, 153, 179);
+    color: white;
+    border: 1px solid rgb(70, 153, 179);
+    transition: ease-in-out background-color 250ms, ease-in-out color 250ms;
+  }
+  
+  .excel button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: rgb(70, 153, 179);
+  }
