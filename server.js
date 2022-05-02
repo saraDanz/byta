@@ -7,6 +7,14 @@ const userRoute = require("./routes/user");
 const reportRoute = require("./routes/report");
 const coursesRoute = require("./routes/courses");
 const teacherCoursesRoute = require("./routes/teacherCourses");
+const path = require("path")
+
+// ... other app.use middleware 
+app.use(express.static(path.join(__dirname, "client", "build")))
+
+// ...
+// Right before your app.listen(), add this:
+
 require("dotenv").config();
 const app = express();
 app.use(cors());
@@ -19,6 +27,16 @@ app.use("/users", userRoute)
 app.use("/reports", reportRoute)
 app.use("/courses", coursesRoute)
 app.use("/teacherCourses", teacherCoursesRoute)
+// if (process.env.NODE_ENV === 'production') {
+//     app.use(express.static('client/build')); // serve the static react app
+//     app.get(/^\/(?!api).*/, (req, res) => { // don't serve api routes to react app
+//       res.sendFile(path.join(__dirname, './client/build/index.html'));
+//     });
+//     console.log('Serving React App...');
+//   };
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+});
 app.listen(process.env.PORT || 8000, () => { console.log("waiting port 8000") })
 //userName sara
 //6PsUABpopt63jWxY
