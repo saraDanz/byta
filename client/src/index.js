@@ -40,6 +40,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 let store = createStore(reducer, composeWithDevTools());
 ReactDOM.render(<BrowserRouter>
     <Provider store={store}>
-        <App />
+        <div dir="rtl">
+            <App /></div>
     </Provider>
 </BrowserRouter>, document.getElementById('root'));

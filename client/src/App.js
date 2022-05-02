@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 // import 'semantic-ui-css/semantic.min.css'
 import DemoApp from "./DemoApp.jsx";
 import { Routes, Route, useNavigate } from "react-router";
@@ -9,9 +9,10 @@ import AddTeacher from "./AddTeacher.js";
 import AddCourse from "./AddCourse.js";
 import AddTeacherToCourse from "./AddTeacherToCourse";
 import { useSelector, useDispatch } from "react-redux";
-import { logOut } from "./store/actions/index.js";
+import { logOut, saveUser } from "./store/actions/index.js";
 import ExportToExcel from "./ExportToExcel.js";
 import { Menu, Segment, Icon } from 'semantic-ui-react'
+import { removeStorage, getStorage } from "./storageUtils.js";
 // import { AppBar } from '@mui/material';
 export default function App() {
     let user = useSelector(st => st.currentUser);
@@ -21,7 +22,13 @@ export default function App() {
     const logOutf = () => {
         dispatch(logOut());
         navigate("/login")
+        removeStorage();
     }
+    useEffect(() => {
+        dispatch(saveUser(getStorage()));
+
+
+    }, []);
     return (<>
         <Menu pointing secondary>
 

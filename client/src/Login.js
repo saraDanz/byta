@@ -1,6 +1,6 @@
 import "./Login.css";
 import React from "react";
-
+import {setStorage, removeStorage} from "./storageUtils";
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
@@ -22,6 +22,7 @@ export default function Login() {
                     console.log("Logging in", values);
                     dispatch(saveUser(res.data))
                     setSubmitting(false);
+                    setStorage(res.data)
 
                     if (res.data.role == 1)
                         navigate("/report")
@@ -34,6 +35,7 @@ export default function Login() {
 
                     // alert("התרחשה תקלה בהתחברות");
                     alert("שגיאה באח מפרטי הזיהוי");
+                  removeStorage()
                     setSubmitting(false);
                 })
 
@@ -100,7 +102,7 @@ export default function Login() {
                             id="password"
                             name="password"
                             type="password"
-                            placeholder="Enter your password"
+                            placeholder="הקש סיסמא"
                             value={values.password}
                             onChange={handleChange}
                             onBlur={handleBlur}

@@ -21,14 +21,17 @@ export default function ExportToExcel() {
             try {
                 let reports = res.data.map(item => {
                     let { courseId, teacherId, fromTime, toTime, date, reportDate, ...x } = item;
+                    fromTime = new Date(fromTime);
+                    toTime = new Date(toTime);
+                    date=new Date(date)
                     return {
                         ...x, teacherFirstName: teacherId.firstName,
                         teacherlastName: teacherId.lastName,
                         courseName: courseId.name,
                         directorFirstName: courseId.directorId.firstName,
                         directorLastName: courseId.directorId.lastName,
-                        fromTime: fromTime.getHours() + ":" + fromTime.getMinutes(),
-                        toTime: toTime.getHours() + ":" + toTime.getMinutes(),
+                        fromTime: fromTime && (fromTime.getHours() + ":" + fromTime.getMinutes()) || "00:00",
+                        toTime: toTime && (toTime.getHours() + ":" + toTime.getMinutes()) || "00:00",
                         date: date.toLocaleDateString()
                     }
                 });
@@ -62,17 +65,17 @@ export default function ExportToExcel() {
 
             <label>שנה</label>
             <select onChange={(e) => { setYear(e.target.value) }}>
-                {[...Array(20)].map((item, index) => { return <option>{index + da - 19}</option> })}
+                {[...Array(20)].map((item, index) => { return <option key={index}>{index + da - 19}</option> })}
             </select>
             <label>חודש</label>
 
             <select onChange={(e) => { setMonth(e.target.value) }}>
-                {[...Array(12)].map((item, index) => { return <option>{index + 1}</option> })}
+                {[...Array(12)].map((item, index) => { return <option key={index}>{index + 1}</option> })}
             </select>
             <button type="button" onClick={getData}>
-            הורדה לקובץ אקסל
+                הורדה לקובץ אקסל
       </button>
-            
+
         </form>
     </div>;
 }
