@@ -10,7 +10,6 @@ const teacherCoursesRoute = require("./routes/teacherCourses");
 const path = require("path")
 
 // ... other app.use middleware 
-app.use(express.static(path.join(__dirname, "client", "build")))
 
 // ...
 // Right before your app.listen(), add this:
@@ -19,6 +18,7 @@ require("dotenv").config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "client", "build")))
 
 mongoose.connect(process.env.DB||"mongodb+srv://sara:6PsUABpopt63jWxY@byta-reporst.hj4vu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", { useNewUrlParser: true }).then(() => { console.log("mongo db connected") })
     .catch(err => { console.log(err) })
