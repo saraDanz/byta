@@ -44,15 +44,21 @@
   }
   
   .add-teacher-to-course button {
-    padding: 10px 15px;
-    background-color: rgb(70, 153, 179);
-    color: white;
-    border: 1px solid rgb(70, 153, 179);
-    transition: ease-in-out background-color 250ms, ease-in-out color 250ms;
+   
+      padding: 10px 15px;
+      background-color: rgb(255 165 0);
+      color: white;
+      border: 1px solid rgb(255 165 0);
+      transition: ease-in-out background-color 250ms, ease-in-out color 250ms;
+  
   }
   
   .add-teacher-to-course button:hover {
     cursor: pointer;
     background-color: white;
     color: rgb(70, 153, 179);
+  }
+  .course-details-bold p{
+    font-weight: bold;
+    color: blue;
   }

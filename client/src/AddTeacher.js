@@ -14,20 +14,20 @@ export default function AddTeacher() {
     let navigate = useNavigate();
     return <div className="add-user">
         <Formik
-            initialValues={{ tz: "", firstName: "", lastName: "", address: "", phone: "", password: "" }}
+            initialValues={{ tz: "", firstName: "", lastName: "", address: "", phone: "", password: "", role: 1 }}
             onSubmit={(values, { setSubmitting }) => {
 
                 axios.post(BASE_URL + "users", values).then(res => {
                     console.log(res)
                     console.log("user added in", values);
-                    dispatch(saveUser(res.data))
+                    // dispatch(saveUser(res.data))
                     setSubmitting(false);
 
                     // if (res.data.role == 1)
                     //     navigate("/report")
                     // else
-                        // navigate("/director")
-                        alert("מורה נוספה בהצלחה")
+                    // navigate("/director")
+                    alert("מורה נוספה בהצלחה")
 
 
                 }).catch(err => {
@@ -49,7 +49,7 @@ export default function AddTeacher() {
                 //     errors.tz = "מספר זהות יכול להכיל רק ספרות";
                 // }
                 else if (values.tz.length < 9) {
-                    errors.tz = "סיסמא חייבת להכיל 9 ספרות";
+                    errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
                 }
                 // else if (!EmailValidator.validate(values.email)) {
                 //     errors.email = "Invalid email address.";
@@ -86,7 +86,7 @@ export default function AddTeacher() {
                             id="tz"
                             name="tz"
                             type="text"
-                         
+
                             value={values.tz}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -101,7 +101,7 @@ export default function AddTeacher() {
                             id="firstName"
                             name="firstName"
                             type="text"
-                           
+
                             value={values.firstName}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -115,7 +115,7 @@ export default function AddTeacher() {
                             id="lastName"
                             name="lastName"
                             type="text"
-                           
+
                             value={values.lastName}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -129,7 +129,7 @@ export default function AddTeacher() {
                             id="address"
                             name="address"
                             type="text"
-                           
+
                             value={values.address}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -143,7 +143,7 @@ export default function AddTeacher() {
                             id="phone"
                             name="phone"
                             type="text"
-                         
+
                             value={values.phone}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -157,7 +157,7 @@ export default function AddTeacher() {
                             id="email"
                             name="email"
                             type="text"
-                          
+
                             value={values.email}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -171,7 +171,7 @@ export default function AddTeacher() {
                             id="password"
                             name="password"
                             type="password"
-                         
+
                             value={values.password}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -181,7 +181,18 @@ export default function AddTeacher() {
                             <div className="input-feedback">{errors.password}</div>
                         )}
 
-
+                        <label htmlFor="lastName">תפקיד</label>
+                        <select
+                            id="role"
+                            name="role"
+                            value={values.role}
+                            onChange={handleChange}
+                            onBlur={handleBlur}>
+                            <option value="1">מורה
+                            </option>
+                            <option value='2'>
+                                רכזת</option>
+                        </select>
                         <button type="submit" disabled={isSubmitting}>
                             הוסף
       </button>

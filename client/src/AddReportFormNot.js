@@ -35,7 +35,8 @@ export default function AddReportForm(props) {
             trigger={<Button>Basic Modal</Button>}
         >
             <Header icon>
-                <Icon name='calendar plus' size="small" color='teal'/>
+            
+                <Icon name='calendar check outline' size="small" color='teal'/>
              פרטי דווח
         </Header>
             <Modal.Content>

@@ -5,6 +5,7 @@ const courseSchema = new mongoose.Schema({
     startDate: { type: Date, default: Date.now() },
     name: String,
     description: String,
+    symbol: String,
     teachers: [{ type: mongoose.Types.ObjectId, ref: "users" }]
 
 

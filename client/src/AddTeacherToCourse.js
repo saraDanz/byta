@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
+import CourseSelectListItem from "./CourseSelectListItem";
 export default function AddTeacherToCourse() {
     let dispatch = useDispatch();
     const [courses, setCourses] = useState([]);
@@ -38,6 +39,8 @@ export default function AddTeacherToCourse() {
         <Formik
             initialValues={{ courseId: "", teacherId: "" }}
             onSubmit={(values, { setSubmitting }) => {
+                if (!values.courseId&&courses) values.courseId = courses[0]._id;
+                if (!values.teacherId&&teachers) values.teacherId = teachers[0]._id;
 
                 axios.post(BASE_URL + "teacherCourses", values).then(res => {
                     console.log(res)
@@ -96,12 +99,14 @@ export default function AddTeacherToCourse() {
                             onBlur={handleBlur}
                             className={errors.teacherId && touched.teacherId && "error"}
                         >
+                  
                             {teachers.map((item) => { return <option value={item._id} key={item._id}>{item.firstName + " " + item.lastName}</option> })}
                         </select>
                         {errors.teacherId && touched.teacherId && (
                             <div className="input-feedback">{errors.teacherId}</div>
                         )}
-                        <label>קורס</label>
+
+
 
                         <select
                             id="courseId"
@@ -112,10 +117,11 @@ export default function AddTeacherToCourse() {
                             onBlur={handleBlur}
                             className={errors.courseId && touched.courseId && "error"}
                         >
+                     
 
-                            {courses.map((item, index) => { return <option value={item._id} key={item._id}>{item.name}</option> })}
+                            {courses.map((item, index) => { return <option value={item._id} key={item._id} ><CourseSelectListItem course={item} /></option> })}
                         </select>
-                    
+
                         {errors.courseId && touched.courseId && (
                             <div className="input-feedback">{errors.courseId}</div>
                         )}

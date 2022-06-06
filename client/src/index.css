@@ -78,3 +78,7 @@ i.hours {
 i.time {
   color: #21ba45;
 }
+.ui.menu .item>p:first-child {
+  margin-top: 0;
+  margin-left: 15px;
+}

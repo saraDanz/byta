@@ -155,14 +155,39 @@ const DemoApp = () => {
       });
   }
   const handleEventClick = (clickInfo) => {
-    // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-    //   clickInfo.event.remove()
-    // }
+
+    if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
+      clickInfo.event.remove()
+    }
   }
 
   const handleEvents = (events) => {
     setCurrentEvents(events);
     console.log(events)
+  }
+  function renderEventContent(eventInfo) {
+    console.log(eventInfo)
+    console.log(eventInfo.event.extendedProps.numHours, "numhours")
+
+    return (
+      <>
+        {/*  <b>{eventInfo.timeText}</b>
+        <i>{eventInfo.event.extendedProps.title}</i>*/}
+        <div className="event-info">
+          <div>
+            <b>{eventInfo.event.extendedProps.courseName}</b>
+
+            <i className="time">{eventInfo.event.extendedProps.fromTime}-{eventInfo.event.extendedProps.toTime}</i>
+
+            <i className="hours" dir="rtl"> {eventInfo.event.extendedProps.numHours + "שע'"} </i>
+
+          </div>
+
+          <Icon name="delete" size="small" onClick={() => handleEventClick(eventInfo)} />
+
+        </div>
+      </>
+    )
   }
   return (
     <div className='demo-app'>
@@ -209,30 +234,7 @@ const DemoApp = () => {
 
 }
 
-function renderEventContent(eventInfo) {
-  console.log(eventInfo)
-  console.log(eventInfo.event.extendedProps.numHours, "numhours")
 
-  return (
-    <>
-      {/*  <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.extendedProps.title}</i>*/}
-      <div className="event-info">
-  <div>
-  <b>{eventInfo.event.extendedProps.courseName}</b>
-
-  <i className="time">{eventInfo.event.extendedProps.fromTime}-{eventInfo.event.extendedProps.toTime}</i>
-
-  <i className="hours" dir="rtl"> {eventInfo.event.extendedProps.numHours+"שע'"} </i>
-  
-  </div>
-    
-      <Icon name="delete"  size="small"/>
-      
-</div>
-    </>
-  )
-}
 
 function renderSidebarEvent(event) {
   return (

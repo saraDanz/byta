@@ -26,9 +26,10 @@ export default function AddCourse() {
     }, []);
     return <div className="add-course">
         <Formik
-            initialValues={{ name: "", description: "", directorId: "" }}
+            initialValues={{ name: "", description: "", directorId: "", symbol: "" }}
             onSubmit={(values, { setSubmitting }) => {
-
+                if (!values.directorId && directors)
+                    values.directorId = directors[0]._id;
                 axios.post(BASE_URL + "courses", values).then(res => {
                     console.log(res)
                     console.log("course added in", values);
@@ -39,7 +40,7 @@ export default function AddCourse() {
                 }).catch(err => {
                     console.log(err);
 
-                    alert("התרחשה תקלה בהוספת קורס");
+                    alert("התרחשה תקלה בהוספת קורס\n" + err);
 
                     setSubmitting(false);
                 })
@@ -107,7 +108,7 @@ export default function AddCourse() {
                             id="description"
                             name="description"
                             type="text"
-                            placeholder="Enter your description"
+                            placeholder="הקש תאור"
                             value={values.description}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -115,6 +116,20 @@ export default function AddCourse() {
                         />
                         {errors.description && touched.description && (
                             <div className="input-feedback">{errors.description}</div>
+                        )}
+                        <label htmlFor="description">סמל קורס</label>
+                        <input
+                            id="symbol"
+                            name="symbol"
+                            type="text"
+                            placeholder="הקש סמל קורס"
+                            value={values.symbol}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={errors.symbol && touched.symbol && "error"}
+                        />
+                        {errors.symbol && touched.symbol && (
+                            <div className="input-feedback">{errors.symbol}</div>
                         )}
 
                         <label>רכזת</label>

@@ -34,7 +34,7 @@ export default function Login() {
                     console.log(err);
 
                     // alert("התרחשה תקלה בהתחברות");
-                    alert("שגיאה באח מפרטי הזיהוי");
+                    alert("שגיאה באחד מפרטי הזיהוי");
                   removeStorage()
                     setSubmitting(false);
                 })
