@@ -145,7 +145,7 @@ export default function AddReportForm(props) {
                                 {errors.toTime && touched.toTime && (
                                     <div className="input-feedback">{errors.toTime}</div>
                                 )}
-                                <label htmlFor="numHours">מספר שעות</label>
+                                <label htmlFor="numHours">מספר שעורים</label>
                                 <input
                                     id="numHours"
                                     name="numHours"
