@@ -47,6 +47,7 @@ export default function AddTeacherToCourse() {
                     console.log("teacher added to course", values);
                     // dispatch(saveUser(res.data))
                     setSubmitting(false);
+                    alert("המורה נוספה לקורס בהצלחה")
 
                     // if (res.data.role == 1)
                     //     navigate("/report")
