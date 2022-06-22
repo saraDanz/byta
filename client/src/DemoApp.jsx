@@ -29,6 +29,7 @@ const DemoApp = () => {
     let date = new Date(d.year, d.month, 1);
     console.log(date);
     calendarApi.gotoDate(date);
+    // calendarApi.gotoDate(new Date(2022,5,1));
     if (currentUser)
       axios.get(BASE_URL + "teacherCourses/" + currentUser._id).then(res => {
         console.log(res.data);
@@ -196,15 +197,17 @@ const DemoApp = () => {
 
       <div className='demo-app-main'>
         <FullCalendar
-          ref={calendarComponentRef}
+    
+        headerToolbar = {{
+          start: 'today',
+          center: 'title',   
+          end: 'prev next'
+        }}
+        ref={calendarComponentRef}
           // showNonCurrentDates="true"
           // defaultDate={new Date(2020,10,10)}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={{
-            left: '',
-            center: 'title',
-            right: ''
-          }}
+         
           initialView='dayGridMonth'
           editable={true}
           selectable={true}
