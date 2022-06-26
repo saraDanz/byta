@@ -93,9 +93,11 @@ const DemoApp = () => {
     // if (date.getMonth() == today.getMonth() && today.getDate() >= 20 || date.getMonth() != today.getMonth() && today.getDate() < 20)
     // setShowAdd(true);
     let d = getCurrentViewMonthAndYear();
-
-    if (selectInfo.start.getMonth() == d.month)
-      setSelectInfo(selectInfo);
+//to do להחזיר שורה הבאה מההערה
+//נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
+//א"א לדווח על חודשים קודמים
+    //if (selectInfo.start.getMonth() == d.month)
+    setSelectInfo(selectInfo);
   }
   const closeModal = () => {
     setSelectInfo(null);
@@ -197,17 +199,17 @@ const DemoApp = () => {
 
       <div className='demo-app-main'>
         <FullCalendar
-    
-        headerToolbar = {{
-          start: 'today',
-          center: 'title',   
-          end: 'prev next'
-        }}
-        ref={calendarComponentRef}
+
+          headerToolbar={{
+            start: 'today',
+            center: 'title',
+            end: 'prev next'
+          }}
+          ref={calendarComponentRef}
           // showNonCurrentDates="true"
           // defaultDate={new Date(2020,10,10)}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-         
+
           initialView='dayGridMonth'
           editable={true}
           selectable={true}
