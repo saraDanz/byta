@@ -93,10 +93,10 @@ const DemoApp = () => {
     // if (date.getMonth() == today.getMonth() && today.getDate() >= 20 || date.getMonth() != today.getMonth() && today.getDate() < 20)
     // setShowAdd(true);
     let d = getCurrentViewMonthAndYear();
-//to do להחזיר שורה הבאה מההערה
+
 //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
 //א"א לדווח על חודשים קודמים
-    //if (selectInfo.start.getMonth() == d.month)
+    if (selectInfo.start.getMonth() == d.month)
     setSelectInfo(selectInfo);
   }
   const closeModal = () => {
@@ -201,9 +201,9 @@ const DemoApp = () => {
         <FullCalendar
 
           headerToolbar={{
-            start: 'today',
+            start: '',
             center: 'title',
-            end: 'prev next'
+            end: ''
           }}
           ref={calendarComponentRef}
           // showNonCurrentDates="true"
