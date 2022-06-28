@@ -68,7 +68,7 @@ export default function App() {
 
 
 
-            {user && user.role == 2 && <>
+            {user && user.role !=1 && <>
                 {/*   <Menu.Item >      <Link to="addUser" >הוספת משתמש</Link></Menu.Item>*/}
                 <Menu.Item >     <Link to="addCourse" >הוספת קורס</Link></Menu.Item>
                 <Menu.Item >     <Link to="addTeacherToCourse" >הוספת מורה לקורס</Link></Menu.Item>
@@ -133,7 +133,7 @@ export default function App() {
             </MenuItem></Link>
 
             {user && <Divider />}
-            {user && user.role == 2 && <Link to="addUser" > <MenuItem>
+            {user && user.role !=1 && <Link to="addUser" > <MenuItem>
                 <ListItemIcon>
                     <PersonAdd fontSize="small" />
                 </ListItemIcon>

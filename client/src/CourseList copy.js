@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import SearchIcon from '@mui/icons-material/Search';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -18,7 +17,6 @@ import Typography from '@mui/material/Typography';
 import FolderIcon from '@mui/icons-material/Folder';
 // import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { InputAdornment, TextField } from "@mui/material";
 import { BASE_URL } from './VARIABLES';
 import axios from 'axios';
 
@@ -34,7 +32,7 @@ const Demo = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
 }));
 
-export default function CourseList() {
+export default function CourseListCopy() {
     const deleteCourse = (item) => {
         let confir = window.confirm("האם ברצונך למחוק קורס " + item.name)
         let id = item._id
@@ -48,9 +46,7 @@ export default function CourseList() {
                     alert("תקלה במחיקת קורס")
                 })
     }
-    const [searchTerm, setSearchTerm] = useState("");
     const [courses, setCourses] = useState([]);
-    const [filteredCourses, setFilteredCourses] = useState([]);
     useEffect(() => {
         axios.get(BASE_URL + "courses").
             then(res => {
@@ -62,31 +58,11 @@ export default function CourseList() {
                 alert("תקלה בהצגת הקורסים")
             })
     }, []);
-    useEffect(() => {
-        let tempFilteredArrCourses = courses.filter(item => {
-            if (item.name.indexOf(searchTerm) > -1||item.description.indexOf(searchTerm) > -1)
-                return true;
-            return false;
-        });
-        setFilteredCourses(tempFilteredArrCourses);
-    }, [courses, searchTerm])
     const [dense, setDense] = useState(false);
     // const [secondary, setSecondary] = React.useState(false);
 
     return (<div >
-        <TextField
-            id="input-with-icon-textfield"
-            label=""
-            onChange={(e) => { setSearchTerm(e.target.value) }}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <SearchIcon />
-                    </InputAdornment>
-                ),
-            }}
-            variant="outlined"
-        />
+
         <Box sx={{ flexGrow: 1 }}>
 
 
@@ -97,7 +73,7 @@ export default function CourseList() {
           </Typography>
             <Demo>
                 <List dense={dense} dir="ltr">
-                    {filteredCourses.map(item => {
+                    {courses.map(item => {
                         return <ListItem key={item._id}
                             secondaryAction={
                                 <IconButton edge="end" aria-label="delete" onClick={() => { deleteCourse(item) }}>
@@ -119,7 +95,7 @@ export default function CourseList() {
                                 primary={item.symbol}
                                 secondary={""}
                             /> <ListItemText
-                                primary={item.directorId.firstName + " " + item.directorId.lastName}
+                                primary={item.directorId.firstName+" "+item.directorId.lastName}
                                 secondary={"רכזת"}
                             />
                         </ListItem>
