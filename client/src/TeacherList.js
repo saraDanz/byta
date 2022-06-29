@@ -56,7 +56,7 @@ export default function TeacherList() {
 
     useEffect(() => {
         let tempFilteredArrTeachers = teachers.filter(item => {
-            if (item.firstName.indexOf(searchTerm) > -1 || item.lastName.indexOf(searchTerm) > -1 || item.tz.indexOf(searchTerm) > -1 || item.email&&item.email.indexOf(searchTerm) > -1)
+            if ((item.firstName+" "+item.lastName).indexOf(searchTerm) > -1||item.firstName.indexOf(searchTerm) > -1 || item.lastName.indexOf(searchTerm) > -1 || item.tz.indexOf(searchTerm) > -1 || item.email&&item.email.indexOf(searchTerm) > -1)
                 return true;
             return false;
         });
