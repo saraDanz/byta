@@ -1,4 +1,4 @@
-.App {
+/* .App {
     font-family: sans-serif;
   }
   
@@ -41,9 +41,9 @@
     margin-top: -15px;
     font-size: 14px;
     margin-bottom: 20px;
-  }
+  } */
   
-  .add-teacher-to-course button {
+  .button-add-teacher-to-course {
    
       padding: 10px 15px;
       background-color: rgb(255 165 0);
@@ -53,7 +53,7 @@
   
   }
   
-  .add-teacher-to-course button:hover {
+  .button-add-teacher-to-course:hover {
     cursor: pointer;
     background-color: white;
     color: rgb(70, 153, 179);

@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
+import { Autocomplete, TextField } from "@mui/material";
 export default function AddCourse() {
     let dispatch = useDispatch();
     let navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function AddCourse() {
         <Formik
             initialValues={{ name: "", description: "", directorId: "", symbol: "" }}
             onSubmit={(values, { setSubmitting }) => {
+
                 if (!values.directorId && directors)
                     values.directorId = directors[0]._id;
                 axios.post(BASE_URL + "courses", values).then(res => {
@@ -82,14 +84,15 @@ export default function AddCourse() {
                     isSubmitting,
                     handleChange,
                     handleBlur,
-                    handleSubmit
+                    handleSubmit, setFieldValue
                 } = props;
 
                 return (
                     <form onSubmit={handleSubmit}>
 
-                        <label htmlFor="name">שם</label>
+                        <label htmlFor="name" className="label-add-course">שם</label>
                         <input
+                            
                             id="name"
                             name="name"
                             type="text"
@@ -97,14 +100,15 @@ export default function AddCourse() {
                             value={values.name}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className={errors.name && touched.name && "error"}
+                            className={errors.name && touched.name && "error input-add-course"||"input-add-course"}
                         />
                         {errors.name && touched.name && (
                             <div className="input-feedback">{errors.name}</div>
                         )}
 
-                        <label htmlFor="description">תאור</label>
+                        <label htmlFor="description" className="label-add-course">תאור</label>
                         <input
+                            className="input-add-course"
                             id="description"
                             name="description"
                             type="text"
@@ -112,13 +116,14 @@ export default function AddCourse() {
                             value={values.description}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className={errors.description && touched.description && "error"}
+                            className={errors.description && touched.description && "error input-add-course" ||"input-add-course"}
                         />
                         {errors.description && touched.description && (
                             <div className="input-feedback">{errors.description}</div>
                         )}
-                        <label htmlFor="description">סמל קורס</label>
+                        <label htmlFor="description" className="label-add-course">סמל קורס</label>
                         <input
+                            className="input-add-course"
                             id="symbol"
                             name="symbol"
                             type="text"
@@ -126,30 +131,50 @@ export default function AddCourse() {
                             value={values.symbol}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className={errors.symbol && touched.symbol && "error"}
+                            className={errors.symbol && touched.symbol   && "error input-add-course" ||"input-add-course"}
                         />
                         {errors.symbol && touched.symbol && (
                             <div className="input-feedback">{errors.symbol}</div>
                         )}
 
-                        <label>רכזת</label>
-                        <select
+                        <label className="label-add-course">רכזת</label>
+                        {/* <select
                             id="directorId"
                             name="directorId"
 
-
+className="select-add-course"
                             value={values.directorId}
                             onChange={handleChange}
                             onBlur={handleBlur}
                             className={errors.directorId && touched.directorId && "error"}
                         >
                             {directors.map((item) => { return <option value={item._id} key={item._id}>{item.firstName + " " + item.lastName}</option> })}
-                        </select>
+                        </select> */}
+                        <Autocomplete
+                            disablePortal
+                            id="combo-box-demo"
+                            options={directors}
+                            sx={{ width: 300 }}
+                            getOptionLabel={(option) => option.firstName + " " + option.lastName}
+                            onChange={(event, newValue) => {
+                                console.log(newValue)
+                                if (newValue)
+                                    setFieldValue("directorId", newValue._id)
+                                //  setValue(newValue);
+                            }}
+
+                            // onInputChange={(event, newInputValue) => {
+                            //   console.log(newInputValue,"input value")
+
+                            // setInputValue(newInputValue);
+                            // }}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
                         {errors.directorId && touched.directorId && (
                             <div className="input-feedback">{errors.directorId}</div>
                         )}
 
-                        <button type="submit" disabled={isSubmitting}>
+                        <button className="button-add-course" type="submit" disabled={isSubmitting}>
                             הוסף      </button>
 
                     </form>
@@ -157,6 +182,6 @@ export default function AddCourse() {
 
             }}
         </Formik>
-        );
+        {/* ); */}
     </div>
 }

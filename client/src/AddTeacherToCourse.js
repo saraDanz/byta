@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
+import { Autocomplete, TextField } from "@mui/material";
+
 import CourseSelectListItem from "./CourseSelectListItem";
 export default function AddTeacherToCourse() {
     let dispatch = useDispatch();
@@ -84,13 +86,13 @@ export default function AddTeacherToCourse() {
                     isSubmitting,
                     handleChange,
                     handleBlur,
-                    handleSubmit
+                    handleSubmit,setFieldValue
                 } = props;
 
                 return (
                     <form onSubmit={handleSubmit}>
-                        <label>מורה</label>
-                        <select
+                        {/* <label>מורה</label> */}
+                        {/* <select
                             id="teacherId"
                             name="teacherId"
 
@@ -102,14 +104,33 @@ export default function AddTeacherToCourse() {
                         >
                   
                             {teachers.map((item) => { return <option value={item._id} key={item._id}>{item.firstName + " " + item.lastName}</option> })}
-                        </select>
+                        </select> */}
+                        <Autocomplete
+                            disablePortal
+                           
+                            options={teachers}
+                           
+
+                            sx={{ width: 300 }}
+                            getOptionLabel={(item) => item.firstName + " " + item.lastName}
+                            onChange={(event, newValue) => {
+                             debugger;   
+                                console.log(newValue)
+                               if (newValue)
+                                   setFieldValue("teacherId", newValue._id)
+                                
+                            }}
+
+                         
+                            renderInput={(params) => <TextField {...params}  label="מורה" />}
+                        />
                         {errors.teacherId && touched.teacherId && (
                             <div className="input-feedback">{errors.teacherId}</div>
                         )}
 
 
 
-                        <select
+                        {/* <select
                             id="courseId"
                             name="courseId"
                             placeholder="הקש קוד קורס"
@@ -121,14 +142,32 @@ export default function AddTeacherToCourse() {
                      
 
                             {courses.map((item, index) => { return <option value={item._id} key={item._id} ><CourseSelectListItem course={item} /></option> })}
-                        </select>
+                        </select> */}
+                        <Autocomplete
+                            disablePortal
+                            id="combo-box-demo"
+                            options={courses}
+                           
 
+                            sx={{ width: 300 }}
+                            getOptionLabel={(course) => course.name +"-"+course.description+" - "+(course.symbol?course.symbol:"")}
+                            onChange={(event, newValue) => {
+                             debugger;   
+                                console.log(newValue)
+                               if (newValue)
+                                   setFieldValue("courseId", newValue._id)
+                                
+                            }}
+
+                         
+                            renderInput={(params) => <TextField {...params}  label="קורס"/>}
+                        />
                         {errors.courseId && touched.courseId && (
                             <div className="input-feedback">{errors.courseId}</div>
                         )}
 
 
-                        <button type="submit" disabled={isSubmitting}>
+                        <button type="submit" className="button-add-teacher-to-course" disabled={isSubmitting}>
                             הוסף      </button>
 
                     </form>
