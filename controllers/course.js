@@ -6,7 +6,7 @@ const TeacherCourses = require("../models/teachersCourses").teachersCoursesModel
 
 const getAllCourses = async (req, res) => {
     try {
-        const courses = await Course.find().populate("directorId", "firstName lastName").populate("teachers").sort({"name":1});
+        const courses = await Course.find().populate("directorId", "firstName lastName").populate("teachers").sort({ "name": 1 });
         return res.send(courses);
     }
     catch (e) {
@@ -98,12 +98,12 @@ const addNewCourse = async (req, res) => {
         console.log(course)
         if (course)
             return res.status(409).send("course with same name and director already exists");
-
-        course = await Course.findOne({ symbol });
-        console.log(course)
-        if (course)
-            return res.status(409).send("course with same symbol already exists");
-
+        if (symbol) {
+            course = await Course.findOne({ symbol });
+            console.log(course)
+            if (course)
+                return res.status(409).send("course with same symbol already exists");
+        }
 
         // if (!mongoose.Types.ObjectId.isValid(teacherId))
         //     return res.status(400).send("teacher id is not valid");
