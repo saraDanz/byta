@@ -6,7 +6,7 @@ const TeacherCourses = require("../models/teachersCourses").teachersCoursesModel
 
 const getAllCourses = async (req, res) => {
     try {
-        const courses = await Course.find().populate("directorId", "firstName lastName").populate("teachers");
+        const courses = await Course.find().populate("directorId", "firstName lastName").populate("teachers").sort({"name":1});
         return res.send(courses);
     }
     catch (e) {

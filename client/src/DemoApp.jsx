@@ -47,6 +47,8 @@ const DemoApp = () => {
   }, [currentUser]);
   const [weekendsVisible, setWeekendsVisible] = useState(true);
   const [currentEvents, setCurrentEvents] = useState([]);
+  let pastSendingEnabled=currentUser&&currentUser.role==3;
+
   // state = {
   //   weekendsVisible: true,
   //   currentEvents: []
@@ -96,7 +98,7 @@ const DemoApp = () => {
 
 //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
 //א"א לדווח על חודשים קודמים
-    if (selectInfo.start.getMonth() == d.month)
+    if (pastSendingEnabled||selectInfo.start.getMonth() == d.month)
     setSelectInfo(selectInfo);
   }
   const closeModal = () => {
@@ -200,7 +202,11 @@ const DemoApp = () => {
       <div className='demo-app-main'>
         <FullCalendar
 
-          headerToolbar={{
+          headerToolbar={pastSendingEnabled?{
+            start: 'today',
+            center: 'title',
+            end: 'prev next'
+          }:{
             start: '',
             center: 'title',
             end: ''

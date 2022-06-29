@@ -4,7 +4,7 @@ const TeacherCourses  = require("../models/teachersCourses").teachersCoursesMode
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find().sort({"lastName":1,"firstName":1});
         return res.send(users);
     }
     catch (e) {
@@ -14,7 +14,7 @@ const getAllUsers = async (req, res) => {
 }
 const getAllDirectors = async (req, res) => {
     try {
-        const users = await User.find({ role: 2 });
+        const users = await User.find({ role: 2 }).sort({"lastName":1,"firstName":1});
         return res.send(users);
     }
     catch (e) {
@@ -24,7 +24,7 @@ const getAllDirectors = async (req, res) => {
 }
 const getAllTeachers = async (req, res) => {
     try {
-        const users = await User.find({ role: 1 });
+        const users = await User.find({ role: {$in:[1,2]} }).sort({"lastName":1,"firstName":1});
         return res.send(users);
     }
     catch (e) {
