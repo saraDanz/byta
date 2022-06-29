@@ -80,7 +80,7 @@ const getAllReportsByTeacherId = async (req, res) => {
 }
 const addReport = async (req, res) => {
 
-    let { teacherId, date, fromTime, toTime, numHours, subject, courseId } = req.body;
+    let { teacherId, date, fromTime, toTime, numHours, subject, courseId ,type,comment} = req.body;
     if (!mongoose.Types.ObjectId.isValid(teacherId))
         return res.status(400).send("teacher id is not valid");
     try {
@@ -93,7 +93,7 @@ const addReport = async (req, res) => {
         console.log(course)
         if (!course)
             return res.status(400).send("no such course");
-        let report = new Report({ teacherId, date, fromTime, courseId, toTime, numHours, subject, courseId });
+        let report = new Report({ teacherId, date, fromTime, courseId, toTime, numHours, subject, courseId ,type,comment});
 
         await report.save();
         return res.send(report);

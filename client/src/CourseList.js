@@ -64,7 +64,7 @@ export default function CourseList() {
     }, []);
     useEffect(() => {
         let tempFilteredArrCourses = courses.filter(item => {
-            if (item.name.indexOf(searchTerm) > -1||item.description.indexOf(searchTerm) > -1)
+            if (item.name.indexOf(searchTerm) > -1||item.symbol&&item.symbol.indexOf(searchTerm) > -1||item.description.indexOf(searchTerm) > -1)
                 return true;
             return false;
         });
