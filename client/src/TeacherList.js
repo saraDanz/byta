@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import { InputAdornment, TextField } from "@mui/material";
+
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -48,6 +51,18 @@ export default function TeacherList() {
                 })
     }
     const [teachers, setTeachers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredTeacherList, setFilteredTeacherList] = useState([]);
+
+    useEffect(() => {
+        let tempFilteredArrTeachers = teachers.filter(item => {
+            if (item.firstName.indexOf(searchTerm) > -1 || item.lastName.indexOf(searchTerm) > -1 || item.tz.indexOf(searchTerm) > -1 || item.email&&item.email.indexOf(searchTerm) > -1)
+                return true;
+            return false;
+        });
+        setFilteredTeacherList(tempFilteredArrTeachers);
+    }, [teachers, searchTerm])
+
     const deleteTeacherFromCourse = (teacherId, courseId) => {
         // let res = teachers.map(item => {
         //     if (item._id == teacherId)
@@ -88,6 +103,19 @@ export default function TeacherList() {
     // const [secondary, setSecondary] = React.useState(false);
 
     return (<div >
+        <TextField
+            id="input-with-icon-textfield"
+            label=""
+            onChange={(e) => { setSearchTerm(e.target.value) }}
+            InputProps={{
+                startAdornment: (
+                    <InputAdornment position="start">
+                        <SearchIcon />
+                    </InputAdornment>
+                ),
+            }}
+            variant="outlined"
+        />
 
         <Box sx={{ flexGrow: 1 }}>
 
@@ -96,11 +124,11 @@ export default function TeacherList() {
 
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
                 מורות
-          </Typography>
+            </Typography>
             <Demo>
                 <List dense={dense} dir="ltr">
-                    {teachers.map(item => {
-                        return <TeacherListItem deleteTeacherFromCourse={deleteTeacherFromCourse} deleteTeacher={deleteTeacher} item={item} />
+                    {filteredTeacherList.map(item => {
+                        return <TeacherListItem key={item._id} deleteTeacherFromCourse={deleteTeacherFromCourse} deleteTeacher={deleteTeacher} item={item} />
                     })}
                 </List>
             </Demo>

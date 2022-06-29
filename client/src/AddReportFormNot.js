@@ -1,6 +1,6 @@
 import "./AddReportFormNot.css";
 import React, { useEffect } from "react";
-
+import { Radio, RadioGroup, FormControlLabel } from "@mui/material";
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
@@ -35,20 +35,21 @@ export default function AddReportForm(props) {
             trigger={<Button>Basic Modal</Button>}
         >
             <Header icon>
-            
-                <Icon name='calendar check outline' size="small" color='teal'/>
-             פרטי דווח
-        </Header>
+
+                <Icon name='calendar check outline' size="small" color='teal' />
+                פרטי דווח
+            </Header>
             <Modal.Content>
                 <Formik
                     initialValues={{
                         course: 0,
                         fromTime: 0,
                         toTime: 0,
-                        numHours: 1,
+                        numHours: 1,type:"frontal",comment:""
                     }}
                     onSubmit={(values, { setSubmitting }) => {
-                      //  alert("sss")
+                        //  alert("sss")
+                        
                         console.log(values)
                         let { course, ...details } = values;
                         console.log(course)
@@ -92,7 +93,7 @@ export default function AddReportForm(props) {
                             isSubmitting,
                             handleChange,
                             handleBlur,
-                            handleSubmit
+                            handleSubmit,setFieldValue 
                         } = props;
 
                         return (
@@ -159,13 +160,34 @@ export default function AddReportForm(props) {
                                 {errors.numHours && touched.numHours && (
                                     <div className="input-feedback">{errors.numHours}</div>
                                 )}
+                                <RadioGroup
+                                
+                                    aria-labelledby="demo-controlled-radio-buttons-group"
+                                    name="controlled-radio-buttons-group"
+                                    value={values.type}
+                                    row
+                                    onChange={(e)=>{setFieldValue("type",e.target.value)}}
+                                >
+                                    <FormControlLabel value="frontal" control={<Radio />} label="פרונטלי" />
+                                    <FormControlLabel value="distance" control={<Radio />} label="למידה מרחוק" />
+                                </RadioGroup>
+                                <label htmlFor="fromTime">הערה</label>
+                                <input
+                                    id="comment"
+                                    name="comment"
+                                    type="text"
+                                    
+                                    value={values.comment}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                
+                                    />
+            
 
-
-
-                                <Button  type={"submit"}   >
+                                <Button type={"submit"}   >
                                     <Icon name='checkmark' /> שמור
-                      </Button>
-                    
+                                </Button>
+
 
                             </form>
 
@@ -178,7 +200,7 @@ export default function AddReportForm(props) {
 
             </Modal.Content>
 
-           
+
 
         </Modal>
     </div>
