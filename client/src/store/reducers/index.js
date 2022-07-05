@@ -22,6 +22,11 @@ export const reducer = (state = initialState, action) => {
                 ...state,
                 courses: action.payload
             }
+        case ActionTypes.UPDATE_USER:
+            return {
+                ...state,
+                courses: action.payload
+            }
         default: return state;
     }
 }

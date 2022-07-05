@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const User = require("../models/user").userModel;
-const TeacherCourses  = require("../models/teachersCourses").teachersCoursesModel;
+const TeacherCourses = require("../models/teachersCourses").teachersCoursesModel;
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().sort({"lastName":1,"firstName":1});
+        const users = await User.find().sort({ "lastName": 1, "firstName": 1 });
         return res.send(users);
     }
     catch (e) {
@@ -14,7 +14,7 @@ const getAllUsers = async (req, res) => {
 }
 const getAllDirectors = async (req, res) => {
     try {
-        const users = await User.find({ role: 2 }).sort({"lastName":1,"firstName":1});
+        const users = await User.find({ role: 2 }).sort({ "lastName": 1, "firstName": 1 });
         return res.send(users);
     }
     catch (e) {
@@ -24,7 +24,7 @@ const getAllDirectors = async (req, res) => {
 }
 const getAllTeachers = async (req, res) => {
     try {
-        const users = await User.find({ role: {$in:[1,2]} }).sort({"lastName":1,"firstName":1});
+        const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
         return res.send(users);
     }
     catch (e) {
@@ -50,16 +50,16 @@ const deleteUser = async (req, res) => {
     try {
         let { id
 
-         } = req.params;
-         console.log(id)
+        } = req.params;
+        console.log(id)
         if (!mongoose.Types.ObjectId.isValid(id))
             return res.status(400).send("not a valid user id");
         const user = await User.findById(id);
         if (!user)
             return res.status(404).send("no such user");
-            //האם לבדוק בדיקות שאין לה קורסים ואיין לה דיווחים
-            //check
-        const coursesForTeacher = await TeacherCourses.find({ teacherId:id }).count();
+        //האם לבדוק בדיקות שאין לה קורסים ואיין לה דיווחים
+        //check
+        const coursesForTeacher = await TeacherCourses.find({ teacherId: id }).count();
         console.log(coursesForTeacher)
 
         if (coursesForTeacher > 0)
@@ -73,19 +73,52 @@ const deleteUser = async (req, res) => {
     }
 
 }
+const updateUser = async (req, res) => {
+    //to do  לבדוק שהאי די חוקי
+    try {
+        let id = req.params.id;
+        let { tz, password, firstName, lastName,
+            address,
+            phone,
+            email, role
+        } = req.body;
+
+        let userkk = await User.findOne({ tz });
+        if (userkk&&userkk._id != id)
+            return res.status(409).send("user with same id already exists");
+        let updated = await User.findOneAndUpdate({ _id: id }, req.body, { new: true });
+        console.log(updated);
+        return res.send(updated);
+        // User.updateOne({  }, $set({
+        //     tz, password, firstName, lastName,
+        //     address,
+        //     phone,
+        //     email,
+        //     role
+        // }))
+
+
+        // await user.save();
+
+        // return res.send(user);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
 
 const addNewUser = async (req, res) => {
     try {
         let { tz, password, firstName, lastName,
             address,
             phone,
-            email,role
+            email, role
         } = req.body;
 
         let user = await User.findOne({ tz });
         if (user)
             return res.status(409).send("user already exists");
-
         user = new User({
             tz, password, firstName, lastName,
             address,
@@ -156,5 +189,5 @@ const addNewDirector = async (req, res) => {
 
 }
 module.exports = {
-    login, addNewTeacher, getAllUsers, addNewUser,addNewDirector, deleteUser, getAllTeachers, getAllDirectors
+    login, addNewTeacher, getAllUsers, updateUser, addNewUser, addNewDirector, deleteUser, getAllTeachers, getAllDirectors
 }

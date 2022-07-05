@@ -6,6 +6,7 @@ router.get("/:id", courseController.getCourseById);
 router.delete("/:id", courseController.deleteCourseById);
 router.get("/bySymbol/:symbol", courseController.getCourseBySymbol);
 router.post("", courseController.addNewCourse);
+router.put("/:id", courseController.updateCourse);
 
 
 

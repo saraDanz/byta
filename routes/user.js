@@ -6,6 +6,7 @@ router.get("/directors", userController.getAllDirectors);
 router.get("/teachers", userController.getAllTeachers);
 router.post("/login", userController.login);
 router.post("", userController.addNewUser);
+router.put("/:id", userController.updateUser);
 router.post("/newDirector", userController.addNewDirector);
 router.post("/newTeacher", userController.addNewTeacher);
 

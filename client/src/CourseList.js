@@ -7,6 +7,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import "./TeacherList.css";
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import EditCourseDialog from "./EditCourseDialog";
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
@@ -16,7 +18,8 @@ import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import FolderIcon from '@mui/icons-material/Folder';
-// import DeleteIcon from '@mui/icons-material/Delete';
+import "./CourseList.css"
+    ;
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { InputAdornment, TextField } from "@mui/material";
 import { BASE_URL } from './VARIABLES';
@@ -35,6 +38,7 @@ const Demo = styled('div')(({ theme }) => ({
 }));
 
 export default function CourseList() {
+    const [courseToEdit, setCourseToEdit] = useState(null);
     const deleteCourse = (item) => {
         let confir = window.confirm("האם ברצונך למחוק קורס " + item.name)
         let id = item._id
@@ -51,6 +55,24 @@ export default function CourseList() {
     const [searchTerm, setSearchTerm] = useState("");
     const [courses, setCourses] = useState([]);
     const [filteredCourses, setFilteredCourses] = useState([]);
+    const openEditCourseDialoge = (item) => {
+        setCourseToEdit(item)
+    }
+    const closeEditCourseDialoge = () => {
+        setCourseToEdit(null)
+    }
+    const saveUpdateChanges = (updated) => {
+        setCourses(courses.map(course => {
+            if (course._id != updated._id)
+                return course;
+            return updated;
+        }).sort(
+            function (a, b) {
+                return a.name > b.name ? 1 : -1;
+
+            }));
+
+    }
     useEffect(() => {
         axios.get(BASE_URL + "courses").
             then(res => {
@@ -64,7 +86,7 @@ export default function CourseList() {
     }, []);
     useEffect(() => {
         let tempFilteredArrCourses = courses.filter(item => {
-            if (item.name.indexOf(searchTerm) > -1||item.symbol&&item.symbol.indexOf(searchTerm) > -1||item.description.indexOf(searchTerm) > -1)
+            if (item.name.indexOf(searchTerm) > -1 || item.symbol && item.symbol.indexOf(searchTerm) > -1 || item.description.indexOf(searchTerm) > -1)
                 return true;
             return false;
         });
@@ -73,7 +95,7 @@ export default function CourseList() {
     const [dense, setDense] = useState(false);
     // const [secondary, setSecondary] = React.useState(false);
 
-    return (<div >
+    return (<div id="course-list">
         <TextField
             id="input-with-icon-textfield"
             label=""
@@ -122,12 +144,16 @@ export default function CourseList() {
                                 primary={item.directorId.firstName + " " + item.directorId.lastName}
                                 secondary={"רכזת"}
                             />
+                            <IconButton edge="end" onClick={() => { openEditCourseDialoge(item) }}>
+                                <EditOutlinedIcon />
+                            </IconButton>
                         </ListItem>
                     })}
                 </List>
             </Demo>
 
         </Box>
+        <EditCourseDialog handleClose={closeEditCourseDialoge} saveChanges={saveUpdateChanges} course={courseToEdit} />
     </div>
     );
 }

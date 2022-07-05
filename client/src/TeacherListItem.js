@@ -25,8 +25,9 @@ import Public from '@mui/icons-material/Public';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { BASE_URL } from './VARIABLES';
 // import {DeleteIcon }from '@mui/icons-material';
-
-export default function TeacherListItem({ item, deleteTeacher, deleteTeacherFromCourse }) {
+import EditIcon from '@mui/icons-material/Edit';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+export default function TeacherListItem({ item, deleteTeacher, editTeacher, deleteTeacherFromCourse }) {
     const [open, setOpen] = useState(false);
     const deleteCourse = (course) => {
         if (window.confirm("האם המורה אינה מלמדת בקורס " + course.name)) {
@@ -49,9 +50,11 @@ export default function TeacherListItem({ item, deleteTeacher, deleteTeacherFrom
     }
     return <> <ListItem key={item._id}
         secondaryAction={
-            <IconButton edge="end" aria-label="delete" onClick={() => { deleteTeacher(item) }}>
+            <>   <IconButton edge="end" aria-label="delete" onClick={() => { deleteTeacher(item) }}>
                 <DeleteOutlineIcon />
             </IconButton>
+
+            </>
         }
     >
 
@@ -72,18 +75,20 @@ export default function TeacherListItem({ item, deleteTeacher, deleteTeacherFrom
             secondary={""}
         />
 
+        <IconButton onClick={() => setOpen(!open)}>
+            <KeyboardArrowDown
 
-        <KeyboardArrowDown
-            onClick={() => setOpen(!open)}
-            sx={{
-                mr: -1,
+                sx={{
+                   
 
-                transform: open ? 'rotate(-180deg)' : 'rotate(0)',
-                transition: '0.2s',
-            }}
-        />
-
-
+                    transform: open ? 'rotate(-180deg)' : 'rotate(0)',
+                    transition: '0.2s',
+                }}
+            />
+        </IconButton>
+        <IconButton edge="end" onClick={() => { editTeacher(item) }}>
+            <EditOutlinedIcon />
+        </IconButton>
     </ListItem>
         {open &&
             item.courses.map((c, index) => (

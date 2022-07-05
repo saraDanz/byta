@@ -23,6 +23,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { BASE_URL } from './VARIABLES';
 import axios from 'axios';
 import TeacherListItem from './TeacherListItem';
+import EditTeacherDialog from "./EditTeacherDialog";
+import EditIcon from '@mui/icons-material/Edit';
 
 // function generate(element) {
 //     return [0, 1, 2].map((value) =>
@@ -53,16 +55,30 @@ export default function TeacherList() {
     const [teachers, setTeachers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredTeacherList, setFilteredTeacherList] = useState([]);
-
+    const [editTeacherDialogVisible, setEditTeacherDialogVisible] = useState(null)
     useEffect(() => {
         let tempFilteredArrTeachers = teachers.filter(item => {
-            if ((item.firstName+" "+item.lastName).indexOf(searchTerm) > -1||item.firstName.indexOf(searchTerm) > -1 || item.lastName.indexOf(searchTerm) > -1 || item.tz.indexOf(searchTerm) > -1 || item.email&&item.email.indexOf(searchTerm) > -1)
+            if ((item.firstName + " " + item.lastName).indexOf(searchTerm) > -1 || item.firstName.indexOf(searchTerm) > -1 || item.lastName.indexOf(searchTerm) > -1 || item.tz.indexOf(searchTerm) > -1 || item.email && item.email.indexOf(searchTerm) > -1)
                 return true;
             return false;
         });
         setFilteredTeacherList(tempFilteredArrTeachers);
     }, [teachers, searchTerm])
+    const saveUpdateChanges = (updated) => {
+        setTeachers(teachers.map(teacher => {
+            if (teacher._id != updated._id)
+                return teacher;
+            return updated;
+        }).sort(
+            function(a, b) {          
+               if (a.lastName === b.lastName) {
+                  // Price is only important when cities are the same
+                  return a.firstName > b.firstName ? 1 : -1;
+               }
+               return a.lastName > b.lastName ? 1 : -1;
+            }));
 
+    }
     const deleteTeacherFromCourse = (teacherId, courseId) => {
         // let res = teachers.map(item => {
         //     if (item._id == teacherId)
@@ -128,12 +144,14 @@ export default function TeacherList() {
             <Demo>
                 <List dense={dense} dir="ltr">
                     {filteredTeacherList.map(item => {
-                        return <TeacherListItem key={item._id} deleteTeacherFromCourse={deleteTeacherFromCourse} deleteTeacher={deleteTeacher} item={item} />
+                        return <TeacherListItem deleteTeacherFromCourse={deleteTeacherFromCourse} key={item._id} editTeacher={() => { setEditTeacherDialogVisible(item) }} deleteTeacher={deleteTeacher} item={item} />
                     })}
                 </List>
             </Demo>
 
         </Box>
+        <EditTeacherDialog teacher={editTeacherDialogVisible} saveChanges={saveUpdateChanges} handleClose={() => { setEditTeacherDialogVisible(null) }} />
     </div>
+
     );
 }
