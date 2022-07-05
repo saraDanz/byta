@@ -120,7 +120,37 @@ const addNewCourse = async (req, res) => {
 
     }
 }
+const updateCourse = async (req, res) => {
+    try {
+        let { name, description, directorId, startDate, symbol } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(directorId))
+            return res.status(400).send("director id is not valid");
+        let id = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(id))
+            return res.status(400).send("course id is not valid");
+
+        let course = await Course.findOne({ name, directorId });
+        console.log(course)
+        if (course && course._id != id)
+            return res.status(409).send("course with same name and director already exists");
+        if (symbol) {
+            course = await Course.findOne({ symbol });
+            console.log(course)
+            if (course && course._id != id)
+                return res.status(409).send("course with same symbol already exists");
+        }
+
+        course = await Course.findByIdAndUpdate(id, { name, description, directorId, startDate: startDate || Date.now(), symbol }, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
+        console.log(course)
+        return res.send(course);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
 
 module.exports = {
-    getCourseByName, getCourseById, addNewCourse, deleteCourseById, getAllCourses, getCourseBySymbol
+    getCourseByName, updateCourse,getCourseById, addNewCourse, deleteCourseById, getAllCourses, getCourseBySymbol
 }

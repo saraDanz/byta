@@ -18,3 +18,9 @@ export const saveCoursesOfCurrentUser = (courses) => {
         payload: courses
     }
 }
+export const updateUserDetails = (newDetails) => {
+    return {
+        type: ActionTypes.UPDATE_USER,
+        payload: newDetails
+    }
+}
