@@ -41,6 +41,9 @@ export default function EditCourseDialog({ course, handleClose, saveChanges }) {
 
             if (!values.directorId && directors)
               values.directorId = directors[0]._id;
+              if(values.directorId._id)
+              values.directorId=values.directorId._id;//במקרה ולא שינו את הרכזת
+              //בגלל שהערך ברירת מחדל של האוטוקומפליט צריך להיות אובייקט אבל צריך לשמור רק את קוד הרכזת
             axios.put(BASE_URL + "courses/" + course._id, values).then(res => {
               console.log(res)
               console.log("course updated in", values);
@@ -52,7 +55,7 @@ export default function EditCourseDialog({ course, handleClose, saveChanges }) {
             }).catch(err => {
               console.log(err);
 
-              alert("התרחשה תקלה בהוספת קורס\n" + err);
+              alert("התרחשה תקלה בעדכון הקורס\n" + err);
 
               setSubmitting(false);
             }).finally(() => { handleClose() })
