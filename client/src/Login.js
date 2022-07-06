@@ -49,7 +49,7 @@ export default function Login() {
                 // else if (!/^[0-9]$/.test(values.tz)) {
                 //     errors.tz = "מספר זהות יכול להכיל רק ספרות";
                 // }
-                else if (values.tz.length < 9) {
+                else if (values.tz.length < 8) {
                     errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
                 }
                 // else if (!EmailValidator.validate(values.email)) {
@@ -61,7 +61,8 @@ export default function Login() {
                     errors.password = "שדה חובה";
                     // } else if (values.password.length < 8) {
                     //     errors.password = "סיסמא לפחות 8 תווים";
-                } else if (!passwordRegex.test(values.password)) {
+                } 
+                else if (!passwordRegex.test(values.password)) {
                     errors.password = "סיסמא חייבת להכיל ספרה";
                 }
 

@@ -11,8 +11,9 @@ const reportSchema = new mongoose.Schema({
     directorStatus: { type: Boolean, default: false },
     bookKeeperStatus: { type: Boolean, default: false },
     reportDate: { type: Date, default: Date.now() },
-    type:{type:String},
-    comment:{type:String}
+    type: { type: String },
+    comment: { type: String },
+    commited: { type: Boolean, default: false }
 
 });
 const reportModel = mongoose.model("reports", reportSchema);
