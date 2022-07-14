@@ -15,10 +15,11 @@ import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 
 // import {ReminderForm}from "./reminders/ReminderForm";
 const DisplayCalendar = () => {
-
+  let [initialEvents, setInitialEvents] = useState([]);
   let dispatch = useDispatch();
   let navigate = useNavigate();
   let currentUser = useSelector(st => st.currentUser);
+  let currentUserCourses = useSelector(st => st.courses);
   // const [showAdd, setShowAdd] = useState(false);
   const [selectInfo, setSelectInfo] = useState(null);
   let calendarComponentRef = useRef(null);
@@ -30,14 +31,8 @@ const DisplayCalendar = () => {
     console.log(date);
     calendarApi.gotoDate(date);
     // calendarApi.gotoDate(new Date(2022,5,1));
-    if (currentUser)
-    axios.get(BASE_URL + "reports/teacherId/" + currentUser._id).then(res => {
-      console.log(res.data);
-      dispatch(saveCoursesOfCurrentUser(res.data))
-    }).catch(err => {
-      console.log(err);
-      alert("תקלה בהצגת הקורסים האפשריים")
-    })
+    if (currentUser ) {
+      if( !currentUserCourses)
       axios.get(BASE_URL + "teacherCourses/" + currentUser._id).then(res => {
         console.log(res.data);
         dispatch(saveCoursesOfCurrentUser(res.data))
@@ -45,6 +40,17 @@ const DisplayCalendar = () => {
         console.log(err);
         alert("תקלה בהצגת הקורסים האפשריים")
       })
+
+      // axios.get(BASE_URL + "reports").then(res => {
+        axios.get(BASE_URL + "reports/" + currentUser._id).then(res => {
+        console.log(res.data,"Sreports");
+        // dispatch(saveCoursesOfCurrentUser(res.data))
+        setInitialEvents(res.data.map((item) => { return { ...item, start: item.date } }))
+      }).catch(err => {
+        console.log(err);
+        alert("תקלה בהצגת הדווחים הקיימים")
+      })
+    }
   }, [currentUser]);
 
   useEffect(() => {
@@ -54,46 +60,10 @@ const DisplayCalendar = () => {
   }, [currentUser]);
   const [weekendsVisible, setWeekendsVisible] = useState(true);
   const [currentEvents, setCurrentEvents] = useState([]);
-  let pastSendingEnabled=currentUser&&currentUser.role==3;
+  let pastSendingEnabled = currentUser && currentUser.role == 3;
 
-  // state = {
-  //   weekendsVisible: true,
-  //   currentEvents: []
-  // }
-  // let renderSidebar = () => {
-  //   return (
-  //     <div className='demo-app-sidebar'>
-  //       <div className='demo-app-sidebar-section'>
-  //         <h2>Instructions</h2>
-  //         <ul>
-  //           <li>Select dates and you will be prompted to create a new event</li>
-  //           <li>Drag, drop, and resize events</li>
-  //           <li>Click an event to delete it</li>
-  //         </ul>
-  //       </div>
-  //       <div className='demo-app-sidebar-section'>
-  //         <label>
-  //           <input
-  //             type='checkbox'
-  //             checked={weekendsVisible}
-  //             onChange={handleWeekendsToggle}
-  //           ></input>
-  //           toggle weekends
-  //         </label>
-  //       </div>
-  //       <div className='demo-app-sidebar-section'>
-  //         <h2>All Events ({currentEvents.length})</h2>
-  //         <ul>
-  //           {currentEvents.map(renderSidebarEvent)}
-  //         </ul>
-  //       </div>
 
-  //     </div>
-  //   )
-  // }
-  const handleWeekendsToggle = () => {
-    setWeekendsVisible(!weekendsVisible)
-  }
+
 
   const handleDateClick = (selectInfo) => {
     console.log(selectInfo);
@@ -103,10 +73,10 @@ const DisplayCalendar = () => {
     // setShowAdd(true);
     let d = getCurrentViewMonthAndYear();
 
-//נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
-//א"א לדווח על חודשים קודמים
-    if (pastSendingEnabled||selectInfo.start.getMonth() == d.month)
-    setSelectInfo(selectInfo);
+    //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
+    //א"א לדווח על חודשים קודמים
+    if (pastSendingEnabled || selectInfo.start.getMonth() == d.month)
+      setSelectInfo(selectInfo);
   }
   const closeModal = () => {
     setSelectInfo(null);
@@ -209,20 +179,20 @@ const DisplayCalendar = () => {
       <div className='demo-app-main'>
         <FullCalendar
 
-          headerToolbar={pastSendingEnabled?{
+          headerToolbar={pastSendingEnabled ? {
             start: 'today',
             center: 'title',
             end: 'prev next'
-          }:{
-            start: '',
-            center: 'title',
-            end: ''
-          }}
+          } : {
+              start: '',
+              center: 'title',
+              end: ''
+            }}
           ref={calendarComponentRef}
           // showNonCurrentDates="true"
           // defaultDate={new Date(2020,10,10)}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-
+          initialEvents={initialEvents}
           initialView='dayGridMonth'
           editable={true}
           selectable={true}
