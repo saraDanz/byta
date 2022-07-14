@@ -17,7 +17,7 @@ const getAllReportsByYearAndMonth = async (req, res) => {
     let first = new Date(year, month - 1);
     let last = new Date(year, month);
     try {
-        const reports = await Report.find({ date: { $gte: first, $lt: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId",select:"firstName lastName -_id" } });
+        const reports = await Report.find({ date: { $gte: first, $lt: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         console.log(reports)
         return res.send(reports);
     }
@@ -63,13 +63,19 @@ const getAllReportsByTeacherIdAndYear = async (req, res) => {
     }
 }
 const getAllReportsByTeacherId = async (req, res) => {
+    console.log("place")
     let { teacherId } = req.params;
     if (!mongoose.Types.ObjectId.isValid(teacherId))
         return res.status(400).send("id not valid");
-    const teacher = await User.findById(teacherId);
-    if (!teacher)
-        return res.status(400).send("no such teacher");
     try {
+        const teacher = await User.findById(teacherId);
+
+    console.log("place",teacher)
+
+        
+        if (!teacher)
+            return res.status(400).send("no such teacher");
+
         const reports = await Report.find({ teacherId });
         return res.send(reports);
     }
@@ -80,7 +86,7 @@ const getAllReportsByTeacherId = async (req, res) => {
 }
 const addReport = async (req, res) => {
 
-    let { teacherId, date, fromTime, toTime, numHours, subject, courseId ,type,comment} = req.body;
+    let { teacherId, date, fromTime, toTime, numHours, subject, courseId, type, comment } = req.body;
     if (!mongoose.Types.ObjectId.isValid(teacherId))
         return res.status(400).send("teacher id is not valid");
     try {
@@ -93,7 +99,7 @@ const addReport = async (req, res) => {
         console.log(course)
         if (!course)
             return res.status(400).send("no such course");
-        let report = new Report({ teacherId, date, fromTime, courseId, toTime, numHours, subject, courseId ,type,comment});
+        let report = new Report({ teacherId, date, fromTime, courseId, toTime, numHours, subject, courseId, type, comment });
 
         await report.save();
         return res.send(report);

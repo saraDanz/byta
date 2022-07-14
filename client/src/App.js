@@ -30,6 +30,7 @@ import Logout from '@mui/icons-material/Logout';
 // import { AppBar } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Avatar, Typography } from "@mui/material";
+import DisplayCalendar from "./DisplayCalendar";
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -54,6 +55,8 @@ export default function App() {
 
 
     }, []);
+    // <Menu.Item >     <Link to="displayCalendar" >דווחים קודמים</Link></Menu.Item>/*}
+
     return (<>
         <Menu pointing secondary>
 
@@ -161,6 +164,7 @@ export default function App() {
             <Route path="addCourse" element={<AddCourse />} />
             <Route path="teacherList" element={<TeacherList />} />
             <Route path="courseList" element={<CourseList />} />
+            <Route path="displayCalendar" element={<DisplayCalendar />} />
             <Route path="addTeacherToCourse" element={<AddTeacherToCourse />} />
 
 
