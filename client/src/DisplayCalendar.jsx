@@ -15,37 +15,42 @@ import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 
 // import {ReminderForm}from "./reminders/ReminderForm";
 const DisplayCalendar = () => {
-  let [initialEvents, setInitialEvents] = useState([]);
+
   let dispatch = useDispatch();
   let navigate = useNavigate();
   let currentUser = useSelector(st => st.currentUser);
   let currentUserCourses = useSelector(st => st.courses);
   // const [showAdd, setShowAdd] = useState(false);
   const [selectInfo, setSelectInfo] = useState(null);
+  const [x, setX] = useState(true);
   let calendarComponentRef = useRef(null);
 
   useEffect(() => {
     let calendarApi = calendarComponentRef.current.getApi();
     let d = getCurrentViewMonthAndYear();
     let date = new Date(d.year, d.month, 1);
-    console.log(date);
+
     calendarApi.gotoDate(date);
     // calendarApi.gotoDate(new Date(2022,5,1));
-    if (currentUser ) {
-      if( !currentUserCourses)
-      axios.get(BASE_URL + "teacherCourses/" + currentUser._id).then(res => {
-        console.log(res.data);
-        dispatch(saveCoursesOfCurrentUser(res.data))
-      }).catch(err => {
-        console.log(err);
-        alert("תקלה בהצגת הקורסים האפשריים")
-      })
+    if (currentUser) {
+      if (!currentUserCourses || !currentUserCourses.length)
+        axios.get(BASE_URL + "teacherCourses/" + currentUser._id).then(res => {
+
+          dispatch(saveCoursesOfCurrentUser(res.data))
+        }).catch(err => {
+          console.log(err);
+          alert("תקלה בהצגת הקורסים האפשריים")
+        })
 
       // axios.get(BASE_URL + "reports").then(res => {
-        axios.get(BASE_URL + "reports/" + currentUser._id).then(res => {
-        console.log(res.data,"Sreports");
-        // dispatch(saveCoursesOfCurrentUser(res.data))
-        setInitialEvents(res.data.map((item) => { return { ...item, start: item.date } }))
+      axios.get(BASE_URL + "reports/" + currentUser._id).then(res => {
+        console.log(res.data, "Sreports");
+
+
+        res.data.forEach(element => {
+          calendarApi.addEvent({ ...element, start: element.date })
+        });
+
       }).catch(err => {
         console.log(err);
         alert("תקלה בהצגת הדווחים הקיימים")
@@ -60,9 +65,9 @@ const DisplayCalendar = () => {
   }, [currentUser]);
   const [weekendsVisible, setWeekendsVisible] = useState(true);
   const [currentEvents, setCurrentEvents] = useState([]);
-  let pastSendingEnabled = currentUser && currentUser.role == 3;
+  let pastSendingEnabled = currentUser && currentUser.role == 3 || true;
 
-
+  const [changedEvents, setChangedEvents] = useState([]);
 
 
   const handleDateClick = (selectInfo) => {
@@ -75,7 +80,7 @@ const DisplayCalendar = () => {
 
     //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
     //א"א לדווח על חודשים קודמים
-    if (pastSendingEnabled || selectInfo.start.getMonth() == d.month)
+    if (selectInfo.start.getMonth() == d.month)
       setSelectInfo(selectInfo);
   }
   const closeModal = () => {
@@ -90,43 +95,40 @@ const DisplayCalendar = () => {
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
-
-    calendarApi.addEvent({
+    let newEvent = {
       id: createEventId(),
       courseName: object.course.name,
       teacherId: currentUser._id,
-      // teacherId: "624d4ed9bc1d81e3e89ad480",
       courseId: object.course.id,
-
       fromTime: object.fromTime,
       toTime: object.toTime,
       numHours: object.numHours,
-      // subject: { type: String, default: "" },
-
       start: date,
       end: date,
-
-
       allDay: false
-    })
-
+    }
+    calendarApi.addEvent(newEvent)
+    setChangedEvents([...changedEvents, { ...newEvent, modelState: "added" }])
   }
   const handleSubmit = () => {
-    let events = currentEvents.map(item => {
-      return {
-        teacherId: currentUser._id,
-        date: item.start,
-        fromTime: item.extendedProps.fromTime,
-        toTime: item.extendedProps.toTime,
-        numHours: item.extendedProps.numHours,
-        courseId: item.extendedProps.courseId,
-        courseName: item.extendedProps.courseName,
-      }
+    let events = changedEvents.map(item => {
+      if (item.modelState == "added")
+        return {
+          teacherId: currentUser._id,
+          date: item.start,
+          fromTime: item.fromTime,
+          toTime: item.toTime,
+          numHours: item.numHours,
+          courseId: item.courseId,
+          courseName: item.courseName,
+          modelState:"added"
+        }
+      return item;
     })
-    axios.post(BASE_URL + "reports/addReports", events).then(data => {
+    axios.put(BASE_URL + "reports", events).then(data => {
       console.log(data)
-      dispatch(logOut())
-      alert("הדווח הוגש בהצלחה")
+
+      alert("הדווח עודכן בהצלחה")
       navigate("/login");
 
     }
@@ -137,19 +139,30 @@ const DisplayCalendar = () => {
       });
   }
   const handleEventClick = (clickInfo) => {
+    let d = getCurrentViewMonthAndYear();
+    //if (clickInfo.event.start.getMonth() == d.month)
 
     if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
       clickInfo.event.remove()
+      if (clickInfo.event.extendedProps._id)
+        setChangedEvents([...changedEvents, { id: clickInfo.event.extendedProps._id, modelState: "deleted" }])
+
+
     }
   }
 
   const handleEvents = (events) => {
     setCurrentEvents(events);
-    console.log(events)
+
   }
+  // useEffect(() => {
+  //   console.log("currentEvents", currentEvents);
+  // }, [currentEvents])
+  useEffect(() => {
+    console.log("changedEvents", changedEvents);
+  }, [changedEvents])
   function renderEventContent(eventInfo) {
-    console.log(eventInfo)
-    console.log(eventInfo.event.extendedProps.numHours, "numhours")
+
 
     return (
       <>
@@ -192,7 +205,7 @@ const DisplayCalendar = () => {
           // showNonCurrentDates="true"
           // defaultDate={new Date(2020,10,10)}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialEvents={initialEvents}
+
           initialView='dayGridMonth'
           editable={true}
           selectable={true}

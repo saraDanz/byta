@@ -54,6 +54,8 @@ export default function AddReportForm(props) {
                         let { course, ...details } = values;
                         console.log(course)
                         details = { ...details, course: { id: courses[course].courseId._id, name: courses[course].courseId.name } }
+
+                        // details = { ...details }
                         props.addReport(details)
                         props.onClose()
                     }}

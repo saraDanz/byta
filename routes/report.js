@@ -7,6 +7,7 @@ router.get("/:teacherId", reportController.getAllReportsByTeacherId);
 // router.get("/:year/:month", reportController.getAllReportsByYearAndMonth);
 router.post("", reportController.addReport);
 router.post("/addReports", reportController.addReports);
+router.put("",reportController.saveReportChanges);
 
 
 
