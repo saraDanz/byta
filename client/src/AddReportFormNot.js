@@ -15,6 +15,7 @@ import { BASE_URL } from "./VARIABLES";
 // import DialogContentText from '@mui/material/DialogContentText';
 // import{ DialogTitle,Button }from '@mui/material';
 import { Button, Header, Icon, Modal } from 'semantic-ui-react'
+import { convertToTime } from "./Utils";
 export default function AddReportForm(props) {
     // let dispatch = useDispatch();
     // let courses;
@@ -45,15 +46,23 @@ export default function AddReportForm(props) {
                         course: 0,
                         fromTime: 0,
                         toTime: 0,
-                        numHours: 1,type:"frontal",comment:""
+                        numHours: 1, type: "frontal", comment: ""
                     }}
                     onSubmit={(values, { setSubmitting }) => {
                         //  alert("sss")
-                        
+
                         console.log(values)
                         let { course, ...details } = values;
                         console.log(course)
-                        details = { ...details, course: { id: courses[course].courseId._id, name: courses[course].courseId.name } }
+                        details = {
+                            ...details,
+                            course: {
+                                _id: courses[course].courseId._id,
+                                name: courses[course].courseId.name,
+                            },
+                            fromTime: convertToTime(details.fromTime),
+                            toTime: convertToTime(details.toTime),
+                        }
 
                         // details = { ...details }
                         props.addReport(details)
@@ -95,7 +104,7 @@ export default function AddReportForm(props) {
                             isSubmitting,
                             handleChange,
                             handleBlur,
-                            handleSubmit,setFieldValue 
+                            handleSubmit, setFieldValue
                         } = props;
 
                         return (
@@ -163,12 +172,12 @@ export default function AddReportForm(props) {
                                     <div className="input-feedback">{errors.numHours}</div>
                                 )}
                                 <RadioGroup
-                                
+
                                     aria-labelledby="demo-controlled-radio-buttons-group"
                                     name="controlled-radio-buttons-group"
                                     value={values.type}
                                     row
-                                    onChange={(e)=>{setFieldValue("type",e.target.value)}}
+                                    onChange={(e) => { setFieldValue("type", e.target.value) }}
                                 >
                                     <FormControlLabel value="frontal" control={<Radio />} label="פרונטלי" />
                                     <FormControlLabel value="distance" control={<Radio />} label="למידה מרחוק" />
@@ -178,13 +187,13 @@ export default function AddReportForm(props) {
                                     id="comment"
                                     name="comment"
                                     type="text"
-                                    
+
                                     value={values.comment}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                
-                                    />
-            
+
+                                />
+
 
                                 <Button type={"submit"}   >
                                     <Icon name='checkmark' /> שמור

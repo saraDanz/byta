@@ -10,7 +10,7 @@ import { logOut, saveCoursesOfCurrentUser } from './store/actions';
 import { BASE_URL } from './VARIABLES';
 import { useNavigate } from 'react-router';
 import AddReportForm from './AddReportFormNot';
-import { getCurrentViewMonthAndYear } from "./Utils";
+import { getCurrentViewMonthAndYear, DateStringToTimeString } from "./Utils";
 import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 
 // import {ReminderForm}from "./reminders/ReminderForm";
@@ -99,12 +99,13 @@ const DisplayCalendar = () => {
       id: createEventId(),
       courseName: object.course.name,
       teacherId: currentUser._id,
-      courseId: object.course.id,
+      courseId: object.course,
       fromTime: object.fromTime,
       toTime: object.toTime,
       numHours: object.numHours,
       start: date,
       end: date,
+      //  course:object.course,
       allDay: false
     }
     calendarApi.addEvent(newEvent)
@@ -119,9 +120,9 @@ const DisplayCalendar = () => {
           fromTime: item.fromTime,
           toTime: item.toTime,
           numHours: item.numHours,
-          courseId: item.courseId,
+          courseId: item.courseId._id,
           courseName: item.courseName,
-          modelState:"added"
+          modelState: "added"
         }
       return item;
     })
@@ -140,15 +141,15 @@ const DisplayCalendar = () => {
   }
   const handleEventClick = (clickInfo) => {
     let d = getCurrentViewMonthAndYear();
-    //if (clickInfo.event.start.getMonth() == d.month)
+    if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
 
-    if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
-      clickInfo.event.remove()
-      if (clickInfo.event.extendedProps._id)
-        setChangedEvents([...changedEvents, { id: clickInfo.event.extendedProps._id, modelState: "deleted" }])
+      if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
+        clickInfo.event.remove()
+        if (clickInfo.event.extendedProps._id)
+          setChangedEvents([...changedEvents, { id: clickInfo.event.extendedProps._id, modelState: "deleted" }])
 
 
-    }
+      }
   }
 
   const handleEvents = (events) => {
@@ -162,17 +163,18 @@ const DisplayCalendar = () => {
     console.log("changedEvents", changedEvents);
   }, [changedEvents])
   function renderEventContent(eventInfo) {
+    debugger;
+    let d = getCurrentViewMonthAndYear();
 
-
+    let isPast = !(eventInfo.event.start.getMonth() == d.month && eventInfo.event.start.getFullYear() == d.year) 
     return (
       <>
-        {/*  <b>{eventInfo.timeText}</b>
-        <i>{eventInfo.event.extendedProps.title}</i>*/}
-        <div className="event-info">
-          <div>
-            <b>{eventInfo.event.extendedProps.courseName}</b>
 
-            <i className="time">{eventInfo.event.extendedProps.fromTime}-{eventInfo.event.extendedProps.toTime}</i>
+        <div className={"event-info " + (isPast?"past":"")} >
+          <div>
+            <b>{eventInfo.event.extendedProps.courseId.name}</b>
+
+            <i className="time">{eventInfo.event.extendedProps.fromTime ? DateStringToTimeString(eventInfo.event.extendedProps.fromTime) : 0}-{eventInfo.event.extendedProps.toTime ? DateStringToTimeString(eventInfo.event.extendedProps.toTime) : 0}</i>
 
             <i className="hours" dir="rtl"> {eventInfo.event.extendedProps.numHours + "שע'"} </i>
 
@@ -186,14 +188,14 @@ const DisplayCalendar = () => {
   }
   return (
     <div className='demo-app'>
-      <Button onClick={handleSubmit}>שליחת הדווח</Button>
+      <Button onClick={handleSubmit}>שמירה</Button>
 
 
       <div className='demo-app-main'>
         <FullCalendar
 
           headerToolbar={pastSendingEnabled ? {
-            start: 'today',
+            start: '',
             center: 'title',
             end: 'prev next'
           } : {
@@ -208,6 +210,7 @@ const DisplayCalendar = () => {
 
           initialView='dayGridMonth'
           editable={true}
+          disableDragging={true}
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}

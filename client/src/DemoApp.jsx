@@ -98,7 +98,7 @@ const DemoApp = () => {
 
 //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
 //א"א לדווח על חודשים קודמים
-  //  if (pastSendingEnabled||selectInfo.start.getMonth() == d.month)
+   if (pastSendingEnabled||selectInfo.start.getMonth() == d.month)
     setSelectInfo(selectInfo);
   }
   const closeModal = () => {
