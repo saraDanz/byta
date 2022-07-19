@@ -52,10 +52,10 @@ export default function App() {
     }
     useEffect(() => {
         dispatch(saveUser(getStorage()));
-
-
+        // <Menu.Item >     <Link to="displayCalendar" >דווחים קודמים</Link></Menu.Item>
+        //
+// 
     }, []);
-    // <Menu.Item >     <Link to="displayCalendar" >דווחים קודמים</Link></Menu.Item>/*}
 
     return (<>
         <Menu pointing secondary>
@@ -65,7 +65,8 @@ export default function App() {
           </Menu.Item>*/}
 
 
-            {user && <Menu.Item >  <Link to="report">הגשת דווח</Link></Menu.Item>}
+            {user && <> <Menu.Item >  <Link to="report">הגשת דווח</Link></Menu.Item>
+</>        }
 
 
 

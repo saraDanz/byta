@@ -70,9 +70,9 @@ const getAllReportsByTeacherId = async (req, res) => {
     try {
         const teacher = await User.findById(teacherId);
 
-    console.log("place",teacher)
+        console.log("place", teacher)
 
-        
+
         if (!teacher)
             return res.status(400).send("no such teacher");
 
@@ -130,9 +130,18 @@ const addReports = async (req, res) => {
         }
         let rep = reports.map(item => {
             return {
-                ...item,
+                teacherId: item.teacherId
+                , date: item.date,
                 fromTime: convertToTime(item.fromTime),
-                toTime: convertToTime(item.toTime)
+                courseId:item.courseId,
+                toTime:convertToTime(item.toTime),
+                numHours:item.numHours,
+                subject:item.subject,
+                courseId:item.courseId,
+                type:item.type,
+                comment:item.comment
+
+
             }
         })
 
@@ -142,6 +151,57 @@ const addReports = async (req, res) => {
     catch (e) {
         return res.status(400).send(e.message);
     }
+}
+
+const saveReportChanges = async (req, res) => {
+    const cnt = { deleted: 0, added: 0 };
+    let reports = req.body;
+    console.log(reports)
+    let changes = groupBy(reports, "modelState")
+    try {
+        //todo: לשפר לולאה שתעבוד אסינכורני בן האלמנטים ורק הסוף יהיה סינכורני
+        for (const element of changes.added) {
+            cnt.added++;
+            let { courseId, teacherId } = element;
+            if (!mongoose.Types.ObjectId.isValid(courseId))
+                return res.status(400).send("course id is not valid");
+            const course = await Course.findById(courseId);
+            if (!course)
+                return res.status(404).send("no such course");
+            if (!mongoose.Types.ObjectId.isValid(teacherId))
+                return res.status(400).send("teacher id is not valid");
+            const teacher = await User.findById(teacherId);
+            if (!teacher)
+                return res.status(404).send("no such teacher");
+        }
+        let rep = changes.added.map(item => {
+            return {
+                ...item,
+                fromTime: convertToTime(item.fromTime),
+                toTime: convertToTime(item.toTime)
+            }
+        })
+
+        await Report.insertMany(rep);
+        for (const element of changes.deleted) {
+
+            if (!mongoose.isValidObjectId(element.id))
+                return res.status(400).send("not a valid _id");
+            await Report.findByIdAndDelete(element.id)
+            cnt.deleted++;
+        }
+        return res.send(cnt);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+    }
+}
+function groupBy(arr, property) {
+    return arr.reduce(function (memo, x) {
+        if (!memo[x[property]]) { memo[x[property]] = []; }
+        memo[x[property]].push(x);
+        return memo;
+    }, {});
 }
 const convertToTime = (time) => {
     let d = new Date("1-1-1900 " + time);
@@ -157,5 +217,6 @@ module.exports = {
     getAllReportsByTeacherIdMonthAndYear,
     getAllReportsByYearAndMonth,
     addReport,
-    addReports
+    addReports,
+    saveReportChanges
 }
