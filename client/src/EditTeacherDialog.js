@@ -34,9 +34,7 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
 
   return (
     <div>
-      <Button variant="outlined" >
-        Open form dialog
-      </Button>
+     
       {teacher && (
         <Formik
           initialValues={{ tz: teacher.tz, firstName: teacher.firstName, lastName: teacher.lastName, email: teacher.email, address: teacher.address, phone: teacher.phone, password: teacher.password, role: teacher.role }}
