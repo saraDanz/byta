@@ -16,7 +16,7 @@ export default function ExportToExcel() {
     const getData = () => {
         // let year = 2022;
         // let month = 4;
-        axios.get(`${BASE_URL}reports/${year}/${month}`).then(res => {
+        axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
             console.log(res);
             try {
                 let reports = res.data.map(item => {
