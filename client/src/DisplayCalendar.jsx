@@ -80,7 +80,7 @@ const DisplayCalendar = () => {
 
     //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
     //א"א לדווח על חודשים קודמים
-    if (selectInfo.start.getMonth() == d.month)
+   // if (selectInfo.start.getMonth() == d.month)
       setSelectInfo(selectInfo);
   }
   const closeModal = () => {
@@ -141,7 +141,7 @@ const DisplayCalendar = () => {
   }
   const handleEventClick = (clickInfo) => {
     let d = getCurrentViewMonthAndYear();
-    if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
+  //  if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
 
       if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
         clickInfo.event.remove()
