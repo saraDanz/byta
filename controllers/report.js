@@ -14,7 +14,7 @@ const getAllReports = async (req, res) => {
 }
 const getAllReportsByYearAndMonth = async (req, res) => {
     let { year, month } = req.params;
-    let first = new Date(year, month - 1,0);
+    let first = new Date(year, month -1,1,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
     let last = new Date(year, month,1,0,0,0,0);
     try {
