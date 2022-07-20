@@ -14,13 +14,39 @@ const getAllReports = async (req, res) => {
 }
 const getAllReportsByYearAndMonth = async (req, res) => {
     let { year, month } = req.params;
-    let first = new Date(year, month - 1);
+    let first = new Date(year, month - 1,0);
+    first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
     let last = new Date(year, month);
     try {
-        const reports = await Report.find({ date: { $gte: first, $lt: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+        const reports = await Report.find({ date: { $gt: first, $lt: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         console.log(reports)
         return res.send(reports);
-    }
+    } 
+
+//    let prev = new Date(year, month, 0);
+//     let next = new Date(year, month+1,0 );
+//         console.log(prev)
+//         console.log(next)
+
+    // try {
+    //     const reports = await Report.find({ date: { $gt: prev, $lt: next } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+    //     console.log(reports)
+    //     return res.send(reports);
+    // }
+
+    // try {
+    //     const reports = await Report.find({ 
+    //         "$expr": { 
+    //             "$and": [ 
+    //                 { "$eq": [ { "$month": "$date" }, month ] },
+    //                 { "$eq": [ { "$year": "$date" }, year ] }
+    //             ] 
+              
+    //         } 
+    //     }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+    //     console.log(reports)
+    //     return res.send(reports);
+    // }
     catch (e) {
         return res.status(400).send(e.message);
 
