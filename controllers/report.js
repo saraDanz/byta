@@ -19,7 +19,7 @@ const getAllReportsByYearAndMonth = async (req, res) => {
     let last = new Date(year, month,0,0,0,0,0);
     console.log(last)
     try {
-        const reports = await Report.find({ date: { $gt: first, $lt: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+        const reports = await Report.find({ date: { $gte: first, $lte: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         console.log(reports)
         return res.send(reports);
     } 
