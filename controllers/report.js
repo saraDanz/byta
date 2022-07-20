@@ -14,12 +14,12 @@ const getAllReports = async (req, res) => {
 }
 const getAllReportsByYearAndMonth = async (req, res) => {
     let { year, month } = req.params;
-    let first = new Date(year, month -1,1,0,0,0,0,0);
+    let first = new Date(year, month -1,0,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
     let last = new Date(year, month,0,0,0,0,0);
     console.log(last)
     try {
-        const reports = await Report.find({ date: { $gte: first, $lte: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+        const reports = await Report.find({ date: { $gt: first, $lte: last } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         console.log(reports)
         return res.send(reports);
     } 
