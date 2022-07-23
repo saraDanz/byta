@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router';
 import AddReportForm from './AddReportFormNot';
 import { getCurrentViewMonthAndYear } from "./Utils";
 import { Button, Header, Icon, Modal } from 'semantic-ui-react'
-
 // import {ReminderForm}from "./reminders/ReminderForm";
 const DemoApp = () => {
 

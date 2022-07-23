@@ -7,16 +7,24 @@ import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 
 import { BASE_URL } from "./VARIABLES";
 import { getCurrentViewMonthAndYear } from "./Utils";
+import{useSelector}from"react-redux";
+
 export default function ExportToExcel() {
     let d = getCurrentViewMonthAndYear();
     let [year, setYear] = useState(d.year);
+    let currentUser = useSelector(st => st.currentUser);
+
+
     let [month, setMonth] = useState(d.month);
 
 
     const getData = () => {
         // let year = 2022;
         // let month = 4;
-        axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
+        if(currentUser)
+        axios.get(`${BASE_URL}reports/byDirectorIdYearAndMonth/${currentUser._id}/${year}/${month}`).then(res => {
+
+        // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
             console.log(res);
             try {
                 let reports = res.data.map(item => {

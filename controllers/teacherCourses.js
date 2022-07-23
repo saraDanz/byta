@@ -14,6 +14,20 @@ const getAllTeacherCourses = async (req, res) => {
     }
 
 }
+const getCoursesByDirectorId = async (req, res) => {
+    try {
+        let { directorId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(directorId))
+            return res.status(400).send("teacher id is not valid");
+        const courses = await TeacherCourses.find({ directorId }).populate({ path: "courseId" });
+        return res.send(courses);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+
+}
 const getCoursesByTeacherId = async (req, res) => {
     try {
         let { teacherId } = req.params;
@@ -73,7 +87,11 @@ const deleteTecherFromCourse = async (req, res) => {
     }
 
 }
-module.exports = { getCoursesByTeacherId, addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse }
+module.exports = {
+    getCoursesByTeacherId,
+    getCoursesByDirectorId,
+    addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse
+}
 // const addTeacherToCoure = async (req, res) => {
 //     try {
 //         let { tz, password, firstName, lastName, address, phone, email } = req.body;
