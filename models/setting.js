@@ -11,7 +11,7 @@ const settingSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 
 });
-const settingModel = mongoose.model("settings", settingModel);
+const settingModel = mongoose.model("settings", settingSchema);
 module.exports = {
     settingModel,
     settingSchema
