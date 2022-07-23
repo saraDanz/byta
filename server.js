@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const userRoute = require("./routes/user");
 const reportRoute = require("./routes/report");
 const coursesRoute = require("./routes/courses");
+const settingsRoute = require("./routes/settings");
 const teacherCoursesRoute = require("./routes/teacherCourses");
 const path = require("path")
 
@@ -20,10 +21,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "client", "build")))
 
-mongoose.connect(process.env.DB||"mongodb+srv://sara:6PsUABpopt63jWxY@byta-reporst.hj4vu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", { useNewUrlParser: true }).then(() => { console.log("mongo db connected") })
+mongoose.connect(process.env.DB || "mongodb+srv://sara:6PsUABpopt63jWxY@byta-reporst.hj4vu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", { useNewUrlParser: true }).then(() => { console.log("mongo db connected") })
     .catch(err => { console.log(err) })
 
 app.use("/users", userRoute)
+app.use("/settings", settingsRoute)
 app.use("/reports", reportRoute)
 app.use("/courses", coursesRoute)
 app.use("/teacherCourses", teacherCoursesRoute)
