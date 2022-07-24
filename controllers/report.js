@@ -66,9 +66,9 @@ const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
         courses = courses.map(item => item._id);
         let reports = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         let reportsCnt = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } }).count();
-        let reportsx ={repFilter: reports.filter(item => item.date&&item.date.getFullYear() == year && item.date.getMonth() == month-1),rep:reports,reportsCnt};
+        let reportsx = { repFilter: reports.filter(item => item.date && item.date.getFullYear() == year && item.date.getMonth() == month - 1), rep: reports, reportsCnt };
         console.log(reports)
-        return res.send(reportsx);
+        return res.send(reportsx.repFilter);
     }
 
     //    let prev = new Date(year, month, 0);
@@ -253,8 +253,10 @@ const saveReportChanges = async (req, res) => {
                     return res.status(404).send("no such teacher");
             }
             let rep = changes.added.map(item => {
+                let date=new Date(item.date)
                 return {
                     ...item,
+                    date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
                     fromTime: item.fromTime,
                     toTime: item.toTime
                     //  fromTime: convertToTime(item.fromTime),
