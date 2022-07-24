@@ -65,9 +65,10 @@ const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
         let courses = await Course.find({ directorId }).select("_id");
         courses = courses.map(item => item._id);
         let reports = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
-        reports = reports.filter(item => item.date&&item.date.getFullYear() == year && item.date.getMonth() == month-1)
+        let reportsCnt = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } }).count();
+        let reportsx ={repFilter: reports.filter(item => item.date&&item.date.getFullYear() == year && item.date.getMonth() == month-1),rep:reports,reportsCnt};
         console.log(reports)
-        return res.send(reports);
+        return res.send(reportsx);
     }
 
     //    let prev = new Date(year, month, 0);
