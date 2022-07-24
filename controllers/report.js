@@ -66,7 +66,9 @@ const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
         courses = courses.map(item => item._id);
         let reports = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         let reportsCnt = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } }).count();
-        let reportsx = { repFilter: reports.filter(item => item.date && item.date.getFullYear() == year && item.date.getMonth() == month - 1), rep: reports, reportsCnt };
+        let reportsx = {
+            repFilter: reports.filter(item => { return item.date && getDateXDaysAgo(1, item.date).getFullYear() == year && getDateXDaysAgo(1, item.date).getMonth() == month - 1 }), rep: reports, reportsCnt
+        };
         console.log(reports)
         return res.send(reportsx.repFilter);
     }
@@ -100,6 +102,14 @@ const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
 
     }
 }
+function getDateXDaysAgo(numOfDays, date = new Date()) {
+    const daysAgo = new Date(date.getTime());
+
+    daysAgo.setDate(date.getDate() - numOfDays);
+
+    return daysAgo;
+}
+
 const getAllReportsByTeacherIdMonthAndYear = async (req, res) => {
     let { year, month, teacherId } = req.params;
     if (!mongoose.Types.ObjectId.isValid(teacherId))
@@ -253,7 +263,7 @@ const saveReportChanges = async (req, res) => {
                     return res.status(404).send("no such teacher");
             }
             let rep = changes.added.map(item => {
-                let date=new Date(item.date)
+                let date = new Date(item.date)
                 return {
                     ...item,
                     date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
