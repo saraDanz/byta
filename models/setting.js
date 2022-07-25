@@ -7,7 +7,7 @@ const settingSchema = new mongoose.Schema({
     monthToBeChanged: Number,
     yearToBeChanged: Number,
     changeType: { String, enum: ["all", "month"] },
-    changeStatus: String,//או פתוח או סגור
+    isOpen:Boolean,//או פתוח או סגור
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 
 });

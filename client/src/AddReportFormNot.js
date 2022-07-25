@@ -162,10 +162,11 @@ export default function AddReportForm(props) {
                                     id="numHours"
                                     name="numHours"
                                     type="number"
-                                    placeholder="הקש מספר שעות"
+                                    placeholder="הקש מספר שעורים"
                                     value={values.numHours}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    step="0.01"
                                     className={errors.numHours && touched.numHours && "error"}
                                 />
                                 {errors.numHours && touched.numHours && (
