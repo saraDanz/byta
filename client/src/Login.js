@@ -25,7 +25,7 @@ export default function Login() {
                     setStorage(res.data)
 
                     if (res.data.role == 1)
-                        navigate("/report")
+                        navigate("/displayCalendar")
                     else
                         navigate("/director")
 
