@@ -263,10 +263,10 @@ const saveReportChanges = async (req, res) => {
                     return res.status(404).send("no such teacher");
             }
             let rep = changes.added.map(item => {
-                let date = new Date(item.date)
+              //  let date = new Date(item.date)
                 return {
                     ...item,
-                    date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+                   // date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
                     fromTime: item.fromTime,
                     toTime: item.toTime
                     //  fromTime: convertToTime(item.fromTime),
