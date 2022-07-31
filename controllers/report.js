@@ -54,6 +54,54 @@ const getAllReportsByYearAndMonth = async (req, res) => {
 
     }
 }
+const searchByParameters = async (req, res) => {
+    //לא בדקתי לפי מורה וקורס יחד
+    //לא בדקתי לפי רכזת
+    let { year, month, directorId, courseId, teacherId } = req.params;
+
+    // let first = new Date(year, month -1,0,0,0,0,0,0);
+    // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
+    // let last = new Date(year, month,0,0,0,0,0);
+    // console.log(last)
+
+    // try {
+    //     let courses = await Course.find({ directorId }).select("_id");
+    //     courses = courses.map(item => item._id);
+    //     let reports = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+    //     let reportsCnt = await Report.find({ courseId: { $in: courses } }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } }).count();
+    //     let reportsx = {
+    //         repFilter: reports.filter(item => { return item.date && getDateXDaysAgo(1, item.date).getFullYear() == year && getDateXDaysAgo(1, item.date).getMonth() == month - 1 }), rep: reports, reportsCnt
+    //     };
+    //     console.log(reports)
+    //     return res.send(reportsx.repFilter);
+    // }
+
+    let prev = getDateXDaysAgo(1, new Date(year, month-1, 0));
+    let next = getDateXDaysAgo(1, new Date(year, month , 0));
+    console.log(prev)
+    console.log(next)
+
+    try {
+        //לא בדקתי על פי רכזת
+        let reports;
+        //     if (teacherId && courseId)
+        //         reports = await Report.find({ date: { $gt: prev, $lt: next }, teacherId, courseId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+        //     else if (teacherId) reports = await Report.find({ date: { $gt: prev, $lt: next }, teacherId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+        //     else if (courseId) reports = await Report.find({ date: { $gt: prev, $lt: next }, courseId: courseId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+        //    else 
+        let ob = { courseId, teacherId, directorId };
+        ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v!='undefined'&&v!=null&&v!=undefined&&v!=''));
+        reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+
+        console.log(reports)
+        return res.send(reports);
+    }
+
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
 const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
     let { year, month, directorId } = req.params;
     // let first = new Date(year, month -1,0,0,0,0,0,0);
@@ -105,7 +153,7 @@ const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
 function getDateXDaysAgo(numOfDays, date = new Date()) {
     const daysAgo = new Date(date.getTime());
 
-    daysAgo.setDate(date.getDate() + numOfDays);
+    daysAgo.setDate(date.getDate() - numOfDays);
 
     return daysAgo;
 }
@@ -263,10 +311,10 @@ const saveReportChanges = async (req, res) => {
                     return res.status(404).send("no such teacher");
             }
             let rep = changes.added.map(item => {
-              //  let date = new Date(item.date)
+                //  let date = new Date(item.date)
                 return {
                     ...item,
-                   // date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+                    // date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
                     fromTime: item.fromTime,
                     toTime: item.toTime
                     //  fromTime: convertToTime(item.fromTime),
@@ -315,5 +363,6 @@ module.exports = {
     addReport,
     addReports,
     saveReportChanges,
-    getAllReportsByDirectorIdYearAndMonth
+    getAllReportsByDirectorIdYearAndMonth,
+    searchByParameters
 }

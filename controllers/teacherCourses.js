@@ -14,7 +14,7 @@ const getAllTeacherCourses = async (req, res) => {
     }
 
 }
-const getCoursesByDirectorId = async (req, res) => {
+const getTeacherCoursesByDirectorId = async (req, res) => {
     try {
         let { directorId } = req.params;
         if (!mongoose.Types.ObjectId.isValid(directorId))
@@ -89,7 +89,7 @@ const deleteTecherFromCourse = async (req, res) => {
 }
 module.exports = {
     getCoursesByTeacherId,
-    getCoursesByDirectorId,
+    getTeacherCoursesByDirectorId,
     addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse
 }
 // const addTeacherToCoure = async (req, res) => {

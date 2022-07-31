@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 // import 'semantic-ui-css/semantic.min.css'
-import DemoApp from "./DemoApp.jsx";
+
 import { Routes, Route, useNavigate } from "react-router";
 import DirectorMenu from "./DirectorMenu.js";
 import { Link } from "react-router-dom";
@@ -10,7 +10,7 @@ import AddCourse from "./AddCourse.js";
 import AddTeacherToCourse from "./AddTeacherToCourse";
 import { useSelector, useDispatch } from "react-redux";
 import { logOut, saveUser } from "./store/actions/index.js";
-import ExportToExcel from "./ExportToExcel.js";
+import ExportToExcel from "./ExportToExcel/ExportToExcel";
 import { Menu, Segment, Icon } from 'semantic-ui-react'
 import { removeStorage, getStorage } from "./storageUtils.js";
 import TeacherList from "./TeacherList.js";
@@ -21,9 +21,7 @@ import M from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-// import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
+
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
@@ -31,6 +29,7 @@ import Logout from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Avatar, Typography } from "@mui/material";
 import DisplayCalendar from "./DisplayCalendar";
+import ExportToExcelManager from "./ExportToExcel/ExportToExcelManager.js";
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -54,7 +53,7 @@ export default function App() {
         dispatch(saveUser(getStorage()));
         // <Menu.Item >     <Link to="displayCalendar" >דווחים קודמים</Link></Menu.Item>
         //
-// 
+        // 
     }, []);
 
     return (<>
@@ -67,29 +66,32 @@ export default function App() {
 
             {user && <> <Menu.Item >  <Link to="displayCalendar">הגשת דווח</Link></Menu.Item>
 
-            </>        }
+            </>}
 
 
 
 
 
-            {user && user.role !=1 && <>
+            {user && user.role != 1 && <>
                 {/*   <Menu.Item >      <Link to="addUser" >הוספת משתמש</Link></Menu.Item>*/}
                 <Menu.Item >     <Link to="addCourse" >הוספת קורס</Link></Menu.Item>
                 <Menu.Item >     <Link to="addTeacherToCourse" >הוספת מורה לקורס</Link></Menu.Item>
                 <Menu.Item >     <Link to="teacherList" >מורות</Link></Menu.Item>
                 <Menu.Item >     <Link to="courseList" >קורסים</Link></Menu.Item>
 
-                <Menu.Item >     <Link to="export" title="excel הורדה לקובץ"><Icon name="download" /></Link></Menu.Item>
+              
 
             </>}
+            {user && user.role == 2 && <Menu.Item ><Link to="export" title="excel הורדה לקובץ"><Icon name="download" /></Link></Menu.Item>}
+            {user && user.role == 3 && <> <Menu.Item ><Link to="exportManager" title="excel הורדה לקובץ"><Icon name="download" /></Link></Menu.Item>
+                <Menu.Item >     <Link to="support" title="הגדרות">הגדרות</Link></Menu.Item></>}
 
-           
+
             <Menu.Item position="left">
-            {user &&
-                <Typography >
-                    {user.firstName}
-                </Typography>}
+                {user &&
+                    <Typography >
+                        {user.firstName}
+                    </Typography>}
                 <Avatar sx={{ bgcolor: "orange", width: 30, height: 30 }} >
                     <AccountCircleIcon onClick={handleClick} />
                 </Avatar>
@@ -138,12 +140,12 @@ export default function App() {
             </MenuItem></Link>
 
             {user && <Divider />}
-            {user && user.role !=1 && <Link to="addUser" > <MenuItem>
+            {user && user.role != 1 && <Link to="addUser" > <MenuItem>
                 <ListItemIcon>
                     <PersonAdd fontSize="small" />
                 </ListItemIcon>
                 הוספת מורה
- 
+
             </MenuItem></Link>}
 
             {user && <MenuItem onClick={logOutf}>
@@ -151,17 +153,18 @@ export default function App() {
                     <Logout fontSize="small" />
                 </ListItemIcon>
                 יציאה
-        </MenuItem>}
+            </MenuItem>}
         </M>
 
 
 
         <Routes>
-          
+
             <Route path="login" element={<Login />} />
 
             <Route path="director" element={<TeacherList />} />
             <Route path="export" element={<ExportToExcel />} />
+            <Route path="exportManager" element={<ExportToExcelManager />} />
             <Route path="addUser" element={<AddTeacher />} />
             <Route path="addCourse" element={<AddCourse />} />
             <Route path="teacherList" element={<TeacherList />} />

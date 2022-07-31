@@ -1,7 +1,8 @@
 import * as ActionTypes from "../actionTypes";
 const initialState = {
     currentUser: null,
-    courses: []
+    courses: [],
+    teachers:[]
 }
 export const reducer = (state = initialState, action) => {
     switch (action.type) {
@@ -27,6 +28,11 @@ export const reducer = (state = initialState, action) => {
                 ...state,
                 courses: action.payload
             }
+            case ActionTypes.SAVE_ALL_TEACHERS            :
+                return {
+                    ...state,
+                    teachers: action.payload
+                }
         default: return state;
     }
 }

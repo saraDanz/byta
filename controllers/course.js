@@ -14,6 +14,17 @@ const getAllCourses = async (req, res) => {
 
     }
 }
+const getCoursesByDirectorId = async (req, res) => {
+    const { directorId } = req.params;
+    try {
+        const courses = await Course.find({ directorId }).populate("directorId", "firstName lastName").populate("teachers").sort({ "name": 1 });
+        return res.send(courses);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
 const getCourseById = async (req, res) => {
     try {
         let { id } = req.params;
@@ -152,5 +163,5 @@ const updateCourse = async (req, res) => {
 }
 
 module.exports = {
-    getCourseByName, updateCourse,getCourseById, addNewCourse, deleteCourseById, getAllCourses, getCourseBySymbol
+    getCourseByName, updateCourse, getCoursesByDirectorId, getCourseById, addNewCourse, deleteCourseById, getAllCourses, getCourseBySymbol
 }

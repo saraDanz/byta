@@ -3,6 +3,7 @@ const userController = require("../controllers/user");
 router.get("", userController.getAllUsers);
 router.delete("/:id", userController.deleteUser);
 router.get("/directors", userController.getAllDirectors);
+router.get("/byDirectorId/:directorId", userController.getTeachersByDirectorId);
 router.get("/teachers", userController.getAllTeachers);
 router.post("/login", userController.login);
 router.post("", userController.addNewUser);
