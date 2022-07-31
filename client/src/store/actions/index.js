@@ -24,3 +24,10 @@ export const updateUserDetails = (newDetails) => {
         payload: newDetails
     }
 }
+
+export const saveAllTeachers = (teachers) => {
+    return {
+        type: ActionTypes.SAVE_ALL_TEACHERS,
+        payload: teachers
+    }
+}

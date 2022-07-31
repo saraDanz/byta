@@ -26,13 +26,7 @@ import TeacherListItem from './TeacherListItem';
 import EditTeacherDialog from "./EditTeacherDialog";
 import EditIcon from '@mui/icons-material/Edit';
 
-// function generate(element) {
-//     return [0, 1, 2].map((value) =>
-//         React.cloneElement(element, {
-//             key: value,
-//         }),
-//     );
-// }
+
 
 const Demo = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
@@ -88,6 +82,7 @@ export default function TeacherList() {
         // setTeachers(res)
     }
     useEffect(() => {
+        
         axios.get(BASE_URL + "users/teachers").
             then(res => {
                 console.log(res.data);

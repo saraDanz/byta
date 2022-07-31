@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const User = require("../models/user").userModel;
 const TeacherCourses = require("../models/teachersCourses").teachersCoursesModel;
+const Course = require("../models/course").courseModel;
+
 
 const getAllUsers = async (req, res) => {
     try {
@@ -25,6 +27,23 @@ const getAllDirectors = async (req, res) => {
 const getAllTeachers = async (req, res) => {
     try {
         const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
+        return res.send(users);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
+const getTeachersByDirectorId = async (req, res) => {
+    let { directorId } = req.params;
+    try {
+        let courses = await Course.find({ directorId });
+        courses = courses.map(c => c._id);
+        let teachersInCourses = await TeacherCourses.find({ courseId: { $in: courses } });
+        teachersInCourses = teachersInCourses.map(c => c.teacherId);
+
+
+        const users = await User.find({ role: { $in: [1, 2] }, _id: { $in: teachersInCourses } }).sort({ "lastName": 1, "firstName": 1 });
         return res.send(users);
     }
     catch (e) {
@@ -70,8 +89,8 @@ const deleteUser = async (req, res) => {
     }
     catch (e) {
         return res.status(400).send(e.message);
-     
-        
+
+
 
     }
 
@@ -87,7 +106,7 @@ const updateUser = async (req, res) => {
         } = req.body;
 
         let userkk = await User.findOne({ tz });
-        if (userkk&&userkk._id != id)
+        if (userkk && userkk._id != id)
             return res.status(409).send("user with same id already exists");
         let updated = await User.findOneAndUpdate({ _id: id }, req.body, { new: true });
         console.log(updated);
@@ -192,5 +211,5 @@ const addNewDirector = async (req, res) => {
 
 }
 module.exports = {
-    login, addNewTeacher, getAllUsers, updateUser, addNewUser, addNewDirector, deleteUser, getAllTeachers, getAllDirectors
+    login, addNewTeacher, getTeachersByDirectorId, getAllUsers, updateUser, addNewUser, addNewDirector, deleteUser, getAllTeachers, getAllDirectors
 }
