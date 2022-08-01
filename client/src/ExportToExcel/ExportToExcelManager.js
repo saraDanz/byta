@@ -8,7 +8,7 @@ import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear } from "../Utils";
 import { useSelector } from "react-redux";
 
-import { Autocomplete, TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
+import { Autocomplete, Paper,TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
 
 const ExportToExcelManager = () => {
     const reduxTeachers = useSelector(st => st.teachers);
@@ -122,83 +122,87 @@ const ExportToExcelManager = () => {
     let da = new Date().getFullYear();
     return <div className="excel">
         <form>
-            <Box>
+            <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
+                <Box sx={{ display: "flex", 'flex-wrap': 'wrap', "flex-direction": "row", "justify-content": "center", "align-items": "center" }}>
 
 
-                <FormControl sx={{ m: 1, minWidth: 80 }}>
-                    <InputLabel id="demo-simple-select-autowidth-label">שנה</InputLabel>
-                    <Select
-                        labelId="demo-simple-select-autowidth-label"
-                        id="demo-simple-select-autowidth"
-                        value={year}
-                        onChange={(e) => { setYear(e.target.value) }}
-                        autoWidth
-                        label="Age"
-                    >
-                        {/* <MenuItem value="">
+
+
+                    <FormControl sx={{ m: 1, width: "25ch" }}>
+                        <InputLabel id="demo-simple-select-autowidth-label">שנה</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-autowidth-label"
+                            id="demo-simple-select-autowidth"
+                            value={year}
+                            onChange={(e) => { setYear(e.target.value) }}
+                            autoWidth
+                            label="Age"
+                        >
+                            {/* <MenuItem value="">
                         <em>בחר שנה</em>
                     </MenuItem> */}
-                        {[...Array(20)].map((item, index) => { return <MenuItem key={index} value={index + da - 19}>{index + da - 19}</MenuItem> })}
+                            {[...Array(20)].map((item, index) => { return <MenuItem key={index} value={index + da - 19}>{index + da - 19}</MenuItem> })}
 
-                    </Select>
-                </FormControl>
+                        </Select>
+                    </FormControl>
 
-                <FormControl sx={{ m: 1, minWidth: 80 }}>
-                    <InputLabel id="demo-simple-select-autowidth-label">חודש</InputLabel>
-                    <Select
-                        labelId="demo-simple-select-autowidth-label"
-                        id="demo-simple-select-autowidth"
-                        value={month}
-                        onChange={(e) => { setMonth(e.target.value) }}
-                        autoWidth
-                        label="Age"
-                    >
-                        {/* <MenuItem value="">
+                    <FormControl sx={{ m: 1, width: "25ch" }}>
+                        <InputLabel id="demo-simple-select-autowidth-label">חודש</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-autowidth-label"
+                            id="demo-simple-select-autowidth"
+                            value={month}
+                            onChange={(e) => { setMonth(e.target.value) }}
+                            autoWidth
+                            label="Age"
+                        >
+                            {/* <MenuItem value="">
                         <em>בחר חודש</em>
                     </MenuItem> */}
-                        {[...Array(12)].map((item, index) => { return <MenuItem key={index} value={index + 1}>{index + 1}</MenuItem> })}
+                            {[...Array(12)].map((item, index) => { return <MenuItem key={index} value={index + 1}>{index + 1}</MenuItem> })}
 
-                    </Select>
-                </FormControl>
-
-
+                        </Select>
+                    </FormControl>
 
 
-                <Autocomplete
-                    disablePortal
-
-                    options={teachers}
-                    sx={{ width: 300 }}
-                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
-                    value={teacher}
-                    onChange={(event, newValue) => {
-                        setTeacher(newValue);
-                        console.log(newValue)
-
-                    }}
 
 
-                    renderInput={(params) => teacherLoading ? <CircularProgress /> : <TextField {...params} label="מורה" />}
-                />
-                <Autocomplete
-                    disablePortal
-                    options={courses}
-                    sx={{ width: 300 }}
-                    getOptionLabel={(item) => item.name + " " + item.description}
-                    value={course}
-                    onChange={(event, newValue) => {
-                        console.log(newValue)
-                        setCourse(newValue);
-                    }}
+                    <Autocomplete
+                        disablePortal
+
+                        options={teachers}
+                        sx={{ m: 1, width: "25ch" }}
+                        getOptionLabel={(item) => item.firstName + " " + item.lastName}
+                        value={teacher}
+                        onChange={(event, newValue) => {
+                            setTeacher(newValue);
+                            console.log(newValue)
+
+                        }}
 
 
-                    renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
-                />
+                        renderInput={(params) => teacherLoading ? <CircularProgress /> : <TextField {...params} label="מורה" />}
+                    />
+                    <Autocomplete
+                        disablePortal
+                        options={courses}
+                        sx={{ m: 1, width: "25ch" }}
+                        getOptionLabel={(item) => item.name + " " + item.description}
+                        value={course}
+                        onChange={(event, newValue) => {
+                            console.log(newValue)
+                            setCourse(newValue);
+                        }}
 
-                <Button type="button" variant="contained" onClick={getData}>
-                    הורדה לקובץ Excel
-                </Button>
-            </Box>
+
+                        renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
+                    />
+
+                    <Button type="button" variant="contained" sx={{ m: 1, width: "25ch" }} onClick={getData}>
+                        הורדה לקובץ Excel
+                    </Button>
+                </Box>
+            </Paper>
         </form>
     </div>;
 }

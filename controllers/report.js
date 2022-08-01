@@ -76,8 +76,10 @@ const searchByParameters = async (req, res) => {
     //     return res.send(reportsx.repFilter);
     // }
 
-    let prev = getDateXDaysAgo(1, new Date(year, month-1, 0));
-    let next = getDateXDaysAgo(1, new Date(year, month , 0));
+    // let prev = getDateXDaysAgo(1, new Date(year, month-1, 0));
+    let prev =new Date(year, month-1,0);
+    let next =new Date(year, month,0);
+    // let next = getDateXDaysAgo(1, new Date(year, month , 0));
     console.log(prev)
     console.log(next)
 
