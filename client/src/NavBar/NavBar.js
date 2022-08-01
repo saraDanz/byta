@@ -1,5 +1,5 @@
-import M from "@mui/material/Menu";
-import { MenuItem } from "semantic-ui-react";
+
+
 import { Link } from "react-router-dom";
 import M from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,16 +7,38 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 
 import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
+import {Logout} from '@mui/icons-material';
 import { Avatar, Typography } from "@mui/material";
 import UserNavBar from "./UserNavBar";
-import GuestNavBar from "./GuestNavBar";
 
-const NavBar = ({ userRole }) => {
-    return <>
-        {userRole ? <UserNavBar userRole={userRole} /> : <GuestNavBar />}
-        <M
+import { Menu, Segment, Icon } from 'semantic-ui-react'
+
+
+const NavBar = ({ user ,handleMenuClick}) => {
+    let userRole=user?user.role:0;
+    return( <>
+        <Menu pointing secondary>
+            {userRole>0 && <UserNavBar userRole={userRole} />}
+
+
+
+
+            <Menu.Item position="left">
+                {userRole>0 &&
+                    <Typography >
+                        {user.firstName}
+                    </Typography>}
+                <Avatar sx={{ bgcolor: "orange", width: 30, height: 30 }} >
+                    <AccountCircleIcon onClick={handleMenuClick} />
+                </Avatar>
+
+            </Menu.Item>
+
+
+        </Menu>
+        {/* <M
             anchorEl={anchorEl}
             id="account-menu"
             open={open}
@@ -70,6 +92,7 @@ const NavBar = ({ userRole }) => {
                 </ListItemIcon>
                 יציאה
             </MenuItem>}
-        </M></>
+        </M> */}
+        </>)
 }
 export default NavBar;

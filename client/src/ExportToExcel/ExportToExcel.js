@@ -6,7 +6,7 @@ import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
 import { Header, Icon, Modal } from 'semantic-ui-react'
-import { Autocomplete, TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
+import { Autocomplete, TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box, Paper } from "@mui/material";
 
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear } from "../Utils";
@@ -125,10 +125,11 @@ export default function ExportToExcel() {
     let da = new Date().getFullYear();
     return <div className="excel">
         <form>
-            <Box>
+            <Paper sx={{width:"60ch",margin:"auto",mt:7,padding:"20px"}}>
+            <Box sx={{display:"flex",'flex-wrap':'wrap',"flex-direction":"row","justify-content":"center","align-items":"center"}}>
 
 
-                <FormControl sx={{ m: 1, minWidth: 80 }}>
+                <FormControl   sx={{ m: 1, width: '25ch' }}>
                     <InputLabel id="demo-simple-select-autowidth-label">שנה</InputLabel>
                     <Select
                         labelId="demo-simple-select-autowidth-label"
@@ -146,7 +147,7 @@ export default function ExportToExcel() {
                     </Select>
                 </FormControl>
 
-                <FormControl sx={{ m: 1, minWidth: 80 }}>
+                <FormControl    sx={{ m: 1, width: '25ch' }}>
                     <InputLabel id="demo-simple-select-autowidth-label">חודש</InputLabel>
                     <Select
                         labelId="demo-simple-select-autowidth-label"
@@ -168,10 +169,11 @@ export default function ExportToExcel() {
 
 
                 <Autocomplete
+                  sx={{ m: 1, width: '25ch' }}
                     disablePortal
-
+                    disabled={course ? true : false}
                     options={teachers}
-                    sx={{ width: 300 }}
+                    
                     getOptionLabel={(item) => item.firstName + " " + item.lastName}
                     value={teacher}
                     onChange={(event, newValue) => {
@@ -185,8 +187,10 @@ export default function ExportToExcel() {
                 />
                 <Autocomplete
                     disablePortal
+                    disabled={teacher ? true : false}
+                    sx={{ m: 1, width: '25ch' }}
                     options={courses}
-                    sx={{ width: 300 }}
+                 
                     getOptionLabel={(item) => item.name + " " + item.description}
                     value={course}
                     onChange={(event, newValue) => {
@@ -198,10 +202,11 @@ export default function ExportToExcel() {
                     renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                 />
 
-                <Button type="button" variant="contained" onClick={getData}>
+                <Button type="button" variant="contained"   sx={{ m: 1, width: '25ch' }} onClick={getData}>
                     הורדה לקובץ Excel
                 </Button>
             </Box>
+            </Paper>
         </form>
     </div>;
 }

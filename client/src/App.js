@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 // import 'semantic-ui-css/semantic.min.css'
 
 import { Routes, Route, useNavigate } from "react-router";
-import DirectorMenu from "./DirectorMenu.js";
+
 import { Link } from "react-router-dom";
 import Login from "./Login.js";
 import AddTeacher from "./AddTeacher.js";
@@ -23,13 +23,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 
 import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
+import Setting from './Setting';
 import Logout from '@mui/icons-material/Logout';
 // import { AppBar } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Avatar, Typography } from "@mui/material";
 import DisplayCalendar from "./DisplayCalendar";
 import ExportToExcelManager from "./ExportToExcel/ExportToExcelManager.js";
+import NavBar from "./NavBar/NavBar.js";
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -57,11 +58,10 @@ export default function App() {
     }, []);
 
     return (<>
-        <Menu pointing secondary>
+        <NavBar user={user} handleMenuClick={handleClick} />
+        {/* <Menu pointing secondary>
 
-            {/*  <Menu.Item >
-                <Link to="login">כניסה</Link>
-          </Menu.Item>*/}
+       
 
 
             {user && <> <Menu.Item >  <Link to="displayCalendar">הגשת דווח</Link></Menu.Item>
@@ -73,7 +73,7 @@ export default function App() {
 
 
             {user && user.role != 1 && <>
-                {/*   <Menu.Item >      <Link to="addUser" >הוספת משתמש</Link></Menu.Item>*/}
+        
                 <Menu.Item >     <Link to="addCourse" >הוספת קורס</Link></Menu.Item>
                 <Menu.Item >     <Link to="addTeacherToCourse" >הוספת מורה לקורס</Link></Menu.Item>
                 <Menu.Item >     <Link to="teacherList" >מורות</Link></Menu.Item>
@@ -99,7 +99,7 @@ export default function App() {
             </Menu.Item>
 
 
-        </Menu>
+        </Menu>*/}
         <M
             anchorEl={anchorEl}
             id="account-menu"
@@ -154,7 +154,7 @@ export default function App() {
                 </ListItemIcon>
                 יציאה
             </MenuItem>}
-        </M>
+        </M> 
 
 
 
@@ -165,6 +165,7 @@ export default function App() {
             <Route path="director" element={<TeacherList />} />
             <Route path="export" element={<ExportToExcel />} />
             <Route path="exportManager" element={<ExportToExcelManager />} />
+            <Route path="setting" element={<Setting />} />
             <Route path="addUser" element={<AddTeacher />} />
             <Route path="addCourse" element={<AddCourse />} />
             <Route path="teacherList" element={<TeacherList />} />
