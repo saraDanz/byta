@@ -35,7 +35,7 @@ const getComputedCurrentStatus = async (req, res) => {
 
     let allStatus = await getLastAllStatusChangeHelper();
     let monthStatus = await getLastMonthChange();
-    return res.send({allStatus:allStatus.isOpen,lastClosedMonth:monthStatus.monthToBeChanged,lastClosedYear:monthStatus.yearToBeChanged})
+    return res.send({ allStatus: allStatus.isOpen, lastClosedMonthAndYear: monthStatus })
 }
 const addNewSetting = async (req, res) => {
     try {
@@ -58,9 +58,9 @@ const addNewSetting = async (req, res) => {
             if (setting.isOpen == isOpen)
                 return res.status(409).send("nothing to update");
             newSetting = new Setting({
-              
-                
-                changeType:"all",
+
+
+                changeType: "all",
                 isOpen,
                 userId
             })
@@ -73,8 +73,8 @@ const addNewSetting = async (req, res) => {
             newSetting = new Setting({
                 monthToBeChanged,
                 yearToBeChanged,
-                changeType:"month",
-                isOpen:false,
+                changeType: "month",
+                isOpen: false,
                 userId
             })
         }
@@ -82,12 +82,38 @@ const addNewSetting = async (req, res) => {
 
 
         await newSetting.save();
-        return res.send(newSetting);
+        //return res.send(newSetting);
+        let allStatus = await getLastAllStatusChangeHelper();
+        let monthStatus = await getLastMonthChange();
+        return res.send({ allStatus: allStatus.isOpen, lastClosedMonthAndYear: monthStatus })
     }
     catch (e) {
         return res.status(400).send(e.message);
 
     }
+}
+const stam=async (req,res)=>{
+    try{
+        
+    newSetting = new Setting({
+        monthToBeChanged:6,
+        yearToBeChanged:2022,
+        changeType: "month",
+        isOpen: false,
+        userId
+    })
+}
+
+
+
+await newSetting.save();
+//return res.send(newSetting);
+}
+
+catch (e) {
+return res.status(400).send(e.message);
+
+}
 }
 const getLastMonthChangeHelper = async () => {
     const setting = await Setting.find({ changeType: "month" }).sort({ yearToBeChanged: -1, monthToBeChanged: -1 }).limit(1);
@@ -99,4 +125,4 @@ const getLastAllStatusChangeHelper = async () => {
 }
 
 
-module.exports = { getLastAllStatusChange, getLastMonthChange, addNewSetting,getComputedCurrentStatus }
+module.exports = { getLastAllStatusChange, getLastMonthChange, addNewSetting, getComputedCurrentStatus }

@@ -5,7 +5,7 @@ import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 import { useSelector } from "react-redux";
 
 export default function AddReportContent  (props)  {
-    let courses = useSelector(st => st.courses);
+    let courses = useSelector(st => st.index.courses);
     return (<Formik
         initialValues={{
             course: { name: "www", id: 1 },

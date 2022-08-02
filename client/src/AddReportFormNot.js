@@ -19,7 +19,7 @@ import { convertToTime } from "./Utils";
 export default function AddReportForm(props) {
     // let dispatch = useDispatch();
     // let courses;
-    let courses = useSelector(st => st.courses);
+    let courses = useSelector(st => st.index.courses);
     // let currentUser = useSelector(st => st.currentUser);
     // useEffect(() => {
     //     console.log(currentUser,"currentUser")

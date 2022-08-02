@@ -2,11 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import "./index.css";
 import App from "./App";
+import { combineReducers } from "redux";
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { reducer } from './store/reducers';
 import { composeWithDevTools } from "redux-devtools-extension";
+import { settingReducer } from './store/reducers/setting';
 // import Spinner from './components/Spinner';
 // import SeasonDisplay from './components/seasonDisplay';
 
@@ -37,7 +39,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 //     }
 
 // }
-let store = createStore(reducer, composeWithDevTools());
+let store = createStore(combineReducers({ index: reducer, setting: settingReducer }), composeWithDevTools());
 ReactDOM.render(<BrowserRouter>
     <Provider store={store}>
         <div dir="rtl">

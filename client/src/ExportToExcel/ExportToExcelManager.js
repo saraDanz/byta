@@ -11,8 +11,8 @@ import { useSelector } from "react-redux";
 import { Autocomplete, Paper,TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
 
 const ExportToExcelManager = () => {
-    const reduxTeachers = useSelector(st => st.teachers);
-    const reduxCourses = useSelector(st => st.courses);
+    const reduxTeachers = useSelector(st => st.index.teachers);
+    const reduxCourses = useSelector(st => st.index.courses);
     const [courses, setCourses] = useState(reduxCourses);
     const [teachers, setTeachers] = useState(reduxTeachers);
     const [directorId, setDirectorId] = useState(null);
@@ -62,7 +62,7 @@ const ExportToExcelManager = () => {
     let [month, setMonth] = useState(getCurrentViewMonthAndYear().month);
     let [teacher, setTeacher] = useState(null);
     let [course, setCourse] = useState(null);
-    let currentUser = useSelector(st => st.currentUser);
+    let currentUser = useSelector(st => st.index.currentUser);
 
 
 

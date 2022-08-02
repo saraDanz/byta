@@ -18,7 +18,7 @@ import { BASE_URL } from "./VARIABLES";
 export default function AddReportForm(props) {
     // let dispatch = useDispatch();
     // let courses;
-    let courses = useSelector(st => st.courses);
+    let courses = useSelector(st => st.index.courses);
 
 
     return <div className="add-report-form">
