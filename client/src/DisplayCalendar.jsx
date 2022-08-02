@@ -10,6 +10,7 @@ import { logOut, saveCoursesOfCurrentUser } from './store/actions';
 import { BASE_URL } from './VARIABLES';
 import { useNavigate } from 'react-router';
 import AddReportForm from './AddReportFormNot';
+import EditReportDialog from './EditReportDialog';
 import { getCurrentViewMonthAndYear, DateStringToTimeString } from "./Utils";
 import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 
@@ -21,6 +22,7 @@ const DisplayCalendar = () => {
   let currentUser = useSelector(st => st.index.currentUser);
   let currentUserCourses = useSelector(st => st.index.courses);
   // const [showAdd, setShowAdd] = useState(false);
+  const [editInfo, setEditInfo] = useState(null);
   const [selectInfo, setSelectInfo] = useState(null);
   const [x, setX] = useState(true);
   let calendarComponentRef = useRef(null);
@@ -80,8 +82,8 @@ const DisplayCalendar = () => {
 
     //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
     //א"א לדווח על חודשים קודמים
-   // if (selectInfo.start.getMonth() == d.month)
-      setSelectInfo(selectInfo);
+    // if (selectInfo.start.getMonth() == d.month)
+    setSelectInfo(selectInfo);
   }
   const closeModal = () => {
     setSelectInfo(null);
@@ -141,15 +143,16 @@ const DisplayCalendar = () => {
   }
   const handleEventClick = (clickInfo) => {
     let d = getCurrentViewMonthAndYear();
-  //  if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
+    setEditInfo(clickInfo.event)
+    //  if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
 
-      if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
-        clickInfo.event.remove()
-        if (clickInfo.event.extendedProps._id)
-          setChangedEvents([...changedEvents, { id: clickInfo.event.extendedProps._id, modelState: "deleted" }])
+    if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
+      clickInfo.event.remove()
+      if (clickInfo.event.extendedProps._id)
+        setChangedEvents([...changedEvents, { id: clickInfo.event.extendedProps._id, modelState: "deleted" }])
 
 
-      }
+    }
   }
 
   const handleEvents = (events) => {
@@ -163,14 +166,14 @@ const DisplayCalendar = () => {
     console.log("changedEvents", changedEvents);
   }, [changedEvents])
   function renderEventContent(eventInfo) {
-    debugger;
+  
     let d = getCurrentViewMonthAndYear();
 
-    let isPast = !(eventInfo.event.start.getMonth() == d.month && eventInfo.event.start.getFullYear() == d.year) 
+    let isPast = !(eventInfo.event.start.getMonth() == d.month && eventInfo.event.start.getFullYear() == d.year)
     return (
       <>
 
-        <div className={"event-info " + (isPast?"past":"")} >
+        <div className={"event-info " + (isPast ? "past" : "")} >
           <div>
             <b>{eventInfo.event.extendedProps.courseId.name}</b>
 
@@ -228,6 +231,7 @@ const DisplayCalendar = () => {
         />
       </div>
       {selectInfo && <AddReportForm onClose={closeModal} addReport={handleEventSaved} />}
+      {editInfo && <EditReportDialog onClose={()=>setEditInfo(null)} />}
     </div>
   )
 

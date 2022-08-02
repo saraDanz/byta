@@ -114,7 +114,7 @@ export default function AddTeacherToCourse() {
                             sx={{ width: 300 }}
                             getOptionLabel={(item) => item.firstName + " " + item.lastName}
                             onChange={(event, newValue) => {
-                             debugger;   
+                            
                                 console.log(newValue)
                                if (newValue)
                                    setFieldValue("teacherId", newValue._id)
@@ -152,7 +152,7 @@ export default function AddTeacherToCourse() {
                             sx={{ width: 300 }}
                             getOptionLabel={(course) => course.name +"-"+course.description+" - "+(course.symbol?course.symbol:"")}
                             onChange={(event, newValue) => {
-                             debugger;   
+                     
                                 console.log(newValue)
                                if (newValue)
                                    setFieldValue("courseId", newValue._id)
