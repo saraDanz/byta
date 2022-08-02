@@ -31,6 +31,9 @@ import { Avatar, Typography } from "@mui/material";
 import DisplayCalendar from "./DisplayCalendar";
 import ExportToExcelManager from "./ExportToExcel/ExportToExcelManager.js";
 import NavBar from "./NavBar/NavBar.js";
+import axios from "axios";
+import { BASE_URL } from "./VARIABLES.js";
+import { saveCurrentStatus } from "./store/actions/setting.js";
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -41,7 +44,7 @@ export default function App() {
         setAnchorEl(null);
     };
 
-    let user = useSelector(st => st.currentUser);
+    let user = useSelector(st => st.index.currentUser);
     let dispatch = useDispatch();
 
     let navigate = useNavigate();
@@ -52,9 +55,15 @@ export default function App() {
     }
     useEffect(() => {
         dispatch(saveUser(getStorage()));
-        // <Menu.Item >     <Link to="displayCalendar" >דווחים קודמים</Link></Menu.Item>
-        //
-        // 
+        axios.get(`${BASE_URL}settings/currentStatus`) .then(res => {
+           dispatch(saveCurrentStatus(res.data))
+          
+        }).
+        catch(err => {
+            console.log(err);
+            alert("תקלה בקליטת ההגדרות")
+        })
+     
     }, []);
 
     return (<>

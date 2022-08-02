@@ -18,8 +18,8 @@ const DisplayCalendar = () => {
 
   let dispatch = useDispatch();
   let navigate = useNavigate();
-  let currentUser = useSelector(st => st.currentUser);
-  let currentUserCourses = useSelector(st => st.courses);
+  let currentUser = useSelector(st => st.index.currentUser);
+  let currentUserCourses = useSelector(st => st.index.courses);
   // const [showAdd, setShowAdd] = useState(false);
   const [selectInfo, setSelectInfo] = useState(null);
   const [x, setX] = useState(true);

@@ -11,6 +11,16 @@ export const getCurrentViewMonthAndYear = () => {
 
   return { month, year };
 }
+export const isDateEqualsCurrentViewYearAndMonth = (date) => {
+  let { year, month } = getCurrentViewMonthAndYear();
+  return year == date.getFullYear() && month == date.getMonth();
+
+}
+export const isDateBeforeCurrentViewYearAndMonth = (date) => {
+  let { year, month } = getCurrentViewMonthAndYear();
+  return year > date.getFullYear()||year==date.getFullYear() && month > date.getMonth();
+
+}
 export const convertToTime = (time) => {
   let d = new Date("1-1-1900 " + time);
   d.setMonth(new Date().getMonth());

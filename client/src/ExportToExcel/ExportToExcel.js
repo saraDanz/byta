@@ -16,8 +16,8 @@ export default function ExportToExcel() {
 
     //    axios.get(`${BASE_URL}reports/byDirectorIdYearAndMonth/${currentUser._id}/${year}/${month}`).then(res => {
 
-    const reduxTeachers = useSelector(st => st.teachers);
-    const reduxCourses = useSelector(st => st.courses);
+    const reduxTeachers = useSelector(st => st.index.teachers);
+    const reduxCourses = useSelector(st => st.index.courses);
     const [courses, setCourses] = useState(reduxCourses);
     const [teachers, setTeachers] = useState(reduxTeachers);
 
@@ -29,7 +29,7 @@ export default function ExportToExcel() {
     const [month, setMonth] = useState(getCurrentViewMonthAndYear().month);
     const [teacher, setTeacher] = useState(null);
     const [course, setCourse] = useState(null);
-    let currentUser = useSelector(st => st.currentUser);
+    let currentUser = useSelector(st => st.index.currentUser);
     useEffect(() => {
         if (currentUser) {
             setTeacherLoading(true);
