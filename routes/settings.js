@@ -2,6 +2,7 @@ const router = require("express").Router();
 const settingsController = require("../controllers/setting");
 
 router.get("/all", settingsController.getLastAllStatusChange);
+// router.get("/stam", settingsController.stam);
 router.get("/currentStatus", settingsController.getComputedCurrentStatus);
 router.get("/month", settingsController.getLastMonthChange);
 router.post("", settingsController.addNewSetting);

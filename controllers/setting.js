@@ -92,29 +92,28 @@ const addNewSetting = async (req, res) => {
 
     }
 }
-const stam=async (req,res)=>{
-    try{
-        
-    newSetting = new Setting({
-        monthToBeChanged:6,
-        yearToBeChanged:2022,
-        changeType: "month",
-        isOpen: false,
-        userId
-    })
-}
+// const stam = async (req, res) => {
+//     try {
+
+//         let newSetting = new Setting({
+           
+//             changeType: "year",
+//             isOpen: true,
+//             userId:"629f26235811f761a46e82b7"
+//     });
+
+//         await newSetting.save();
+//         return res.send(newSetting);
+//     }
+//     catch (e) {
+//         return res.status(400).send(e.message);
+
+//     }
+// }
 
 
 
-await newSetting.save();
-//return res.send(newSetting);
-}
 
-catch (e) {
-return res.status(400).send(e.message);
-
-}
-}
 const getLastMonthChangeHelper = async () => {
     const setting = await Setting.find({ changeType: "month" }).sort({ yearToBeChanged: -1, monthToBeChanged: -1 }).limit(1);
     return setting;
@@ -125,4 +124,6 @@ const getLastAllStatusChangeHelper = async () => {
 }
 
 
-module.exports = { getLastAllStatusChange, getLastMonthChange, addNewSetting, getComputedCurrentStatus }
+module.exports = { 
+    // stam,
+    getLastAllStatusChange, getLastMonthChange, addNewSetting, getComputedCurrentStatus }
