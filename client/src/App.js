@@ -53,18 +53,18 @@ export default function App() {
         navigate("/login")
         removeStorage();
     }
-    // useEffect(() => {
-    //     dispatch(saveUser(getStorage()));
-    //     axios.get(`${BASE_URL}settings/currentStatus`) .then(res => {
-    //        dispatch(saveCurrentStatus(res.data))
+    useEffect(() => {
+        dispatch(saveUser(getStorage()));
+        axios.get(`${BASE_URL}settings/currentStatus`) .then(res => {
+           dispatch(saveCurrentStatus(res.data))
           
-    //     }).
-    //     catch(err => {
-    //         console.log(err);
-    //         alert("תקלה בקליטת ההגדרות")
-    //     })
+        }).
+        catch(err => {
+            console.log(err);
+            alert("תקלה בקליטת ההגדרות")
+        })
      
-    // }, []);
+    }, []);
 
     return (<>
         <NavBar user={user} handleMenuClick={handleClick} />
@@ -174,7 +174,7 @@ export default function App() {
             <Route path="director" element={<TeacherList />} />
             <Route path="export" element={<ExportToExcel />} />
             <Route path="exportManager" element={<ExportToExcelManager />} />
-            {/*<Route path="setting" element={<Setting />} />*/}
+            <Route path="setting" element={<Setting />} />
             <Route path="addUser" element={<AddTeacher />} />
             <Route path="addCourse" element={<AddCourse />} />
             <Route path="teacherList" element={<TeacherList />} />

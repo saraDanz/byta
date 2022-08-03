@@ -1,6 +1,6 @@
 import DirectorNavBar from "./DirectorNavBar";
 import ManagerNavBar from "./ManagerNavBar";
-import { Menu, Segment, Icon } from 'semantic-ui-react'
+import { Menu, Icon } from 'semantic-ui-react'
 import { Link } from "react-router-dom";
 
 const UserNavBar = ({ userRole }) => {

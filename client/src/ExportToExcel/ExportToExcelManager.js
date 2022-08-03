@@ -123,7 +123,7 @@ const ExportToExcelManager = () => {
     return <div className="excel">
         <form>
             <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
-                <Box sx={{ display: "flex", 'flex-wrap': 'wrap', "flex-direction": "row", "justify-content": "center", "align-items": "center" }}>
+                <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
 
 
 

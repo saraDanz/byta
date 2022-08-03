@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Setting = require("../models/setting").settingModel;
+const User = require("../models/user").userModel;
 
 const getLastMonthChange = async (req, res) => {
     try {
@@ -32,10 +33,15 @@ const getLastAllStatusChange = async (req, res) => {
 
 }
 const getComputedCurrentStatus = async (req, res) => {
+    try {
+        let allStatus = await getLastAllStatusChangeHelper();
+        let monthStatus = await getLastMonthChangeHelper();
+        let result = { allStatus: allStatus && allStatus.isOpen, lastClosedMonthAndYear: monthStatus }
+        return res.send(result)
+    } catch (e) {
+        return res.status(400).send(e.message);
 
-    let allStatus = await getLastAllStatusChangeHelper();
-    let monthStatus = await getLastMonthChange();
-    return res.send({ allStatus: allStatus.isOpen, lastClosedMonthAndYear: monthStatus })
+    }
 }
 const addNewSetting = async (req, res) => {
     try {
@@ -51,18 +57,18 @@ const addNewSetting = async (req, res) => {
         console.log(user)
         if (!user)
             return res.status(404).send("no such user");
-        if (!user.role !== 3)
+        if (user.role != 3)
             return res.status(400).send("user is not allowed to set setting");
         if (!monthToBeChanged) {
             let setting = await getLastAllStatusChangeHelper();
-            if (setting.isOpen == isOpen)
-                return res.status(409).send("nothing to update");
+            // if (setting.isOpen == isOpen)
+            //     return res.status(409).send("nothing to update");
             newSetting = new Setting({
 
 
-                changeType: "all",
-                isOpen,
-                userId
+                "changeType": "all",
+                "isOpen":!setting.isOpen,
+                "userId":userId
             })
         }
         else {
@@ -84,8 +90,8 @@ const addNewSetting = async (req, res) => {
         await newSetting.save();
         //return res.send(newSetting);
         let allStatus = await getLastAllStatusChangeHelper();
-        let monthStatus = await getLastMonthChange();
-        return res.send({ allStatus: allStatus.isOpen, lastClosedMonthAndYear: monthStatus })
+        let monthStatus = await getLastMonthChangeHelper();
+        return res.send({ allStatus: allStatus&&allStatus.isOpen, lastClosedMonthAndYear: monthStatus })
     }
     catch (e) {
         return res.status(400).send(e.message);
@@ -96,7 +102,7 @@ const addNewSetting = async (req, res) => {
 //     try {
 
 //         let newSetting = new Setting({
-           
+
 //             changeType: "year",
 //             isOpen: true,
 //             userId:"629f26235811f761a46e82b7"
@@ -116,14 +122,15 @@ const addNewSetting = async (req, res) => {
 
 const getLastMonthChangeHelper = async () => {
     const setting = await Setting.find({ changeType: "month" }).sort({ yearToBeChanged: -1, monthToBeChanged: -1 }).limit(1);
-    return setting;
+    return setting.length ? setting[0] : null;
 }
 const getLastAllStatusChangeHelper = async () => {
     const setting = await Setting.find({ changeType: "all" }).sort({ setDate: -1 }).limit(1);
-    return setting;
+    return setting.length ? setting[0] : null;
 }
 
 
-module.exports = { 
+module.exports = {
     // stam,
-    getLastAllStatusChange, getLastMonthChange, addNewSetting, getComputedCurrentStatus }
+    getLastAllStatusChange, getLastMonthChange, addNewSetting, getComputedCurrentStatus
+}
