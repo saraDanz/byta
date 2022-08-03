@@ -1,4 +1,4 @@
-import { Box, Button, FormControlLabel, Switch, FormGroup } from "@mui/material";
+import { Box, CircularProgress, Button, FormControlLabel, Paper, Switch, FormGroup, Typography } from "@mui/material";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { saveCurrentStatus } from "./store/actions/setting";
@@ -13,16 +13,16 @@ const Setting = () => {
     let currentViewDate = getCurrentViewMonthAndYear();
     const closeMonth = () => {
         if (currentUser) {
-            axios.post(`${BASE_URL}setting`, {
+            axios.post(`${BASE_URL}settings`, {
                 monthToBeChanged: currentViewDate.month,
                 yearToBeChanged: currentViewDate.year,
                 changeType: "month",
                 userId: currentUser._id
             })
-            .then(res => {
-                alert("ההגדרות נשמרו בהצלחה")
-                dispatch(saveCurrentStatus(res.data));
-            }).
+                .then(res => {
+                    alert("ההגדרות נשמרו בהצלחה")
+                    dispatch(saveCurrentStatus(res.data));
+                }).
                 catch(err => {
                     console.log(err);
                     alert("תקלה בשמירת ההגדרות ")
@@ -30,17 +30,18 @@ const Setting = () => {
         }
     }
 
-    const changeAllStatus = () => {
+    const changeAllStatus = (e) => {
         if (currentUser) {
-            axios.post(`${BASE_URL}setting`, {
+            axios.post(`${BASE_URL}settings`, {
 
                 changeType: "all",
-                userId: currentUser._id
+                userId: currentUser._id,
+                isOpen: e.target.checked
             })
-            .then(res => {
-                alert("ההגדרות נשמרו בהצלחה")
-                dispatch(saveCurrentStatus(res.data));
-            }).
+                .then(res => {
+                    alert("ההגדרות נשמרו בהצלחה")
+                    dispatch(saveCurrentStatus(res.data));
+                }).
                 catch(err => {
                     console.log(err);
                     alert("תקלה בשמירת ההגדרות ")
@@ -48,13 +49,18 @@ const Setting = () => {
         }
     }
     return <>
-        <Box>
-            <FormGroup>
-                <FormControlLabel control={<Switch checked={isOpen} onChange={changeAllStatus} />} label={isOpen ? "המערכת פתוחה לדווחים" : "המערכת סגורה לדווחים"} />
-                {/* <FormControlLabel disabled={isOpen} control={<Switch />} label="חודש " /> */}
-                <Button onClick={closeMonth} disabled={isOpen || !isDateBeforeCurrentViewYearAndMonth(new Date(lastClosedYear, lastClosedMonth))} value={`סגור חודש ${currentViewDate.month} - ${currentViewDate.year}`} />
-            </FormGroup>
-        </Box>
+        <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
+            <Box sx={{ "alignItem": "center", justifyContent: "center" }}>
+                <Typography variant="h5" sx={{ "textAlign": "center" }}>הגדרות מערכת</Typography>
+                <FormGroup>
+                    {isOpen != null ? <FormControlLabel control={<Switch checked={isOpen} onChange={changeAllStatus} />} label={isOpen ? "המערכת פתוחה לדווחים" : "המערכת סגורה לדווחים"} /> : <CircularProgress />}
+                </FormGroup> <FormGroup>
+
+                    {/* <FormControlLabel disabled={isOpen} control={<Switch />} label="חודש " /> */}
+                    <Button onClick={closeMonth} disabled={isOpen || !isDateBeforeCurrentViewYearAndMonth(new Date(lastClosedYear, lastClosedMonth))} >{`סגור חודש ${currentViewDate.month} - ${currentViewDate.year}`} </Button>
+                </FormGroup>
+            </Box>
+        </Paper>
     </>
 }
 export default Setting;

@@ -6,7 +6,7 @@ const settingSchema = new mongoose.Schema({
     //changeDate: { type: Date, default: Date.now() },
     monthToBeChanged: Number,
     yearToBeChanged: Number,
-    changeType: { String, enum: ["all", "month"] },
+    changeType: { type:String, enum: ["all", "month"] },
     isOpen:Boolean,//או פתוח או סגור
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 

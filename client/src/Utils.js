@@ -18,7 +18,7 @@ export const isDateEqualsCurrentViewYearAndMonth = (date) => {
 }
 export const isDateBeforeCurrentViewYearAndMonth = (date) => {
   let { year, month } = getCurrentViewMonthAndYear();
-  return year > date.getFullYear()||year==date.getFullYear() && month > date.getMonth();
+  return year > date.getFullYear() || year == date.getFullYear() && month > date.getMonth();
 
 }
 export const convertToTime = (time) => {
@@ -32,4 +32,13 @@ export const DateStringToTimeString = (date) => {
   let d = new Date(date);
   return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
 
+}
+export const shortStr = (str, len = 8) => {
+  let res = str.slice(0, len);
+  let words = str.split(" ");
+  if (words.length > 1 && words[0] + " " + words[1] < 10)
+    res = words[0] + " " + words[1];
+  if (res.length < str)
+    res += "...";
+  return res;
 }

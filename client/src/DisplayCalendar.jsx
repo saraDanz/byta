@@ -10,7 +10,7 @@ import { logOut, saveCoursesOfCurrentUser } from './store/actions';
 import { BASE_URL } from './VARIABLES';
 import { useNavigate } from 'react-router';
 import AddReportForm from './AddReportFormNot';
-import { getCurrentViewMonthAndYear, DateStringToTimeString } from "./Utils";
+import { getCurrentViewMonthAndYear, DateStringToTimeString, shortStr } from "./Utils";
 import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 
 // import {ReminderForm}from "./reminders/ReminderForm";
@@ -80,8 +80,8 @@ const DisplayCalendar = () => {
 
     //נועדה לבדוק שלא לוחצים על תאירכיים מחודש קודם
     //א"א לדווח על חודשים קודמים
-   // if (selectInfo.start.getMonth() == d.month)
-      setSelectInfo(selectInfo);
+    // if (selectInfo.start.getMonth() == d.month)
+    setSelectInfo(selectInfo);
   }
   const closeModal = () => {
     setSelectInfo(null);
@@ -141,15 +141,15 @@ const DisplayCalendar = () => {
   }
   const handleEventClick = (clickInfo) => {
     let d = getCurrentViewMonthAndYear();
-  //  if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
+    //  if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
 
-      if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
-        clickInfo.event.remove()
-        if (clickInfo.event.extendedProps._id)
-          setChangedEvents([...changedEvents, { id: clickInfo.event.extendedProps._id, modelState: "deleted" }])
+    if (window.confirm(`האם למחוק את השיעור '${clickInfo.event.extendedProps.courseName}'`)) {
+      clickInfo.event.remove()
+      if (clickInfo.event.extendedProps._id)
+        setChangedEvents([...changedEvents, { id: clickInfo.event.extendedProps._id, modelState: "deleted" }])
 
 
-      }
+    }
   }
 
   const handleEvents = (events) => {
@@ -166,13 +166,14 @@ const DisplayCalendar = () => {
     debugger;
     let d = getCurrentViewMonthAndYear();
 
-    let isPast = !(eventInfo.event.start.getMonth() == d.month && eventInfo.event.start.getFullYear() == d.year) 
+    let isPast = !(eventInfo.event.start.getMonth() == d.month && eventInfo.event.start.getFullYear() == d.year)
     return (
       <>
 
-        <div className={"event-info " + (isPast?"past":"")} >
+        <div className={"event-info " + (isPast ? "past" : "")} >
           <div>
-            <b>{eventInfo.event.extendedProps.courseId.name}</b>
+            <b>{shortStr(eventInfo.event.extendedProps.courseId.name)}</b>
+            <h1>dddd</h1>
 
             <i className="time">{eventInfo.event.extendedProps.fromTime ? DateStringToTimeString(eventInfo.event.extendedProps.fromTime) : 0}-{eventInfo.event.extendedProps.toTime ? DateStringToTimeString(eventInfo.event.extendedProps.toTime) : 0}</i>
 

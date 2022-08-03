@@ -2,7 +2,7 @@ import * as ActionTypes from "../actionTypes";
 
 const initialState = {
     lastClosedMonthAndYear: null,
-    isOpen: false
+    isOpen: null
 }
 export const settingReducer = (state = initialState, action) => {
     switch (action.type) {
