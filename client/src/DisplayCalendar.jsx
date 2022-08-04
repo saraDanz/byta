@@ -173,7 +173,7 @@ const DisplayCalendar = () => {
         <div className={"event-info " + (isPast ? "past" : "")} >
           <div>
             <b>{shortStr(eventInfo.event.extendedProps.courseId.name)}</b>
-            <h1>dddd</h1>
+           
 
             <i className="time">{eventInfo.event.extendedProps.fromTime ? DateStringToTimeString(eventInfo.event.extendedProps.fromTime) : 0}-{eventInfo.event.extendedProps.toTime ? DateStringToTimeString(eventInfo.event.extendedProps.toTime) : 0}</i>
 
