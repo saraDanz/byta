@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import FullCalendar, { formatDate } from '@fullcalendar/react'
+import FullCalendar, { formatDate, CalendarApi } from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -10,19 +10,23 @@ import { logOut, saveCoursesOfCurrentUser } from './store/actions';
 import { BASE_URL } from './VARIABLES';
 import { useNavigate } from 'react-router';
 import AddReportForm from './AddReportFormNot';
-import { getCurrentViewMonthAndYear, DateStringToTimeString, shortStr } from "./Utils";
-import { Button, Header, Icon, Modal } from 'semantic-ui-react'
-
-// import {ReminderForm}from "./reminders/ReminderForm";
+import { Popover, Tooltip, Button } from "@mui/material";
+import { getCurrentViewMonthAndYear, dateStringToTimeString, shortStr } from "./Utils";
+// import { Button, Header, Icon, Modal } from 'semantic-ui-react'
+import EditReportDialog from "./EditReportDialog";
+import AddReportDialog from "./AddReportDialog";
+import { EventTooltipContent } from './EventTooltipContent';
+import "./DisplayCalendar.css";
 const DisplayCalendar = () => {
 
   let dispatch = useDispatch();
   let navigate = useNavigate();
+
   let currentUser = useSelector(st => st.index.currentUser);
   let currentUserCourses = useSelector(st => st.index.courses);
   // const [showAdd, setShowAdd] = useState(false);
   const [selectInfo, setSelectInfo] = useState(null);
-  const [x, setX] = useState(true);
+  const [editInfo, setEditInfo] = useState(null);
   let calendarComponentRef = useRef(null);
 
   useEffect(() => {
@@ -105,12 +109,19 @@ const DisplayCalendar = () => {
       numHours: object.numHours,
       start: date,
       end: date,
+      comment: object.comment,
+      type: object.type,
       //  course:object.course,
       allDay: false
     }
+    console.log("add", newEvent)
     calendarApi.addEvent(newEvent)
     setChangedEvents([...changedEvents, { ...newEvent, modelState: "added" }])
   }
+  const handleEdit = (event) => {
+    setEditInfo(event);
+  }
+
   const handleSubmit = () => {
     let events = changedEvents.map(item => {
       if (item.modelState == "added")
@@ -122,6 +133,8 @@ const DisplayCalendar = () => {
           numHours: item.numHours,
           courseId: item.courseId._id,
           courseName: item.courseName,
+          comment: item.comment,
+          type: item.type,
           modelState: "added"
         }
       return item;
@@ -140,6 +153,7 @@ const DisplayCalendar = () => {
       });
   }
   const handleEventClick = (clickInfo) => {
+    //handleEdit(clickInfo)
     let d = getCurrentViewMonthAndYear();
     //  if (clickInfo.event.start.getMonth() == d.month && clickInfo.event.start.getFullYear() == d.year)
 
@@ -151,10 +165,54 @@ const DisplayCalendar = () => {
 
     }
   }
+  const handleEditSave = (clickInfo, object) => {
+    console.log(object);
 
+    let calendarApi = editInfo.view.calendar
+
+   // calendarApi.unselect() // clear date selection
+    let updatedEvent = {
+        id:clickInfo.event.id,
+      courseName: object.course.name,
+      // teacherId: currentUser._id,
+      courseId: object.course,
+      fromTime: object.fromTime,
+      toTime: object.toTime,
+      numHours: object.numHours,
+      //  start: date,
+      //end: date,
+      comment: object.comment,
+      type: object.type,
+      //  course:object.course,
+      allDay: false
+    }
+   // clickInfo.event.extendedProps.courseId=object.course;
+//     clickInfo.event.extendedProps.type=object.type;
+//     clickInfo.event.extendedProps.comment=object.comment;
+//     clickInfo.event.extendedProps.fromTime=object.fromTime;
+//     clickInfo.event.extendedProps.toTime=object.toTime;
+//     clickInfo.event.extendedProps.numHours=object.numHours;
+//     clickInfo.event.extendedProps.allDay=false;
+// clickInfo.event.updateEvent();
+clickInfo.event.remove();
+calendarApi.addEvent(updatedEvent);
+    // clickInfo.event.extendedProps=updatedEvent;
+
+
+
+
+        //console.log("update", updatedEvent)
+    //calendarApi.updateEvent(updatedEvent)
+//to do להוסיף בדיקה שאירוע זה טרם עודכן לפי שמוסיפים שוב למערך
+    setChangedEvents([...changedEvents, { ...updatedEvent, modelState: "updated" }])
+  }
   const handleEvents = (events) => {
     setCurrentEvents(events);
 
+  }
+  const closeEdit = () => {
+    alert("closeEdit");
+    setEditInfo(null);
   }
   // useEffect(() => {
   //   console.log("currentEvents", currentEvents);
@@ -163,42 +221,51 @@ const DisplayCalendar = () => {
     console.log("changedEvents", changedEvents);
   }, [changedEvents])
   function renderEventContent(eventInfo) {
-    debugger;
+    //  debugger;
     let d = getCurrentViewMonthAndYear();
 
     let isPast = !(eventInfo.event.start.getMonth() == d.month && eventInfo.event.start.getFullYear() == d.year)
     return (
       <>
+        <Tooltip  arrow title={<><EventTooltipContent event={eventInfo}
+          onDelete={() => handleEventClick(eventInfo)}
+          onEdit={() => handleEdit(eventInfo)}
+        />
 
-        <div className={"event-info " + (isPast ? "past" : "")} >
-          <div>
-            <b>{shortStr(eventInfo.event.extendedProps.courseId.name)}</b>
-            <h1>dddd</h1>
+        </>} >
 
-            <i className="time">{eventInfo.event.extendedProps.fromTime ? DateStringToTimeString(eventInfo.event.extendedProps.fromTime) : 0}-{eventInfo.event.extendedProps.toTime ? DateStringToTimeString(eventInfo.event.extendedProps.toTime) : 0}</i>
+          <div
+            //   aria-owns={ancorElPopover ? 'mouse-over-popover' : undefined}
+            // aria-haspopup="true"
 
-            <i className="hours" dir="rtl"> {eventInfo.event.extendedProps.numHours + "שע'"} </i>
+            className={"event-info " + (isPast ? "past" : "")} >
+            <div>
+              <p dir="rtl">{shortStr(eventInfo.event.extendedProps.courseId.name)}</p>
 
-          </div>
 
-          <Icon name="delete" size="small" onClick={() => handleEventClick(eventInfo)} />
+              <p className="hours" dir="rtl"> {eventInfo.event.extendedProps.numHours + "שעורים "} </p>
 
-        </div>
+            </div>
+
+            {/*  <Icon name="delete" size="small" onClick={() => handleEventClick(eventInfo)} />
+            */}
+          </div></Tooltip>
       </>
     )
   }
   return (
     <div className='demo-app'>
-      <Button onClick={handleSubmit}>שמירה</Button>
+      <Button variant="contained" color="grey" className="btn-sub" onClick={handleSubmit}>שמירה</Button>
+
 
 
       <div className='demo-app-main'>
         <FullCalendar
 
           headerToolbar={pastSendingEnabled ? {
-            start: '',
+            start: 'prev next',
             center: 'title',
-            end: 'prev next'
+            end: ''
           } : {
               start: '',
               center: 'title',
@@ -215,11 +282,12 @@ const DisplayCalendar = () => {
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}
+
           weekends={weekendsVisible}
           // alternatively, use the `events` setting to fetch from a feed
           select={handleDateClick}
           eventContent={renderEventContent} // custom render function
-          eventClick={handleEventClick}
+          /*   eventClick={handleEventClick}*/
           eventsSet={handleEvents} // called after events are initialized/added/changed/removed
           /* you can update a remote database when these fire:*/
           eventAdd={function (w) { console.log(w) }}
@@ -228,7 +296,9 @@ const DisplayCalendar = () => {
          */
         />
       </div>
-      {selectInfo && <AddReportForm onClose={closeModal} addReport={handleEventSaved} />}
+      {/*selectInfo && <AddReportForm onClose={closeModal} addReport={handleEventSaved} />*/}
+      {selectInfo && <AddReportDialog selectInfo={selectInfo} onClose={closeModal} addReport={handleEventSaved} />}
+      {editInfo && <EditReportDialog handleEditSave={handleEditSave} event={editInfo} onClose={closeEdit} />}
     </div>
   )
 

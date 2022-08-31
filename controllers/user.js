@@ -14,6 +14,23 @@ const getAllUsers = async (req, res) => {
 
     }
 }
+const getAllDirectorsAndCourses = async (req, res) => {
+    try {
+        const directors = await User.find({ role: 2 }).sort({ "lastName": 1, "firstName": 1 });
+        const courses = await Course.find();
+       const directorsWithCourses = directors.map((data) => {
+            let cou = courses.filter(o => o.directorId == data._id.toString());
+            let {firstName,lastName,email,password,_id,phone,role,tz,address}=data;
+            return { firstName,lastName,email,password,_id,phone,role,tz,address, courses: cou }
+        })
+
+        return res.send(directorsWithCourses);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
 const getAllDirectors = async (req, res) => {
     try {
         const users = await User.find({ role: 2 }).sort({ "lastName": 1, "firstName": 1 });
@@ -211,5 +228,11 @@ const addNewDirector = async (req, res) => {
 
 }
 module.exports = {
-    login, addNewTeacher, getTeachersByDirectorId, getAllUsers, updateUser, addNewUser, addNewDirector, deleteUser, getAllTeachers, getAllDirectors
+    login, addNewTeacher,
+    getAllDirectorsAndCourses,
+    getTeachersByDirectorId,
+    getAllUsers, updateUser,
+    addNewUser, addNewDirector,
+    deleteUser, getAllTeachers,
+    getAllDirectors
 }

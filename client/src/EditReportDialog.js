@@ -1,5 +1,5 @@
 import "./AddReportFormNot.css";
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Radio, RadioGroup, FormControlLabel } from "@mui/material";
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
@@ -25,32 +25,56 @@ import {
 } from "@mui/material";
 
 
-import { convertToTime } from "./Utils";
-export default function EditReportDialog({ onClose }) {
+import { convertToTime, dateStringToTimeString } from "./Utils";
+export default function EditReportDialog({ onClose, event, handleEditSave }) {
     // let dispatch = useDispatch();
-    // let courses;
+    // let courses; 
+    const [changed, setChanged] = useState(false);
+    const formikRef = useRef();
     let courses = useSelector(st => st.index.courses);
     // let currentUser = useSelector(st => st.currentUser);
-    // useEffect(() => {
-    //     console.log(currentUser,"currentUser")
-    // }, []);
+    useEffect(() => {
+        // console.log(event, "event")
+        let ind = courses.findIndex(o => {
+            if (o.courseId._id == event.event.extendedProps.courseId._id)
+                return true;
+            return false;
+        });
+        // setIndex(ind);
+        if (formikRef.current) {
+            formikRef.current.setFieldValue(
+                "course",
+                ind
+            );
+        }
+    }, [courses]);
 
     return <div className="add-report-form-not">
 
 
         <Formik
-            initialValues={{
+
+            innerRef={formikRef}
+            initialValues={
+                /*event.event.extendedProps._id ? {
                 course: 0,
                 fromTime: 0,
                 toTime: 0,
                 numHours: 1, type: "frontal", comment: ""
-            }}
-            onSubmit={(values, { setSubmitting }) => {
-                //  alert("sss")
+            } : */{
+                    course: 0,
+                    fromTime: dateStringToTimeString(event.event.extendedProps.fromTime),
+                    toTime: dateStringToTimeString(event.event.extendedProps.toTime),
+                    numHours: event.event.extendedProps.numHours,
+                    type: event.event.extendedProps.type, comment: event.event.extendedProps.comment
 
-                console.log(values)
+                }}
+            onSubmit={(values, { setSubmitting }) => {
+                //alert("sss")
+
+                //  console.log(values)
                 let { course, ...details } = values;
-                console.log(course)
+                //  console.log(course)
                 details = {
                     ...details,
                     course: {
@@ -60,10 +84,11 @@ export default function EditReportDialog({ onClose }) {
                     fromTime: convertToTime(details.fromTime),
                     toTime: convertToTime(details.toTime),
                 }
+                //      console.log(details)
 
                 // details = { ...details }
-                // props.addReport(details)
-                onClose()
+                handleEditSave(details)
+                onClose();
             }}
 
             validate={values => {
@@ -106,7 +131,7 @@ export default function EditReportDialog({ onClose }) {
 
                 return (
                     <form id="myForm" onSubmit={handleSubmit}>
-                        <Dialog dir="rtl" scroll="body" open="true" onClose={onClose} >
+                        <Dialog dir="rtl" scroll="body" open={true} onClose={onClose} >
                             <DialogTitle > <Typography variant="h6" align="center">עדכון פרטי דווח</Typography></DialogTitle>
                             <DialogContent >
                                 <DialogContentText>
@@ -122,11 +147,27 @@ export default function EditReportDialog({ onClose }) {
                                         onChange={handleChange}
                                         autoWidth
                                         label="קורס"
+                                        name="course"
+                                        sx={{ m: 1, width: '25ch' }}
                                     >
-                                        {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  >{item.courseId.name} <em>בחר חודש</em></MenuItem> })}
+                                        {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
 
                                     </Select>
                                     <TextField
+                                        id="numHours"
+                                        label="מספר שיעורים"
+                                        name="numHours"
+                                        type="number"
+
+                                        value={values.numHours}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        className={errors.numHours && touched.numHours && "error"}
+
+                                        sx={{ m: 1, width: '25ch' }}
+                                    />
+                                    <TextField
+
                                         label="משעה"
                                         id="fromTime"
                                         name="fromTime"
@@ -136,7 +177,7 @@ export default function EditReportDialog({ onClose }) {
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         className={errors.fromTime && touched.fromTime && "error"}
-                                        sx={{ m: 1, width: '25ch' }}
+                                        sx={{ m: 1, width: '25ch', direction: "rtl" }}
                                     />
                                     <TextField
                                         label="עד שעה"
@@ -147,27 +188,19 @@ export default function EditReportDialog({ onClose }) {
                                         value={values.toTime}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className={errors.toTime && touched.toTime && "error"} sx={{ m: 1, width: '25ch' }}
-                                    />
-
-                                    <TextField
-                                        id="numHours"
-                                        name="numHours"
-                                        type="number"
-                                        placeholder="הקש מספר שעורים"
-                                        value={values.numHours}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        className={errors.numHours && touched.numHours && "error"}
-
+                                        className={errors.toTime && touched.toTime && "error"}
+                                        sx={{ m: 1, width: '25ch' }}
 
                                     />
+
+
                                     <RadioGroup
 
                                         aria-labelledby="demo-controlled-radio-buttons-group"
                                         name="controlled-radio-buttons-group"
                                         value={values.type}
                                         row
+                                        sx={{ m: 1, width: '25ch' }}
                                         onChange={(e) => { setFieldValue("type", e.target.value) }}
                                     >
                                         <FormControlLabel value="frontal" control={<Radio />} label="פרונטלי" />
@@ -181,6 +214,7 @@ export default function EditReportDialog({ onClose }) {
                                         value={values.comment}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
+                                        sx={{ m: 1, width: '25ch' }}
                                     />
 
                                     {/*} <FormControl sx={{ m: 1 }}>
@@ -225,7 +259,7 @@ export default function EditReportDialog({ onClose }) {
 
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={onClose} color="secondary" >בטל</Button>
+                                <Button onClick={onClose} >בטל</Button>
                                 <Button type="submit" form="myForm" color="secondary">שמור</Button>
                             </DialogActions>
                         </Dialog>

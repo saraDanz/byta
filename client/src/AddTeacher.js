@@ -1,13 +1,13 @@
 import "./AddTeacher.css";
 import React from "react";
-
+import { Paper, Button, MenuItem, Typography, InputLabel, FormControl, Box, TextField, Select } from "@mui/material";
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { saveUser } from "./store/actions"
+
 import { BASE_URL } from "./VARIABLES";
 export default function AddTeacher() {
     let dispatch = useDispatch();
@@ -80,123 +80,153 @@ export default function AddTeacher() {
 
                 return (
                     <form onSubmit={handleSubmit}>
+                        <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
 
-                        <label htmlFor="tz">מספר זהות</label>
-                        <input
-                            id="tz"
-                            name="tz"
-                            type="text"
+                            <Typography variant="h6" align="center">פרטי מורה חדשה</Typography>
 
-                            value={values.tz}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.tz && touched.tz && "error"}
-                        />
-                        {errors.tz && touched.tz && (
-                            <div className="input-feedback">{errors.tz}</div>
-                        )}
+                            <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
 
-                        <label htmlFor="firstName">שם פרטי</label>
-                        <input
-                            id="firstName"
-                            name="firstName"
-                            type="text"
+                                <TextField
+                                    id="tz"
+                                    name="tz"
+                                    type="text"
+                                    label="מספר זהות"
+                                    value={values.tz}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    sx={{ m: 1, width: '25ch' }}
 
-                            value={values.firstName}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.firstName && touched.firstName && "error"}
-                        />
-                        {errors.firstName && touched.firstName && (
-                            <div className="input-feedback">{errors.firstName}</div>
-                        )}
-                        <label htmlFor="lastName">שם משפחה</label>
-                        <input
-                            id="lastName"
-                            name="lastName"
-                            type="text"
+                                    className={errors.tz && touched.tz && "error"}
+                                />
+                                {/*errors.tz && touched.tz && (
+                                    <div className="input-feedback">{errors.tz}</div>
+                                )*/}
 
-                            value={values.lastName}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.lastName && touched.lastName && "error"}
-                        />
-                        {errors.lastName && touched.lastName && (
-                            <div className="input-feedback">{errors.lastName}</div>
-                        )}
-                        <label htmlFor="address">כתובת</label>
-                        <input
-                            id="address"
-                            name="address"
-                            type="text"
 
-                            value={values.address}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.address && touched.address && "error"}
-                        />
-                        {errors.address && touched.address && (
-                            <div className="input-feedback">{errors.address}</div>
-                        )}
-                        <label htmlFor="phone">טלפון</label>
-                        <input
-                            id="phone"
-                            name="phone"
-                            type="text"
+                                <TextField
+                                    sx={{ m: 1, width: '25ch' }}
+                                    id="firstName"
+                                    name="firstName"
+                                    type="text"
+                                    label="שם פרטי"
+                                    value={values.firstName}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
 
-                            value={values.phone}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.phone && touched.phone && "error"}
-                        />
-                        {errors.phone && touched.phone && (
-                            <div className="input-feedback">{errors.phone}</div>
-                        )}
-                        <label htmlFor="email">מייל</label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="text"
+                                    className={errors.firstName && touched.firstName && "error"}
+                                />
+                                {/*errors.firstName && touched.firstName && (
+                                    <div className="input-feedback">{errors.firstName}</div>
+                                )*/}
 
-                            value={values.email}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.email && touched.email && "error"}
-                        />
-                        {errors.email && touched.email && (
-                            <div className="input-feedback">{errors.email}</div>
-                        )}
-                        <label htmlFor="password">סיסמא</label>
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
+                                <TextField
+                                    id="lastName"
+                                    name="lastName"
+                                    type="text"
+                                    label="שם משפחה"
+                                    sx={{ m: 1, width: '25ch' }}
+                                    value={values.lastName}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={errors.lastName && touched.lastName && "error"}
+                                />
+                                {errors.lastName && touched.lastName && (
+                                    <div className="input-feedback">{errors.lastName}</div>
+                                )}
 
-                            value={values.password}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.password && touched.password && "error"}
-                        />
-                        {errors.password && touched.password && (
-                            <div className="input-feedback">{errors.password}</div>
-                        )}
+                                <TextField
+                                    id="address"
+                                    name="address"
+                                    type="text"
+                                    label="כתובת"
+                                    sx={{ m: 1, width: '25ch' }}
+                                    value={values.address}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={errors.address && touched.address && "error"}
+                                />
+                                {/*errors.address && touched.address && (
+                                    <div className="input-feedback">{errors.address}</div>
+                                )*/}
 
-                        <label htmlFor="lastName">תפקיד</label>
-                        <select
-                            id="role"
-                            name="role"
-                            value={values.role}
-                            onChange={handleChange}
-                            onBlur={handleBlur}>
-                            <option value="1">מורה
+                                <TextField
+                                    sx={{ m: 1, width: '25ch' }}
+                                    id="phone"
+                                    name="phone"
+                                    type="text"
+                                    label="טלפון"
+                                    value={values.phone}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={errors.phone && touched.phone && "error"}
+                                />
+                                {/*errors.phone && touched.phone && (
+                                    <div className="input-feedback">{errors.phone}</div>
+                                )*/}
+
+                                <TextField
+                                    sx={{ m: 1, width: '25ch' }}
+                                    id="email"
+                                    name="email"
+                                    type="text"
+                                    label="מייל"
+                                    value={values.email}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={errors.email && touched.email && "error"}
+                                />
+                                {/*errors.email && touched.email && (
+                                    <div className="input-feedback">{errors.email}</div>
+                                )*/}
+
+                                <TextField
+                                    sx={{ m: 1, width: '25ch' }}
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    label="סיסמא"
+                                    value={values.password}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={errors.password && touched.password && "error"}
+                                />
+                                {/*errors.password && touched.password && (
+                                    <div className="input-feedback">{errors.password}</div>
+                                )*/}
+                                <FormControl sx={{ m: 1, width: '25ch' }}>
+                                    <InputLabel id="demo-simple-select-autowidth-label">תפקיד</InputLabel>
+
+                                    <Select
+                                        id="rolrr"
+                                        value={values.role}
+                                        sx={{ m: 1, width: '25ch' }}
+                                        onChange={handleChange}>
+
+
+                                        <MenuItem value="1">
+                                            <em>מורה</em>
+                                        </MenuItem>
+                                        <MenuItem value="2">
+                                            <em>רכזת</em>
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                                {/*}   <select
+                                    id="role"
+                                    name="role"
+                                    value={values.role}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}>
+                                    <option value="1">מורה
                             </option>
-                            <option value='2'>
-                                רכזת</option>
-                        </select>
-                        <button type="submit" disabled={isSubmitting}>
-                            הוסף
-      </button>
+                                    <option value='2'>
+                                        רכזת</option>
+                                </select>*/}
 
+                                <Button type="submit" form="myForm" disabled={isSubmitting}>הוסף</Button>
+
+                            </Box>
+                        </Paper>
                     </form>
                 );
 

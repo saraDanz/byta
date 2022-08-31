@@ -96,23 +96,22 @@ export default function CourseList() {
     // const [secondary, setSecondary] = React.useState(false);
 
     return (<div id="course-list">
-        <TextField
-            id="input-with-icon-textfield"
-            label=""
-            onChange={(e) => { setSearchTerm(e.target.value) }}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <SearchIcon />
-                    </InputAdornment>
-                ),
-            }}
-            variant="outlined"
-        />
         <Box sx={{ flexGrow: 1 }}>
 
-
-
+            <TextField
+                sx={{ float: "left", m: 1 }}
+                id="input-with-icon-textfield"
+                label=""
+                onChange={(e) => { setSearchTerm(e.target.value) }}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    ),
+                }}
+                variant="outlined"
+            />
 
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
                 קורסים
