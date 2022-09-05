@@ -1,0 +1,42 @@
+button.MuiButton-root.MuiButton-contained.MuiButton-containedPrimary.MuiButton-sizeMedium.MuiButton-containedSizeMedium.MuiButtonBase-root.btn-sub.css-sghohy-MuiButtonBase-root-MuiButton-root{
+    
+    float: left;
+    margin-left: 13%;
+}
+.css-1k51tf5-MuiTooltip-tooltip {
+    padding: 0px !important;
+}
+.fc-prev-button.fc-button.fc-button-primary,
+.fc-next-button.fc-button.fc-button-primary{
+    background-color: white;
+    border-radius: 50%;
+    border: 0ch;
+    width: 40px;
+    height: 40px;
+
+}
+.fc-prev-button.fc-button.fc-button-primary:hover,
+.fc-next-button.fc-button.fc-button-primary:hover{
+    background-color: rgb(241, 241, 241);
+    border-radius: 50%;
+  
+  /*}  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+*/
+}
+span.fc-icon.fc-icon-chevron-right,span.fc-icon.fc-icon-chevron-left{
+color:rgb(87, 87, 87);
+}
+
+.event-info {
+    /* background-color: darkgray; */
+    color: gray;
+    border-radius: 3px;
+    padding-right: 11px;
+    padding-left: 11px;
+    /* box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+    box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%); */
+    /* box-shadow: 2px 2px 2px 2px; */
+}
+.MuiCardContent-root.css-46bh2p-MuiCardContent-root {
+    background: #e7e7e7;
+}

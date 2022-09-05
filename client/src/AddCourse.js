@@ -2,6 +2,9 @@ import "./AddCourse.css";
 import React, { useState, useEffect } from "react";
 
 import { Formik } from "formik";
+
+import { Paper, Box, Button, Typography } from "@mui/material";
+
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
 import axios from "axios";
@@ -10,6 +13,20 @@ import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
 import { Autocomplete, TextField } from "@mui/material";
+
+import * as Yup from "yup";
+
+const courseSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(3, 'שם חייב להכיל לפחות 3 תווים')
+        .required('שדה חובה'),
+
+    description: Yup.string()
+        .required("שדה חובה"),
+       
+        symbol: Yup.string(),
+    directorId: Yup.string().required("שדה חובה")
+});
 export default function AddCourse() {
     let dispatch = useDispatch();
     let navigate = useNavigate();
@@ -27,6 +44,8 @@ export default function AddCourse() {
     }, []);
     return <div className="add-course">
         <Formik
+        validationSchema={courseSchema}
+        
             initialValues={{ name: "", description: "", directorId: "", symbol: "" }}
             onSubmit={(values, { setSubmitting }) => {
 
@@ -89,56 +108,57 @@ export default function AddCourse() {
 
                 return (
                     <form onSubmit={handleSubmit}>
+                        <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
+                            <Typography variant="h6" align="center">פרטי קורס חדש</Typography>
 
-                        <label htmlFor="name" className="label-add-course">שם</label>
-                        <input
-                            
-                            id="name"
-                            name="name"
-                            type="text"
-                            placeholder="הקש שם"
-                            value={values.name}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.name && touched.name && "error input-add-course"||"input-add-course"}
-                        />
-                        {errors.name && touched.name && (
-                            <div className="input-feedback">{errors.name}</div>
-                        )}
+                            <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
 
-                        <label htmlFor="description" className="label-add-course">תאור</label>
-                        <input
-                            className="input-add-course"
-                            id="description"
-                            name="description"
-                            type="text"
-                            placeholder="הקש תאור"
-                            value={values.description}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.description && touched.description && "error input-add-course" ||"input-add-course"}
-                        />
-                        {errors.description && touched.description && (
-                            <div className="input-feedback">{errors.description}</div>
-                        )}
-                        <label htmlFor="description" className="label-add-course">סמל קורס</label>
-                        <input
-                            className="input-add-course"
-                            id="symbol"
-                            name="symbol"
-                            type="text"
-                            placeholder="הקש סמל קורס"
-                            value={values.symbol}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            className={errors.symbol && touched.symbol   && "error input-add-course" ||"input-add-course"}
-                        />
-                        {errors.symbol && touched.symbol && (
-                            <div className="input-feedback">{errors.symbol}</div>
-                        )}
+                                <TextField
+                                    sx={{ m: 1, width: '25ch' }}
 
-                        <label className="label-add-course">רכזת</label>
-                        {/* <select
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    label="שם"
+                                    value={values.name}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    error={errors.name && touched.name}
+                                    helperText={errors.name}
+                                />
+
+
+                                <TextField
+                                    sx={{ m: 1, width: '25ch' }}
+                                    className="input-add-course"
+                                    id="description"
+                                    name="description"
+                                    type="text"
+                                    label="תאור"
+                                    value={values.description}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    error={errors.description && touched.description}
+                                    helperText={errors.description} />
+
+                                <TextField
+                                    sx={{ m: 1, width: '25ch' }}
+                                    className="input-add-course"
+                                    id="symbol"
+                                    name="symbol"
+                                    type="text"
+                                    error={errors.symbol && touched.symbol}
+                                    helperText={errors.symbol}
+                                    label="סמל קורס"
+                                    value={values.symbol}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    className={errors.symbol && touched.symbol && "error input-add-course" || "input-add-course"}
+                                />
+
+
+                                {/* <label className="label-add-course">רכזת</label>
+                                 <select
                             id="directorId"
                             name="directorId"
 
@@ -150,33 +170,32 @@ className="select-add-course"
                         >
                             {directors.map((item) => { return <option value={item._id} key={item._id}>{item.firstName + " " + item.lastName}</option> })}
                         </select> */}
-                        <Autocomplete
-                            disablePortal
-                            id="combo-box-demo"
-                            options={directors}
-                            sx={{ width: 300 }}
-                            getOptionLabel={(option) => option.firstName + " " + option.lastName}
-                            onChange={(event, newValue) => {
-                                console.log(newValue)
-                                if (newValue)
-                                    setFieldValue("directorId", newValue._id)
-                                //  setValue(newValue);
-                            }}
+                                <Autocomplete
+                                    sx={{ m: 1, width: '25ch' }}
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    options={directors}
+                                    error={errors.directorId && touched.directorId}
+                                   
+                                    getOptionLabel={(option) => option.firstName + " " + option.lastName}
+                                    onChange={(event, newValue) => {
+                                        console.log(newValue)
+                                        if (newValue)
+                                            setFieldValue("directorId", newValue._id)
+                                        //  setValue(newValue);
+                                    }}
 
-                            // onInputChange={(event, newInputValue) => {
-                            //   console.log(newInputValue,"input value")
+                                    // onInputChange={(event, newInputValue) => {
+                                    //   console.log(newInputValue,"input value")
 
-                            // setInputValue(newInputValue);
-                            // }}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                        {errors.directorId && touched.directorId && (
-                            <div className="input-feedback">{errors.directorId}</div>
-                        )}
+                                    // setInputValue(newInputValue);
+                                    // }}
+                                    renderInput={(params) => <TextField {...params} label="רכזת קורס"  helperText={errors.directorId} />}
+                                />
 
-                        <button className="button-add-course" type="submit" disabled={isSubmitting}>
-                            הוסף      </button>
-
+                                <Button className="button-add-course" variant="outlined" type="submit" disabled={isSubmitting}>
+                                    הוסף      </Button>
+                            </Box></Paper>
                     </form>
                 );
 

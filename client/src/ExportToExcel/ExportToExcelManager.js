@@ -198,7 +198,7 @@ const ExportToExcelManager = () => {
                         renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                     />
 
-                    <Button type="button" variant="contained" sx={{ m: 1, width: "25ch" }} onClick={getData}>
+                    <Button type="button" variant="outlined" sx={{ m: 1, width: "25ch" }} onClick={getData}>
                         הורדה לקובץ Excel
                     </Button>
                 </Box>

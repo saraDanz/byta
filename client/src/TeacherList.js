@@ -34,7 +34,7 @@ const Demo = styled('div')(({ theme }) => ({
 
 export default function TeacherList() {
     const deleteTeacher = (item) => {
-        let confir = window.confirm("האם ברצונך למחוק קורס " + item.firstName + " " + item.lastName)
+        let confir = window.confirm("האם ברצונך למחוק מורה " + item.firstName + " " + item.lastName)
         let id = item._id
         if (confir)
             axios.delete(BASE_URL + "users/" + id).then(res => {
@@ -114,7 +114,9 @@ export default function TeacherList() {
     // const [secondary, setSecondary] = React.useState(false);
 
     return (<div >
-        <TextField
+        <Box sx={{ flexGrow: 1 }}>
+        <TextField 
+    sx={{float:"left" ,m:1}}
             id="input-with-icon-textfield"
             label=""
             onChange={(e) => { setSearchTerm(e.target.value) }}
@@ -128,7 +130,7 @@ export default function TeacherList() {
             variant="outlined"
         />
 
-        <Box sx={{ flexGrow: 1 }}>
+       
 
 
 

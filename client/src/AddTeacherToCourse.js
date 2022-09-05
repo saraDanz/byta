@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
+import {Paper,Box,Button,Typography} from "@mui/material";
+
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
@@ -91,6 +93,12 @@ export default function AddTeacherToCourse() {
 
                 return (
                     <form onSubmit={handleSubmit}>
+                    <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
+
+                    <Typography variant="h6" align="center">הוספת מורה לקורס</Typography>
+
+                    <Box sx={{ display: "flex", flexDirection:"column",'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
+
                         {/* <label>מורה</label> */}
                         {/* <select
                             id="teacherId"
@@ -111,7 +119,7 @@ export default function AddTeacherToCourse() {
                             options={teachers}
                            
 
-                            sx={{ width: 300 }}
+                            sx={{ m:1,width: 300 }}
                             getOptionLabel={(item) => item.firstName + " " + item.lastName}
                             onChange={(event, newValue) => {
                              debugger;   
@@ -149,7 +157,7 @@ export default function AddTeacherToCourse() {
                             options={courses}
                            
 
-                            sx={{ width: 300 }}
+                            sx={{ m:1,width: 300 }}
                             getOptionLabel={(course) => course.name +"-"+course.description+" - "+(course.symbol?course.symbol:"")}
                             onChange={(event, newValue) => {
                              debugger;   
@@ -167,8 +175,9 @@ export default function AddTeacherToCourse() {
                         )}
 
 
-                        <button type="submit" className="button-add-teacher-to-course" disabled={isSubmitting}>
-                            הוסף      </button>
+                        <Button type="submit" variant="outlined" sx={{m:1}} className="button-add-teacher-to-course" disabled={isSubmitting}>
+                            הוסף      </Button>
+                            </Box></Paper>
 
                     </form>
                 );

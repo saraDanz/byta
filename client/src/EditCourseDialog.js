@@ -177,7 +177,7 @@ export default function EditCourseDialog({ course, handleClose, saveChanges }) {
                         id="combo-box-demo"
                         options={directors}
                         defaultValue={values.directorId}
-                        sx={{ width: 300 }}
+                        sx={{ m: 1, width: '25ch' }}
                         getOptionLabel={(option) => option.firstName + " " + option.lastName}
                         onChange={(event, newValue) => {
                           console.log(newValue)

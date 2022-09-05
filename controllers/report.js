@@ -77,8 +77,8 @@ const searchByParameters = async (req, res) => {
     // }
 
     // let prev = getDateXDaysAgo(1, new Date(year, month-1, 0));
-    let prev =new Date(year, month-1,0);
-    let next =new Date(year, month,0);
+    let prev = new Date(year, month - 1, 0);
+    let next = new Date(year, month, 0);
     // let next = getDateXDaysAgo(1, new Date(year, month , 0));
     console.log(prev)
     console.log(next)
@@ -92,7 +92,7 @@ const searchByParameters = async (req, res) => {
         //     else if (courseId) reports = await Report.find({ date: { $gt: prev, $lt: next }, courseId: courseId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         //    else 
         let ob = { courseId, teacherId, directorId };
-        ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v!='undefined'&&v!=null&&v!=undefined&&v!=''));
+        ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
         reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
 
         console.log(reports)
@@ -291,7 +291,7 @@ const addReports = async (req, res) => {
 }
 
 const saveReportChanges = async (req, res) => {
-    const cnt = { deleted: 0, added: 0 };
+    const cnt = { deleted: 0, added: 0, updated: 0 };
     let reports = req.body;
     console.log(reports)
     let changes = groupBy(reports, "modelState")
@@ -328,6 +328,42 @@ const saveReportChanges = async (req, res) => {
 
 
         }
+        //עריכה
+        if (changes.updated) {
+            for (const element of changes.updated) {
+                cnt.updated++;
+                let { courseId, teacherId, _id } = element;
+                if (!mongoose.Types.ObjectId.isValid(courseId))
+                    return res.status(400).send("course id is not valid");
+                if (!mongoose.Types.ObjectId.isValid(_id))
+                    return res.status(400).send("מזהה דווח לא תקין");
+                const course = await Course.findById(courseId);
+                if (!course)
+                    return res.status(404).send("no such course");
+                if (!mongoose.Types.ObjectId.isValid(teacherId))
+                    return res.status(400).send("teacher id is not valid");
+                const teacher = await User.findById(teacherId);
+                if (!teacher)
+                    return res.status(404).send("no such teacher");
+                await Report.findByIdAndUpdate(_id, element)
+            }
+
+            //   let rep = changes.updated.map(item => {
+            //  let date = new Date(item.date)
+            //   return {
+            //  ...item,
+            // date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+            //  fromTime: item.fromTime,
+            // toTime: item.toTime
+            //  fromTime: convertToTime(item.fromTime),
+            // toTime: convertToTime(item.toTime)
+
+        }
+
+        //   await Report.insertMany(rep);
+
+
+
         if (changes.deleted)
             for (const element of changes.deleted) {
 

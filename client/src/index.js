@@ -9,6 +9,7 @@ import { createStore } from 'redux';
 import { reducer } from './store/reducers';
 import { composeWithDevTools } from "redux-devtools-extension";
 import { settingReducer } from './store/reducers/setting';
+// import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 // import Spinner from './components/Spinner';
 // import SeasonDisplay from './components/seasonDisplay';
 
@@ -40,7 +41,17 @@ import { settingReducer } from './store/reducers/setting';
 
 // }
 let store = createStore(combineReducers({ index: reducer, setting: settingReducer }), composeWithDevTools());
-ReactDOM.render(<BrowserRouter>
+// const THEME = createMuiTheme({
+//     typography: {
+//      "fontFamily": `"Rubik", "Helvetica", "Arial", sans-serif`,
+   
+//     }
+//  });
+
+
+ReactDOM.render(
+  
+    <BrowserRouter>
     <Provider store={store}>
         <div dir="rtl">
             <App /></div>

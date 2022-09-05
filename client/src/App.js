@@ -21,10 +21,11 @@ import M from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-
+import AAAcopy from "./AAAcopy";
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Setting from './Setting';
 import Logout from '@mui/icons-material/Logout';
+import DirectorList from "./DirectorList";
 // import { AppBar } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Avatar, Typography } from "@mui/material";
@@ -171,7 +172,8 @@ export default function App() {
 
             <Route path="login" element={<Login />} />
 
-            <Route path="director" element={<TeacherList />} />
+         
+            <Route path="directorList" element={<DirectorList />} />
             <Route path="export" element={<ExportToExcel />} />
             <Route path="exportManager" element={<ExportToExcelManager />} />
             <Route path="setting" element={<Setting />} />
@@ -179,7 +181,7 @@ export default function App() {
             <Route path="addCourse" element={<AddCourse />} />
             <Route path="teacherList" element={<TeacherList />} />
             <Route path="courseList" element={<CourseList />} />
-            <Route path="displayCalendar" element={<DisplayCalendar />} />
+            <Route path="displayCalendar" element={<AAAcopy />} />
             <Route path="addTeacherToCourse" element={<AddTeacherToCourse />} />
 
 

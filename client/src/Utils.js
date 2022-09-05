@@ -28,7 +28,7 @@ export const convertToTime = (time) => {
   d.setDate(new Date().getDate())
   return d;
 }
-export const DateStringToTimeString = (date) => {
+export const dateStringToTimeString = (date) => {
   let d = new Date(date);
   return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
 
@@ -38,7 +38,10 @@ export const shortStr = (str, len = 8) => {
   let words = str.split(" ");
   if (words.length > 1 && words[0] + " " + words[1] < 10)
     res = words[0] + " " + words[1];
-  if (res.length < str)
+  if (res.length < str.length)
     res += "...";
   return res;
+}
+export const getDayByNumber=(num)=>{
+  return String.fromCharCode(1488+num);
 }
