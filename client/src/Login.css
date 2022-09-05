@@ -1,4 +1,4 @@
-.App {
+/* .App {
     font-family: sans-serif;
   }
   
@@ -56,4 +56,9 @@
   }
   i.teal.icon {
     color: orange;
+} */
+
+.MuiTextField-root p {
+  text-align: center;
+  color: red;
 }

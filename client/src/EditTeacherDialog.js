@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import * as Yup from "yup";
+
 import "./EditTeacherDialog.css"
 import {
   IconButton, InputAdornment, OutlinedInput, FormControl, InputLabel,
@@ -16,7 +18,45 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { BASE_URL } from "./VARIABLES";
 import { Formik } from "formik";
 import axios from "axios";
-
+export const DisplayFormikState = props =>
+    <div style={{ margin: '1rem 0', background: '#f6f8fa', padding: '.5rem' }}>
+        <strong>Injected Formik props (the form's state)</strong>
+        <div style={{}}>
+            <code>touched:</code> {JSON.stringify(props.touched, null, 2)}
+        </div>
+        <div>
+            <code>errors:</code> {JSON.stringify(props.errors, null, 2)}
+        </div>
+        <div>
+            <code>values:</code> {JSON.stringify(props.values, null, 2)}
+        </div>
+        <div>
+            <code>isSubmitting:</code> {JSON.stringify(props.isSubmitting, null, 2)}
+        </div>
+    </div>;
+    const teacherSchema = Yup.object().shape({
+      firstName: Yup.string()
+          .min(3, 'שם קצר מדי')
+          .required('שדה חובה'),
+      lastName: Yup.string()
+          .min(3, 'שם קצר מדי')
+          .required('שדה חובה'),
+  
+      tz: Yup.string()
+          .required("שדה חובה")
+          .min(8, 'מספר זהות חייב להכיל 9 ספרות')
+          .max(9, 'תז חייבת להכיל 9 ספרות')
+          .matches(/^\d+$/, "מספר זהות מכיל רק ספרות"),
+  
+      address: Yup.string().min(3, 'שם חייב קצר מדי'),
+      role: Yup.string().required("שדה חובה"),
+      phone: Yup.string().required("שדה חובה"),
+      email: Yup.string().required("שדה חובה").email("מייל לא תקין"),
+      password: Yup.string()
+          .required("שדה חובה")
+          .min(4, "סיסמא חייבת להכיל לפחות 4 תווים")
+          .max(16, "סיסמא יכולה להכיל לכל היותר 16 תווים")
+  });
 export default function EditTeacherDialog({ teacher, handleClose, saveChanges }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -34,7 +74,7 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
 
   return (
     <div>
-     
+
       {teacher && (
         <Formik
           initialValues={{ tz: teacher.tz, firstName: teacher.firstName, lastName: teacher.lastName, email: teacher.email, address: teacher.address, phone: teacher.phone, password: teacher.password, role: teacher.role }}
@@ -90,7 +130,7 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
               isSubmitting,
               handleChange,
               handleBlur,
-              handleSubmit
+              handleSubmit,setFieldValue
             } = props;
 
             return (
@@ -346,7 +386,9 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                   </select>
                   <button type="submit" disabled={isSubmitting}>
                     הוסף
-                  </button> */}
+                  </button> 
+                  <DisplayFormikState {...props} />*/}
+
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={handleClose} >בטל</Button>

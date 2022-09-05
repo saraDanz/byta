@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
+import{getDayByNumber} from "./Utils";
 import {
     Dialog,
     TextField,
@@ -109,7 +110,7 @@ export default function AddReportDialog({ onClose, addReport,selectInfo }) {
                             </DialogTitle>
                             <DialogContent >
                                 <DialogContentText sx={{textAlign:"center"}}>
-                                <Typography variant="color.secondary" align="center">יום {selectInfo.start.getDay()} תאריך {selectInfo.start.toLocaleDateString()}</Typography>
+                                <Typography variant="color.secondary" align="center">יום {getDayByNumber(selectInfo.start.getDay())+"'"} תאריך {selectInfo.start.toLocaleDateString()}</Typography>
                                 </DialogContentText>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
 
@@ -194,8 +195,8 @@ export default function AddReportDialog({ onClose, addReport,selectInfo }) {
 
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={onClose}  >בטל</Button>
-                                <Button type="submit" form="myForm">שמור</Button>
+                                <Button  onClick={onClose}  >בטל</Button>
+                                <Button  type="submit" form="myForm">שמור</Button>
                             </DialogActions>
                         </Dialog>
                     </form>

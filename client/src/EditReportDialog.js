@@ -5,6 +5,8 @@ import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
 import axios from "axios";
+import{getDayByNumber} from "./Utils";
+
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
@@ -132,9 +134,10 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                 return (
                     <form id="myForm" onSubmit={handleSubmit}>
                         <Dialog dir="rtl" scroll="body" open={true} onClose={onClose} >
-                            <DialogTitle > <Typography variant="h6" align="center">עדכון פרטי דווח</Typography></DialogTitle>
+                            <DialogTitle  > <Typography variant="h6" align="center">עדכון פרטי דווח</Typography></DialogTitle>
                             <DialogContent >
-                                <DialogContentText>
+                                <DialogContentText  sx={{textAlign:"center"}}>
+                                <Typography variant="color.secondary" align="center">יום {getDayByNumber(event.event.start.getDay())+"'"} תאריך {event.event.start.toLocaleDateString()}</Typography>
 
                                 </DialogContentText>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -259,7 +262,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
 
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={onClose} >בטל</Button>
+                                <Button  onClick={onClose} >בטל</Button>
                                 <Button type="submit" form="myForm" color="secondary">שמור</Button>
                             </DialogActions>
                         </Dialog>

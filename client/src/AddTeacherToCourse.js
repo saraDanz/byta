@@ -175,7 +175,7 @@ export default function AddTeacherToCourse() {
                         )}
 
 
-                        <Button type="submit" sx={{m:1}} className="button-add-teacher-to-course" disabled={isSubmitting}>
+                        <Button type="submit" variant="outlined" sx={{m:1}} className="button-add-teacher-to-course" disabled={isSubmitting}>
                             הוסף      </Button>
                             </Box></Paper>
 

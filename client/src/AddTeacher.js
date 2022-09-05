@@ -9,12 +9,39 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 import { BASE_URL } from "./VARIABLES";
+import * as Yup from "yup";
+
+const teacherSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .min(3, 'שם קצר מדי')
+        .required('שדה חובה'),
+    lastName: Yup.string()
+        .min(3, 'שם קצר מדי')
+        .required('שדה חובה'),
+
+    tz: Yup.string()
+        .required("שדה חובה")
+        .min(8, 'מספר זהות חייב להכיל 9 ספרות')
+        .max(9, 'תז חייבת להכיל 9 ספרות')
+        .matches(/^\d+$/, "מספר זהות מכיל רק ספרות"),
+
+    address: Yup.string().min(3, 'שם חייב קצר מדי'),
+    role: Yup.string().required("שדה חובה"),
+    phone: Yup.string().required("שדה חובה"),
+    email: Yup.string().required("שדה חובה").email("מייל לא תקין"),
+    password: Yup.string()
+        .required("שדה חובה")
+        .min(4, "סיסמא חייבת להכיל לפחות 4 תווים")
+        .max(16, "סיסמא יכולה להכיל לכל היותר 16 תווים")
+});
 export default function AddTeacher() {
     let dispatch = useDispatch();
     let navigate = useNavigate();
     return <div className="add-user">
         <Formik
-            initialValues={{ tz: "", firstName: "", lastName: "", address: "", phone: "", password: "", role: 1 }}
+            validationSchema={teacherSchema}
+
+            initialValues={{ tz: "", firstName: "", lastName: "", address: "", phone: "", password: "", role: 1, email: "" }}
             onSubmit={(values, { setSubmitting }) => {
 
                 axios.post(BASE_URL + "users", values).then(res => {
@@ -75,7 +102,8 @@ export default function AddTeacher() {
                     isSubmitting,
                     handleChange,
                     handleBlur,
-                    handleSubmit
+                    handleSubmit,
+                    setFieldValue
                 } = props;
 
                 return (
@@ -95,6 +123,8 @@ export default function AddTeacher() {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     sx={{ m: 1, width: '25ch' }}
+                                    error={errors.tz && touched.tz}
+                                    helperText={touched.tz && errors.tz?errors.tz:undefined}
 
                                     className={errors.tz && touched.tz && "error"}
                                 />
@@ -112,7 +142,8 @@ export default function AddTeacher() {
                                     value={values.firstName}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-
+                                    error={errors.firstName && touched.firstName}
+                                    helperText={touched.firstName && errors.firstName ? errors.firstName : undefined}
                                     className={errors.firstName && touched.firstName && "error"}
                                 />
                                 {/*errors.firstName && touched.firstName && (
@@ -128,11 +159,13 @@ export default function AddTeacher() {
                                     value={values.lastName}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    error={errors.lastName && touched.lastName}
+
+                                    helperText={touched.lastName && errors.lastName ? errors.lastName : undefined}
+
                                     className={errors.lastName && touched.lastName && "error"}
                                 />
-                                {errors.lastName && touched.lastName && (
-                                    <div className="input-feedback">{errors.lastName}</div>
-                                )}
+
 
                                 <TextField
                                     id="address"
@@ -143,6 +176,8 @@ export default function AddTeacher() {
                                     value={values.address}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    error={errors.address && touched.address}
+                                    helperText={touched.address && errors.address ? errors.address : undefined}
                                     className={errors.address && touched.address && "error"}
                                 />
                                 {/*errors.address && touched.address && (
@@ -158,6 +193,8 @@ export default function AddTeacher() {
                                     value={values.phone}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    error={touched.phone && errors.phone}
+                                    helperText={touched.phone && errors.phone ? errors.phone : undefined}
                                     className={errors.phone && touched.phone && "error"}
                                 />
                                 {/*errors.phone && touched.phone && (
@@ -173,6 +210,9 @@ export default function AddTeacher() {
                                     value={values.email}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    error={touched.email && errors.email}
+                                    helperText={touched.email && errors.email?errors.email:undefined}
+
                                     className={errors.email && touched.email && "error"}
                                 />
                                 {/*errors.email && touched.email && (
@@ -188,6 +228,9 @@ export default function AddTeacher() {
                                     value={values.password}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
+                                    error={touched.password && errors.password}
+                                    helperText={touched.password && errors.password?errors.password:undefined}
+
                                     className={errors.password && touched.password && "error"}
                                 />
                                 {/*errors.password && touched.password && (
@@ -199,8 +242,11 @@ export default function AddTeacher() {
                                     <Select
                                         id="rolrr"
                                         value={values.role}
+                                        error={touched.role && errors.role}
+                                        helperText={touched.role && errors.role?errors.role:undefined}
+
                                         sx={{ m: 1, width: '25ch' }}
-                                        onChange={handleChange}>
+                                        onChange={(eve) => { setFieldValue("role", eve.target.value) }}>
 
 
                                         <MenuItem value="1">
@@ -222,8 +268,7 @@ export default function AddTeacher() {
                                     <option value='2'>
                                         רכזת</option>
                                 </select>*/}
-
-                                <Button type="submit" form="myForm" disabled={isSubmitting}>הוסף</Button>
+                                <Button type="submit" variant="outlined" form="myForm" disabled={isSubmitting}>הוסף</Button>
 
                             </Box>
                         </Paper>

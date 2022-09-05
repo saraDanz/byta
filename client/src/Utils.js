@@ -42,3 +42,6 @@ export const shortStr = (str, len = 8) => {
     res += "...";
   return res;
 }
+export const getDayByNumber=(num)=>{
+  return String.fromCharCode(1488+num);
+}

@@ -30,7 +30,7 @@ const NavBar = ({ user ,handleMenuClick}) => {
                     <Typography >
                         {user.firstName}
                     </Typography>}
-                <Avatar sx={{ bgcolor: "orange", width: 30, height: 30 }} >
+                <Avatar sx={{  width: 30, height: 30 }} >
                     <AccountCircleIcon onClick={handleMenuClick} />
                 </Avatar>
 
