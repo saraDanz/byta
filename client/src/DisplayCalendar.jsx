@@ -253,7 +253,7 @@ calendarApi.addEvent(updatedEvent);
 
             {/*  <Icon name="delete" size="small" onClick={() => handleEventClick(eventInfo)} />
             */}
-          </div></Tooltip>
+          </div></div></Tooltip>
       </>
     )
   }
