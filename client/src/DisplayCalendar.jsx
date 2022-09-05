@@ -234,9 +234,13 @@ calendarApi.addEvent(updatedEvent);
 
         </>} >
 
-          <div
-            //   aria-owns={ancorElPopover ? 'mouse-over-popover' : undefined}
-            // aria-haspopup="true"
+       
+
+        <div className={"event-info " + (isPast ? "past" : "")} >
+          <div>
+            <b>{shortStr(eventInfo.event.extendedProps.courseId.name)}</b>
+           
+
 
             className={"event-info " + (isPast ? "past" : "")} >
             <div>
