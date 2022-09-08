@@ -1,5 +1,5 @@
 import "./AddTeacher.css";
-import React from "react";
+import React, { useState } from "react";
 import { Paper, Button, MenuItem, Typography, InputLabel, FormControl, Box, TextField, Select } from "@mui/material";
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
@@ -37,13 +37,19 @@ const teacherSchema = Yup.object().shape({
 export default function AddTeacher() {
     let dispatch = useDispatch();
     let navigate = useNavigate();
+   
     return <div className="add-user">
         <Formik
             validationSchema={teacherSchema}
 
             initialValues={{ tz: "", firstName: "", lastName: "", address: "", phone: "", password: "", role: 1, email: "" }}
-            onSubmit={(values, { setSubmitting }) => {
-
+            onSubmit={  (values, { setSubmitting }) => {
+            //  let x= await  teacherSchema.isValid(values);
+            //     if(!x)
+            //     return;
+              
+                // if (Object.keys(errors).length > 0)
+                //     return;
                 axios.post(BASE_URL + "users", values).then(res => {
                     console.log(res)
                     console.log("user added in", values);
@@ -69,27 +75,27 @@ export default function AddTeacher() {
 
             validate={values => {
                 let errors = {};
-                if (!values.tz) {
-                    errors.tz = "שדה חובה";
-                }
+                // if (!values.tz) {
+                //     errors.tz = "שדה חובה";
+                // }
                 // else if (!/^[0-9]$/.test(values.tz)) {
                 //     errors.tz = "מספר זהות יכול להכיל רק ספרות";
                 // }
-                else if (values.tz.length < 9) {
-                    errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
-                }
-                // else if (!EmailValidator.validate(values.email)) {
+                // else if (values.tz.length < 9) {
+                //     errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
+                // }
+                // // else if (!EmailValidator.validate(values.email)) {
                 //     errors.email = "Invalid email address.";
                 // }
 
-                const passwordRegex = /(?=.*[0-9])/;
-                if (!values.password) {
-                    errors.password = "שדה חובה";
-                    // } else if (values.password.length < 8) {
-                    //     errors.password = "סיסמא לפחות 8 תווים";
-                } else if (!passwordRegex.test(values.password)) {
-                    errors.password = "סיסמא חייבת להכיל ספרה";
-                }
+                // const passwordRegex = /(?=.*[0-9])/;
+                // if (!values.password) {
+                //     errors.password = "שדה חובה";
+                //     // } else if (values.password.length < 8) {
+                //     //     errors.password = "סיסמא לפחות 8 תווים";
+                // } else if (!passwordRegex.test(values.password)) {
+                //     errors.password = "סיסמא חייבת להכיל ספרה";
+                // }
 
                 return errors;
             }}
@@ -103,11 +109,11 @@ export default function AddTeacher() {
                     handleChange,
                     handleBlur,
                     handleSubmit,
-                    setFieldValue
+                    setFieldValue, isValid, dirty
                 } = props;
 
                 return (
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} id="myForm">
                         <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
 
                             <Typography variant="h6" align="center">פרטי מורה חדשה</Typography>
@@ -123,17 +129,15 @@ export default function AddTeacher() {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     sx={{ m: 1, width: '25ch' }}
-                                    error={errors.tz && touched.tz}
-                                    helperText={touched.tz && errors.tz?errors.tz:undefined}
+                                    error={(errors.tz && touched.tz)}
+                                    helperText={touched.tz && errors.tz ? errors.tz : " "}
 
                                     className={errors.tz && touched.tz && "error"}
                                 />
-                                {/*errors.tz && touched.tz && (
-                                    <div className="input-feedback">{errors.tz}</div>
-                                )*/}
+                             
 
 
-                                <TextField
+                               <TextField
                                     sx={{ m: 1, width: '25ch' }}
                                     id="firstName"
                                     name="firstName"
@@ -142,13 +146,11 @@ export default function AddTeacher() {
                                     value={values.firstName}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={errors.firstName && touched.firstName}
-                                    helperText={touched.firstName && errors.firstName ? errors.firstName : undefined}
+                                    error={(errors.firstName && touched.firstName)}
+                                    helperText={touched.firstName && errors.firstName ? errors.firstName : " "}
                                     className={errors.firstName && touched.firstName && "error"}
                                 />
-                                {/*errors.firstName && touched.firstName && (
-                                    <div className="input-feedback">{errors.firstName}</div>
-                                )*/}
+                             
 
                                 <TextField
                                     id="lastName"
@@ -159,9 +161,9 @@ export default function AddTeacher() {
                                     value={values.lastName}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={errors.lastName && touched.lastName}
+                                    error={(errors.lastName && touched.lastName)}
 
-                                    helperText={touched.lastName && errors.lastName ? errors.lastName : undefined}
+                                    helperText={touched.lastName && errors.lastName ? errors.lastName : " "}
 
                                     className={errors.lastName && touched.lastName && "error"}
                                 />
@@ -176,13 +178,11 @@ export default function AddTeacher() {
                                     value={values.address}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={errors.address && touched.address}
-                                    helperText={touched.address && errors.address ? errors.address : undefined}
+                                    error={(errors.address && touched.address)}
+                                    helperText={touched.address && errors.address ? errors.address : " "}
                                     className={errors.address && touched.address && "error"}
                                 />
-                                {/*errors.address && touched.address && (
-                                    <div className="input-feedback">{errors.address}</div>
-                                )*/}
+                            
 
                                 <TextField
                                     sx={{ m: 1, width: '25ch' }}
@@ -193,13 +193,11 @@ export default function AddTeacher() {
                                     value={values.phone}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={touched.phone && errors.phone}
-                                    helperText={touched.phone && errors.phone ? errors.phone : undefined}
+                                    error={(touched.phone && errors.phone)?true:false}
+                                    helperText={touched.phone && errors.phone ? errors.phone : " "}
                                     className={errors.phone && touched.phone && "error"}
                                 />
-                                {/*errors.phone && touched.phone && (
-                                    <div className="input-feedback">{errors.phone}</div>
-                                )*/}
+                              
 
                                 <TextField
                                     sx={{ m: 1, width: '25ch' }}
@@ -210,14 +208,13 @@ export default function AddTeacher() {
                                     value={values.email}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={touched.email && errors.email}
-                                    helperText={touched.email && errors.email?errors.email:undefined}
+                                    error={(touched.email && errors.email)?true:false}
+                                    helperText={touched.email && errors.email ? errors.email : " "}
 
                                     className={errors.email && touched.email && "error"}
                                 />
-                                {/*errors.email && touched.email && (
-                                    <div className="input-feedback">{errors.email}</div>
-                                )*/}
+                               
+                              
 
                                 <TextField
                                     sx={{ m: 1, width: '25ch' }}
@@ -228,23 +225,19 @@ export default function AddTeacher() {
                                     value={values.password}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={touched.password && errors.password}
-                                    helperText={touched.password && errors.password?errors.password:undefined}
+                                    error={(touched.password && errors.password)?true:false}
+                                    helperText={touched.password && errors.password ? errors.password : " "}
 
                                     className={errors.password && touched.password && "error"}
                                 />
-                                {/*errors.password && touched.password && (
-                                    <div className="input-feedback">{errors.password}</div>
-                                )*/}
+                {/**/}
                                 <FormControl sx={{ m: 1, width: '25ch' }}>
                                     <InputLabel id="demo-simple-select-autowidth-label">תפקיד</InputLabel>
 
                                     <Select
                                         id="rolrr"
                                         value={values.role}
-                                        error={touched.role && errors.role}
-                                        helperText={touched.role && errors.role?errors.role:undefined}
-
+                                       
                                         sx={{ m: 1, width: '25ch' }}
                                         onChange={(eve) => { setFieldValue("role", eve.target.value) }}>
 
@@ -257,19 +250,8 @@ export default function AddTeacher() {
                                         </MenuItem>
                                     </Select>
                                 </FormControl>
-                                {/*}   <select
-                                    id="role"
-                                    name="role"
-                                    value={values.role}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}>
-                                    <option value="1">מורה
-                            </option>
-                                    <option value='2'>
-                                        רכזת</option>
-                                </select>*/}
+                               
                                 <Button type="submit" variant="outlined" form="myForm" disabled={isSubmitting}>הוסף</Button>
-
                             </Box>
                         </Paper>
                     </form>

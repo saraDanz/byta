@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -6,35 +6,38 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import * as Yup from "yup";
+
 
 import "./EditTeacherDialog.css"
 import {
   IconButton, InputAdornment, OutlinedInput, FormControl, InputLabel,
   Box, FormHelperText, MenuItem, Typography
 } from "@mui/material";
+import * as Yup from "yup";
+
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { BASE_URL } from "./VARIABLES";
 import { Formik } from "formik";
 import axios from "axios";
 export const DisplayFormikState = props =>
-    <div style={{ margin: '1rem 0', background: '#f6f8fa', padding: '.5rem' }}>
-        <strong>Injected Formik props (the form's state)</strong>
-        <div style={{}}>
-            <code>touched:</code> {JSON.stringify(props.touched, null, 2)}
-        </div>
-        <div>
-            <code>errors:</code> {JSON.stringify(props.errors, null, 2)}
-        </div>
-        <div>
-            <code>values:</code> {JSON.stringify(props.values, null, 2)}
-        </div>
-        <div>
-            <code>isSubmitting:</code> {JSON.stringify(props.isSubmitting, null, 2)}
-        </div>
-    </div>;
-    const teacherSchema = Yup.object().shape({
+  <div style={{ margin: '1rem 0', background: '#f6f8fa', padding: '.5rem' }}>
+    <strong>Injected Formik props (the form's state)</strong>
+    <div style={{}}>
+      <code>touched:</code> {JSON.stringify(props.touched, null, 2)}
+    </div>
+    <div>
+      <code>errors:</code> {JSON.stringify(props.errors, null, 2)}
+    </div>
+    <div>
+      <code>values:</code> {JSON.stringify(props.values, null, 2)}
+    </div>
+    <div>
+      <code>isSubmitting:</code> {JSON.stringify(props.isSubmitting, null, 2)}
+    </div>
+  </div>;
+
+  const teacherSchema = Yup.object().shape({
       firstName: Yup.string()
           .min(3, 'שם קצר מדי')
           .required('שדה חובה'),
@@ -59,7 +62,9 @@ export const DisplayFormikState = props =>
   });
 export default function EditTeacherDialog({ teacher, handleClose, saveChanges }) {
   const [showPassword, setShowPassword] = useState(false);
-
+useEffect(() => {
+  setShowPassword(false);
+  }, []);
   const handleClickShowPassword = () => {
     setShowPassword(true);
   };
@@ -77,6 +82,8 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
 
       {teacher && (
         <Formik
+        validationSchema={teacherSchema}
+
           initialValues={{ tz: teacher.tz, firstName: teacher.firstName, lastName: teacher.lastName, email: teacher.email, address: teacher.address, phone: teacher.phone, password: teacher.password, role: teacher.role }}
           onSubmit={(values, { setSubmitting }) => {
             console.log(values);
@@ -96,30 +103,30 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
           }}
 
           validate={values => {
-            let errors = {};
-            if (!values.tz) {
-              errors.tz = "שדה חובה";
-            }
+            // let errors = {};
+            // if (!values.tz) {
+            //   errors.tz = "שדה חובה";
+            // }
             // else if (!/^[0-9]$/.test(values.tz)) {
             //     errors.tz = "מספר זהות יכול להכיל רק ספרות";
             // }
-            else if (values.tz.length < 9) {
-              errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
-            }
+            // else if (values.tz.length < 9) {
+              // errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
+            // }
             // else if (!EmailValidator.validate(values.email)) {
             //     errors.email = "Invalid email address.";
             // }
 
-            const passwordRegex = /(?=.*[0-9])/;
-            if (!values.password) {
-              errors.password = "שדה חובה";
-              // } else if (values.password.length < 8) {
-              //     errors.password = "סיסמא לפחות 8 תווים";
-            } else if (!passwordRegex.test(values.password)) {
-              errors.password = "סיסמא חייבת להכיל ספרה";
-            }
+            // const passwordRegex = /(?=.*[0-9])/;
+            // if (!values.password) {
+            //   errors.password = "שדה חובה";
+            //   // } else if (values.password.length < 8) {
+            //   //     errors.password = "סיסמא לפחות 8 תווים";
+            // } else if (!passwordRegex.test(values.password)) {
+            //   errors.password = "סיסמא חייבת להכיל ספרה";
+            // }
 
-            return errors;
+            // return errors;
           }}
         >
           {props => {
@@ -130,7 +137,7 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
               isSubmitting,
               handleChange,
               handleBlur,
-              handleSubmit,setFieldValue
+              handleSubmit, setFieldValue, dirty, isValid
             } = props;
 
             return (
@@ -151,8 +158,13 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                         // InputProps={{
                         //   startAdornment: <InputAdornment position="start">kg</InputAdornment>,
                         // }}
+
+                        error={(errors.firstName && touched.firstName)}
+                        helperText={touched.firstName && errors.firstName ? errors.firstName : " "}
+
                         value={values.firstName}
                         onChange={handleChange}
+                        onBlur={handleBlur}
 
                       /> <TextField
                         label="שם משפחה"
@@ -162,13 +174,18 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                         // InputProps={{
                         //   startAdornment: <InputAdornment position="start">kg</InputAdornment>,
                         // }}
+                        onBlur={handleBlur}
                         value={values.lastName}
                         onChange={handleChange}
+                        error={(errors.lastName && touched.lastName)}
+
+                        helperText={touched.lastName && errors.lastName ? errors.lastName : " "}
+
 
                       /> <TextField
                         label="תעודת זהות"
                         name="tz"
-
+                        onBlur={handleBlur}
                         id="outlined-start-adornment"
                         sx={{ m: 1, width: '25ch' }}
                         // InputProps={{
@@ -176,6 +193,9 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                         // }}
                         value={values.tz}
                         onChange={handleChange}
+                        error={(errors.tz && touched.tz)}
+                        helperText={touched.tz && errors.tz ? errors.tz : " "}
+
 
                       />
                       {/* <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
@@ -191,6 +211,35 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                         />
                         <FormHelperText id="outlined-weight-helper-text">Weight</FormHelperText>
                       </FormControl> */}
+
+
+                      <TextField
+                        label="טלפון"
+                        name="phone"
+                        onBlur={handleBlur}
+                        id="outlined-start-adornment"
+                        sx={{ m: 1, width: '25ch' }}
+
+                        value={values.phone}
+                        onChange={handleChange}
+                        error={(touched.phone && errors.phone) ? true : false}
+                        helperText={touched.phone && errors.phone ? errors.phone : " "}
+
+
+                      /> <TextField
+                        label="מייל"
+                        name="email"
+                        onBlur={handleBlur}
+                        id="outlined-start-adornment"
+                        sx={{ m: 1, width: '25ch' }}
+
+                        value={values.email}
+                        onChange={handleChange}
+                        error={(touched.email && errors.email) ? true : false}
+                        helperText={touched.email && errors.email ? errors.email : " "}
+
+
+                      />
                       <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                         <InputLabel htmlFor="outlined-adornment-password">סיסמא</InputLabel>
                         <OutlinedInput
@@ -200,6 +249,9 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                           type={showPassword ? 'text' : 'password'}
                           value={values.password}
                           onChange={handleChange}
+                          error={(touched.password && errors.password) ? true : false}
+                          helperText={touched.password && errors.password ? errors.password : " "}
+                          onBlur={handleBlur}
                           endAdornment={
                             <InputAdornment position="end">
                               <IconButton
@@ -215,43 +267,20 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                           label="Password"
                         />
                       </FormControl>
-
-                      <TextField
-                        label="טלפון"
-                        name="phone"
-
-                        id="outlined-start-adornment"
-                        sx={{ m: 1, width: '25ch' }}
-                        // InputProps={{
-                        //   startAdornment: <InputAdornment position="start">kg</InputAdornment>,
-                        // }}
-                        value={values.phone}
-                        onChange={handleChange}
-
-                      /> <TextField
-                        label="מייל"
-                        name="email"
-                        id="outlined-start-adornment"
-                        sx={{ m: 1, width: '25ch' }}
-                        // InputProps={{
-                        //   startAdornment: <InputAdornment position="start">kg</InputAdornment>,
-                        // }}
-                        value={values.email}
-                        onChange={handleChange}
-
-                      />
-
                       <FormControl sx={{ m: 1 }}>
                         <InputLabel htmlFor="outlined-adornment-amount">כתובת</InputLabel>
                         <OutlinedInput
                           id="outlined-adornment-amount"
                           name="address"
-
+                          error={(errors.address && touched.address)}
+                          helperText={touched.address && errors.address ? errors.address : " "}
+                          onBlur={handleBlur}
                           value={values.address}
                           onChange={handleChange}
                           // startAdornment={<InputAdornment position="start">$</InputAdornment>}
                           label="כתובת"
                         />
+
                       </FormControl>
                       <FormControl sx={{ m: 1 }}>    <TextField
                         id="outlined-select-currency"
@@ -261,6 +290,9 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
 
                         value={values.role}
                         onChange={handleChange}
+                        error={touched.role && errors.role}
+                        helperText={touched.role && errors.role ? errors.role : undefined}
+
                       // helperText="Please select your currency"
                       >
                         {roles.map((option) => (
@@ -270,129 +302,16 @@ export default function EditTeacherDialog({ teacher, handleClose, saveChanges })
                         ))}
                       </TextField>
                       </FormControl>
-                      {/* </div> */}
+
                     </Box>
-                    {/* <label htmlFor="tz">מספר זהות</label>
-                  <input
-                    id="tz"
-                    name="tz"
-                    type="text"
 
-                    value={values.tz}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={errors.tz && touched.tz && "error"}
-                  />
-                  {errors.tz && touched.tz && (
-                    <div className="input-feedback">{errors.tz}</div>
-                  )}
-
-                  <label htmlFor="firstName">שם פרטי</label>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-
-                    value={values.firstName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={errors.firstName && touched.firstName && "error"}
-                  />
-                  {errors.firstName && touched.firstName && (
-                    <div className="input-feedback">{errors.firstName}</div>
-                  )}
-                  <label htmlFor="lastName">שם משפחה</label>
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-
-                    value={values.lastName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={errors.lastName && touched.lastName && "error"}
-                  />
-                  {errors.lastName && touched.lastName && (
-                    <div className="input-feedback">{errors.lastName}</div>
-                  )}
-                  <label htmlFor="address">כתובת</label>
-                  <input
-                    id="address"
-                    name="address"
-                    type="text"
-
-                    value={values.address}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={errors.address && touched.address && "error"}
-                  />
-                  {errors.address && touched.address && (
-                    <div className="input-feedback">{errors.address}</div>
-                  )}
-                  <label htmlFor="phone">טלפון</label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="text"
-
-                    value={values.phone}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={errors.phone && touched.phone && "error"}
-                  />
-                  {errors.phone && touched.phone && (
-                    <div className="input-feedback">{errors.phone}</div>
-                  )}
-                  <label htmlFor="email">מייל</label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="text"
-
-                    value={values.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={errors.email && touched.email && "error"}
-                  />
-                  {errors.email && touched.email && (
-                    <div className="input-feedback">{errors.email}</div>
-                  )}
-                  <label htmlFor="password">סיסמא</label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-
-                    value={values.password}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={errors.password && touched.password && "error"}
-                  />
-                  {errors.password && touched.password && (
-                    <div className="input-feedback">{errors.password}</div>
-                  )}
-
-                  <label htmlFor="lastName">תפקיד</label>
-                  <select
-                    id="role"
-                    name="role"
-                    value={values.role}
-                    onChange={handleChange}
-                    onBlur={handleBlur}>
-                    <option value="1">מורה
-                    </option>
-                    <option value='2'>
-                      רכזת</option>
-                  </select>
-                  <button type="submit" disabled={isSubmitting}>
-                    הוסף
-                  </button> 
-                  <DisplayFormikState {...props} />*/}
+                   {/*  <DisplayFormikState {...props} />*/}
 
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={handleClose} >בטל</Button>
-                    <Button type="submit" form="myForm"  >שמור</Button>
+
+                    <Button type="submit" form="myForm" disabled={isSubmitting}  >שמור</Button>
                   </DialogActions>
                 </Dialog>
               </form>
