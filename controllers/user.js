@@ -18,10 +18,10 @@ const getAllDirectorsAndCourses = async (req, res) => {
     try {
         const directors = await User.find({ role: 2 }).sort({ "lastName": 1, "firstName": 1 });
         const courses = await Course.find();
-       const directorsWithCourses = directors.map((data) => {
+        const directorsWithCourses = directors.map((data) => {
             let cou = courses.filter(o => o.directorId == data._id.toString());
-            let {firstName,lastName,email,password,_id,phone,role,tz,address}=data;
-            return { firstName,lastName,email,password,_id,phone,role,tz,address, courses: cou }
+            let { firstName, lastName, email, password, _id, phone, role, tz, address } = data;
+            return { firstName, lastName, email, password, _id, phone, role, tz, address, courses: cou }
         })
 
         return res.send(directorsWithCourses);
@@ -119,12 +119,17 @@ const updateUser = async (req, res) => {
         let { tz, password, firstName, lastName,
             address,
             phone,
-            email, role
+            email, role, workerNum
         } = req.body;
 
         let userkk = await User.findOne({ tz });
         if (userkk && userkk._id != id)
             return res.status(409).send("user with same id already exists");
+        if (workerNum) {
+            userkk = await User.findOne({ workerNum });
+            if (userkk && userkk._id != id)
+                return res.status(409).send("user workerNum already exists");
+        }
         let updated = await User.findOneAndUpdate({ _id: id }, req.body, { new: true });
         console.log(updated);
         return res.send(updated);
@@ -152,18 +157,23 @@ const addNewUser = async (req, res) => {
         let { tz, password, firstName, lastName,
             address,
             phone,
-            email, role
+            email, role, workerNum
         } = req.body;
 
         let user = await User.findOne({ tz });
         if (user)
             return res.status(409).send("user already exists");
+        if (workerNum) {
+            user = await User.findOne({ workerNum });
+            if (user)
+                return res.status(409).send("user workerNum already exists");
+        }
         user = new User({
             tz, password, firstName, lastName,
             address,
             phone,
             email,
-            role
+            role, workerNum
         });
         await user.save();
 
@@ -179,18 +189,22 @@ const addNewTeacher = async (req, res) => {
         let { tz, password, firstName, lastName,
             address,
             phone,
-            email
+            email, workerNum
         } = req.body;
 
         let user = await User.findOne({ tz });
         if (user)
-            return res.status(409).send("user already exists");
-
+            return res.status(409).send("user with such id already exists");
+        if (workerNum) {
+            user = await User.findOne({ workerNum });
+            if (user)
+                return res.status(409).send("user workerNum already exists");
+        }
         user = new User({
             tz, password, firstName, lastName,
             address,
             phone,
-            email,
+            email, workerNum,
             role: 1
         });
         await user.save();
@@ -204,19 +218,23 @@ const addNewTeacher = async (req, res) => {
 }
 const addNewDirector = async (req, res) => {
     try {
-        let { tz, password, firstName, lastName, address, phone, email } = req.body;
+        let { tz, password, firstName, lastName, address, phone, email, workerNum } = req.body;
 
         let user = await User.findOne({ tz });
         console.log(user);
         if (user)
             return res.status(409).send("user already exists");
-
+        if (workerNum) {
+            user = await User.findOne({ workerNum });
+            if (user)
+                return res.status(409).send("user workerNum already exists");
+        }
         user = new User({
             tz, password, firstName, lastName,
             address,
             phone,
             email,
-            role: 2
+            role: 2, workerNum
         });
         await user.save();
         return res.send(user);

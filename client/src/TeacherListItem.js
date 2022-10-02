@@ -72,7 +72,7 @@ export default function TeacherListItem({ item, deleteTeacher, editTeacher, dele
             secondary={item.address}
         /> <ListItemText
             primary={item.password}
-            secondary={""}
+            secondary={item.workerNum}
         />
 
         <IconButton onClick={() => setOpen(!open)}>

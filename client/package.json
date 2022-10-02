@@ -12,6 +12,7 @@
     "@fullcalendar/timegrid": "^5.10.1",
     "@mui/icons-material": "^5.6.2",
     "@mui/material": "^5.6.0",
+    "@mui/x-data-grid": "^5.17.3",
     "axios": "^0.26.1",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",

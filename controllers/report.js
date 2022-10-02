@@ -91,10 +91,15 @@ const searchByParameters = async (req, res) => {
         //     else if (teacherId) reports = await Report.find({ date: { $gt: prev, $lt: next }, teacherId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         //     else if (courseId) reports = await Report.find({ date: { $gt: prev, $lt: next }, courseId: courseId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         //    else 
-        let ob = { courseId, teacherId, directorId };
+        // let ob = { courseId, teacherId, directorId };
+        let ob = { courseId, teacherId, };
         ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
-        reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
+        reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
+        if (directorId!= 'null' && directorId != 'undefined' &&directorId )
+            reports = reports.filter(item => {
+                return !item.courseId || !item.courseId.directorId || item.courseId.directorId._id == directorId;
 
+            });
         console.log(reports)
         return res.send(reports);
     }
