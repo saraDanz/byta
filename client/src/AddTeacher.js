@@ -28,6 +28,8 @@ const teacherSchema = Yup.object().shape({
     address: Yup.string().min(3, 'שם חייב קצר מדי'),
     role: Yup.string().required("שדה חובה"),
     phone: Yup.string().required("שדה חובה"),
+    workerNum: Yup.string()
+        .matches(/^\d+$/, "מספר עובד מכיל רק ספרות"),
     email: Yup.string().required("שדה חובה").email("מייל לא תקין"),
     password: Yup.string()
         .required("שדה חובה")
@@ -37,17 +39,17 @@ const teacherSchema = Yup.object().shape({
 export default function AddTeacher() {
     let dispatch = useDispatch();
     let navigate = useNavigate();
-   
+
     return <div className="add-user">
         <Formik
             validationSchema={teacherSchema}
 
-            initialValues={{ tz: "", firstName: "", lastName: "", address: "", phone: "", password: "", role: 1, email: "" }}
-            onSubmit={  (values, { setSubmitting }) => {
-            //  let x= await  teacherSchema.isValid(values);
-            //     if(!x)
-            //     return;
-              
+            initialValues={{ tz: "", workerNum: "", firstName: "", lastName: "", address: "", phone: "", password: "", role: 1, email: "" }}
+            onSubmit={(values, { setSubmitting }) => {
+                //  let x= await  teacherSchema.isValid(values);
+                //     if(!x)
+                //     return;
+
                 // if (Object.keys(errors).length > 0)
                 //     return;
                 axios.post(BASE_URL + "users", values).then(res => {
@@ -128,16 +130,49 @@ export default function AddTeacher() {
                                     value={values.tz}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    sx={{ m: 1, width: '25ch' }}
+                                    sx={{ m: 1, width: '20ch' }}
                                     error={(errors.tz && touched.tz)}
                                     helperText={touched.tz && errors.tz ? errors.tz : " "}
 
                                     className={errors.tz && touched.tz && "error"}
                                 />
-                             
+                                <TextField
+                                    id="tz"
+                                    name="workerNum"
+                                    type="text"
+                                    label="מספר עובד"
+                                    value={values.workerNum}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    sx={{ m: 1, width: '17ch' }}
+                                    error={(errors.workerNum && touched.workerNum)}
+                                    helperText={touched.workerNum && errors.workerNum ? errors.workerNum : " "}
+
+                                    className={errors.workerNum && touched.workerNum && "error"}
+                                />
+                                <FormControl sx={{ m: 1, width: '10ch' }}>
+                                <InputLabel id="demo-simple-select-autowidth-label">תפקיד</InputLabel>
+
+                                <Select
+                                    id="rolrr"
+                                    value={values.role}
+
+                                 
+                                    onChange={(eve) => { setFieldValue("role", eve.target.value) }}>
 
 
-                               <TextField
+                                    <MenuItem value="1">
+                                        <em>מורה</em>
+                                    </MenuItem>
+                                    <MenuItem value="2">
+                                        <em>רכזת</em>
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+
+
+
+                                <TextField
                                     sx={{ m: 1, width: '25ch' }}
                                     id="firstName"
                                     name="firstName"
@@ -150,7 +185,7 @@ export default function AddTeacher() {
                                     helperText={touched.firstName && errors.firstName ? errors.firstName : " "}
                                     className={errors.firstName && touched.firstName && "error"}
                                 />
-                             
+
 
                                 <TextField
                                     id="lastName"
@@ -182,7 +217,7 @@ export default function AddTeacher() {
                                     helperText={touched.address && errors.address ? errors.address : " "}
                                     className={errors.address && touched.address && "error"}
                                 />
-                            
+
 
                                 <TextField
                                     sx={{ m: 1, width: '25ch' }}
@@ -193,11 +228,11 @@ export default function AddTeacher() {
                                     value={values.phone}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={(touched.phone && errors.phone)?true:false}
+                                    error={(touched.phone && errors.phone) ? true : false}
                                     helperText={touched.phone && errors.phone ? errors.phone : " "}
                                     className={errors.phone && touched.phone && "error"}
                                 />
-                              
+
 
                                 <TextField
                                     sx={{ m: 1, width: '25ch' }}
@@ -208,13 +243,13 @@ export default function AddTeacher() {
                                     value={values.email}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={(touched.email && errors.email)?true:false}
+                                    error={(touched.email && errors.email) ? true : false}
                                     helperText={touched.email && errors.email ? errors.email : " "}
 
                                     className={errors.email && touched.email && "error"}
                                 />
-                               
-                              
+
+
 
                                 <TextField
                                     sx={{ m: 1, width: '25ch' }}
@@ -225,32 +260,14 @@ export default function AddTeacher() {
                                     value={values.password}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    error={(touched.password && errors.password)?true:false}
+                                    error={(touched.password && errors.password) ? true : false}
                                     helperText={touched.password && errors.password ? errors.password : " "}
 
                                     className={errors.password && touched.password && "error"}
                                 />
-                {/**/}
-                                <FormControl sx={{ m: 1, width: '25ch' }}>
-                                    <InputLabel id="demo-simple-select-autowidth-label">תפקיד</InputLabel>
-
-                                    <Select
-                                        id="rolrr"
-                                        value={values.role}
-                                       
-                                        sx={{ m: 1, width: '25ch' }}
-                                        onChange={(eve) => { setFieldValue("role", eve.target.value) }}>
-
-
-                                        <MenuItem value="1">
-                                            <em>מורה</em>
-                                        </MenuItem>
-                                        <MenuItem value="2">
-                                            <em>רכזת</em>
-                                        </MenuItem>
-                                    </Select>
-                                </FormControl>
+                                {/**/}
                                
+
                                 <Button type="submit" variant="outlined" form="myForm" disabled={isSubmitting}>הוסף</Button>
                             </Box>
                         </Paper>

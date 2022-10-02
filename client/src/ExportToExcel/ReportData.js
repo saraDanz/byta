@@ -22,6 +22,7 @@ export default function ExportToExcel() {
     const [teachers, setTeachers] = useState(reduxTeachers);
 
     const [teacherLoading, setTeacherLoading] = useState(false);
+    const [reportsLoading, setTeacherLoading] = useState(false);
     const [courseLoading, setCourseLoading] = useState(false);
     let [year, setYear] = useState(getCurrentViewMonthAndYear().year);
 
@@ -76,7 +77,7 @@ export default function ExportToExcel() {
 
             let courseId = course?._id;
             let teacherId = teacher?._id;
-            axios.get(`${BASE_URL}reports/searchByParameters/${year}/${month}/${currentUser._id}/${courseId}/${teacherId}`).then(res => {
+            axios.get(`${BASE_URL}reports/searchByParameters/${year}/${month}/null/${courseId}/${teacherId}`).then(res => {
 
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
                 console.log(res);

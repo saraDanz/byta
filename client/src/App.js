@@ -35,6 +35,7 @@ import NavBar from "./NavBar/NavBar.js";
 import axios from "axios";
 import { BASE_URL } from "./VARIABLES.js";
 import { saveCurrentStatus } from "./store/actions/setting.js";
+import ReportDataManager from "./ExportToExcel/ReportDataManager"
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -56,15 +57,15 @@ export default function App() {
     }
     useEffect(() => {
         dispatch(saveUser(getStorage()));
-        axios.get(`${BASE_URL}settings/currentStatus`) .then(res => {
-           dispatch(saveCurrentStatus(res.data))
-          
+        axios.get(`${BASE_URL}settings/currentStatus`).then(res => {
+            dispatch(saveCurrentStatus(res.data))
+
         }).
-        catch(err => {
-            console.log(err);
-            alert("תקלה בקליטת ההגדרות")
-        })
-     
+            catch(err => {
+                console.log(err);
+                alert("תקלה בקליטת ההגדרות")
+            })
+
     }, []);
 
     return (<>
@@ -164,7 +165,7 @@ export default function App() {
                 </ListItemIcon>
                 יציאה
             </MenuItem>}
-        </M> 
+        </M>
 
 
 
@@ -172,8 +173,9 @@ export default function App() {
 
             <Route path="login" element={<Login />} />
 
-         
+
             <Route path="directorList" element={<DirectorList />} />
+            <Route path="tableManager" element={<ReportDataManager />} />
             <Route path="export" element={<ExportToExcel />} />
             <Route path="exportManager" element={<ExportToExcelManager />} />
             <Route path="setting" element={<Setting />} />

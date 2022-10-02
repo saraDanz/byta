@@ -28,6 +28,7 @@ export const convertToTime = (time) => {
   d.setDate(new Date().getDate())
   return d;
 }
+
 export const dateStringToTimeString = (date) => {
   let d = new Date(date);
   return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")
@@ -42,6 +43,17 @@ export const shortStr = (str, len = 8) => {
     res += "...";
   return res;
 }
-export const getDayByNumber=(num)=>{
-  return String.fromCharCode(1488+num);
+export const getDayByNumber = (num) => {
+  return String.fromCharCode(1488 + num);
+}
+export const calculateLessons=(fromTime, toTime)=>{
+  console.log(fromTime)
+  let fullHours = toTime.getHour() - fromTime.getHour() + 1
+  let minutes = 60 - fromTime.getMinutes() + fullHours * 60 + toTime.getMinutes();
+  let breakes = Math.floor(minutes / 150);
+  return (minutes - breakes * 15) / 45;
+}
+export const countTravelingDays = (reportsArr) => {
+  //Nחשב את מספר הימים הפרונטליים אבל לא בודק מה קורה כאשר ישנם מספר שיעורים באותו יום
+  return reportsArr.filter(item => item.type == "פרונטלי").length;
 }

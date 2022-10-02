@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -37,33 +37,35 @@ export const DisplayFormikState = props =>
     </div>
   </div>;
 
-  const teacherSchema = Yup.object().shape({
-      firstName: Yup.string()
-          .min(3, 'שם קצר מדי')
-          .required('שדה חובה'),
-      lastName: Yup.string()
-          .min(3, 'שם קצר מדי')
-          .required('שדה חובה'),
-  
-      tz: Yup.string()
-          .required("שדה חובה")
-          .min(8, 'מספר זהות חייב להכיל 9 ספרות')
-          .max(9, 'תז חייבת להכיל 9 ספרות')
-          .matches(/^\d+$/, "מספר זהות מכיל רק ספרות"),
-  
-      address: Yup.string().min(3, 'שם חייב קצר מדי'),
-      role: Yup.string().required("שדה חובה"),
-      phone: Yup.string().required("שדה חובה"),
-      email: Yup.string().required("שדה חובה").email("מייל לא תקין"),
-      password: Yup.string()
-          .required("שדה חובה")
-          .min(4, "סיסמא חייבת להכיל לפחות 4 תווים")
-          .max(16, "סיסמא יכולה להכיל לכל היותר 16 תווים")
-  });
+const teacherSchema = Yup.object().shape({
+  firstName: Yup.string()
+    .min(3, 'שם קצר מדי')
+    .required('שדה חובה'),
+  lastName: Yup.string()
+    .min(3, 'שם קצר מדי')
+    .required('שדה חובה'),
+
+  tz: Yup.string()
+    .required("שדה חובה")
+    .min(8, 'מספר זהות חייב להכיל 9 ספרות')
+    .max(9, 'תז חייבת להכיל 9 ספרות')
+    .matches(/^\d+$/, "מספר זהות מכיל רק ספרות"),
+
+  address: Yup.string().min(3, 'שם חייב קצר מדי'),
+  role: Yup.string().required("שדה חובה"),
+  phone: Yup.string().required("שדה חובה"),
+  email: Yup.string().required("שדה חובה").email("מייל לא תקין"),
+  workerNum: Yup.string()
+    .matches(/^\d+$/, "מספר עובד מכיל רק ספרות"),
+  password: Yup.string()
+    .required("שדה חובה")
+    .min(4, "סיסמא חייבת להכיל לפחות 4 תווים")
+    .max(16, "סיסמא יכולה להכיל לכל היותר 16 תווים")
+});
 export default function EditTeacherDialog({ teacher, handleClose, saveChanges }) {
   const [showPassword, setShowPassword] = useState(false);
-useEffect(() => {
-  setShowPassword(false);
+  useEffect(() => {
+    setShowPassword(false);
   }, []);
   const handleClickShowPassword = () => {
     setShowPassword(true);
@@ -82,9 +84,9 @@ useEffect(() => {
 
       {teacher && (
         <Formik
-        validationSchema={teacherSchema}
+          validationSchema={teacherSchema}
 
-          initialValues={{ tz: teacher.tz, firstName: teacher.firstName, lastName: teacher.lastName, email: teacher.email, address: teacher.address, phone: teacher.phone, password: teacher.password, role: teacher.role }}
+          initialValues={{ tz: teacher.tz, workerNum: teacher.workerNum, firstName: teacher.firstName, lastName: teacher.lastName, email: teacher.email, address: teacher.address, phone: teacher.phone, password: teacher.password, role: teacher.role }}
           onSubmit={(values, { setSubmitting }) => {
             console.log(values);
             axios.put(BASE_URL + "users/" + teacher._id, values).then(res => {
@@ -111,7 +113,7 @@ useEffect(() => {
             //     errors.tz = "מספר זהות יכול להכיל רק ספרות";
             // }
             // else if (values.tz.length < 9) {
-              // errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
+            // errors.tz = "תעודת זהות חייבת להכיל 9 ספרות";
             // }
             // else if (!EmailValidator.validate(values.email)) {
             //     errors.email = "Invalid email address.";
@@ -267,7 +269,7 @@ useEffect(() => {
                           label="Password"
                         />
                       </FormControl>
-                      <FormControl sx={{ m: 1 }}>
+                      <FormControl sx={{ m: 1, width: "20ch" }}>
                         <InputLabel htmlFor="outlined-adornment-amount">כתובת</InputLabel>
                         <OutlinedInput
                           id="outlined-adornment-amount"
@@ -281,7 +283,21 @@ useEffect(() => {
                           label="כתובת"
                         />
 
-                      </FormControl>
+
+                      </FormControl> <TextField
+                        id="tz"
+                        name="workerNum"
+                        type="text"
+                        label="מספר עובד"
+                        value={values.workerNum}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        sx={{ m: 1, width: '20ch' }}
+                        error={(errors.workerNum && touched.workerNum)}
+                        helperText={touched.workerNum && errors.workerNum ? errors.workerNum : " "}
+
+                        className={errors.workerNum && touched.workerNum && "error"}
+                      />
                       <FormControl sx={{ m: 1 }}>    <TextField
                         id="outlined-select-currency"
                         select
@@ -305,7 +321,7 @@ useEffect(() => {
 
                     </Box>
 
-                   {/*  <DisplayFormikState {...props} />*/}
+                    {/*  <DisplayFormikState {...props} />*/}
 
                   </DialogContent>
                   <DialogActions>

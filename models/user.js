@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     phone: String,
     email: String,
     password: String,
-    role: Number
+    role: Number,
+    workerNum:Number
 
 
 });

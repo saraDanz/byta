@@ -189,6 +189,7 @@ const ExportToExcelManager = () => {
                         sx={{ m: 1, width: "25ch" }}
                         getOptionLabel={(item) => item.name + " " + item.description}
                         value={course}
+                        
                         onChange={(event, newValue) => {
                             console.log(newValue)
                             setCourse(newValue);
