@@ -69,7 +69,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                 toTime: 0,
                 numHours: 1, type: "", comment: ""
             }}
-            validationSchema={reportSchema}
+        
 
             onSubmit={(values, { setSubmitting }) => {
                 console.log(values)
