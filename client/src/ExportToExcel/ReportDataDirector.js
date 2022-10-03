@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
-import "./ReportDataManager.css";
+
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear, countTravelingDays } from "../Utils";
 import { useSelector, useDispatch } from "react-redux";
@@ -64,16 +64,13 @@ let CustomFooter = (props) => {
         </GridFooterContainer>
     );
 }
-const ReportDataManager = () => {
-    const reduxDirectors = useSelector(st => st.index.directors);
+const ReportDataDirector = () => {
     const reduxTeachers = useSelector(st => st.index.teachers);
     const reduxCourses = useSelector(st => st.index.courses);
     const [courses, setCourses] = useState(reduxCourses);
     const [teachers, setTeachers] = useState(reduxTeachers);
-    const [directors, setDirectors] = useState(reduxDirectors);
-    const [director, setDirector] = useState(null);
+
     const [teacherLoading, setTeacherLoading] = useState(false);
-    const [directorsLoading, setDirectorsLoading] = useState(false);
     const [reportsLoading, setReportsLoading] = useState(false);
     const [courseLoading, setCourseLoading] = useState(false);
     const [originalReports, setOriginalReports] = useState([]);
@@ -81,35 +78,14 @@ const ReportDataManager = () => {
     const [travelingDays, setTravelingDays] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
 
-    // useEffect(() => {
-    //     // let list = originalReports.map((item, index) => {
-    //     //     let { courseId, teacherId, fromTime, toTime, date, reportDate, ...x } = item;
-    //     //     fromTime = new Date(fromTime);
-    //     //     toTime = new Date(toTime);
-    //     //     date = new Date(date)
-    //     //     return {
-    //     //         ...x, teacherFirstName: teacherId.firstName,
-    //     //         teacherlastName: teacherId.lastName,
-    //     //         courseName: courseId.name,
-    //     //         directorFirstName: courseId.directorId.firstName,
-    //     //         directorLastName: courseId.directorId.lastName,
-    //     //         fromTime: fromTime && (fromTime.getHours() + ":" + fromTime.getMinutes()) || "00:00",
-    //     //         toTime: toTime && (toTime.getHours() + ":" + toTime.getMinutes()) || "00:00",
-    //     //         date: date.toLocaleDateString()
-    //     //     }
-    //     // })
-
-    //     setReports(originalReports);
-
-    // }, [originalReports]);
     useEffect(() => {
-       
-                document.body.style.overflow = "hidden";
-       
-                return () => {
-                  document.body.style.overflow = "visible";
-                }
-              }, [])
+
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = "visible";
+        }
+    }, [])
     useEffect(() => {
         setTravelingDays(countTravelingDays(reports))
     }, [reports])
@@ -140,9 +116,9 @@ const ReportDataManager = () => {
     ];
 
     useEffect(() => {
-        if (!reduxTeachers || !reduxTeachers.length) {
+        if ((!reduxTeachers || !reduxTeachers.length)&&currentUser) {
             setTeacherLoading(true)
-            axios.get(BASE_URL + "users/teachers").
+            axios.get(BASE_URL + "users/byDirectorId/"+currentUser._id).
                 then(res => {
                     console.log(res.data);
                     let t = res.data;
@@ -157,35 +133,15 @@ const ReportDataManager = () => {
         }
 
     }, [reduxTeachers]);
-    useEffect(() => {
-        if (!reduxDirectors || !reduxDirectors.length) {
-            setDirectorsLoading(true)
-            axios.get(BASE_URL + "users/directors").
-                then(res => {
-                    console.log(res.data);
-                    let t = res.data;
-                    setDirectors(res.data)
 
-
-                }).
-                catch(err => {
-                    console.log(err);
-                    alert("תקלה בהצגת הרכזות")
-                }).finally(() => { setDirectorsLoading(false) })
-
-        }
-
-    }, [reduxDirectors]);
 
     useEffect(() => {
-        if (!reduxCourses || !reduxCourses.length) {
+        if ((!reduxCourses || !reduxCourses.length) && currentUser) {
             setCourseLoading(true);
-            axios.get(BASE_URL + "courses").
+            axios.get(BASE_URL + "courses/byDirectorId/" + currentUser._id).
                 then(res => {
                     console.log(res.data);
-                    let t = res.data;
                     setCourses(res.data)
-
                 }).
                 catch(err => {
                     console.log(err);
@@ -222,9 +178,9 @@ const ReportDataManager = () => {
 
             let courseIdparam = course ?._id;
             let teacherIdparam = teacher ?._id;
-            let directorIdparam = director ?._id;
+
             setReportsLoading(true)
-            axios.get(`${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`).then(res => {
+            axios.get(`${BASE_URL}reports/searchByParameters/${year}/${month}/${currentUser._id}/${courseIdparam}/${teacherIdparam}`).then(res => {
 
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
                 console.log(res);
@@ -285,7 +241,7 @@ const ReportDataManager = () => {
         FileSaver.saveAs(data, fileName + fileExtension);
     }
     let da = new Date().getFullYear();
-    return <div className="excel" sx={{ overflow:"hidden" ,maxHeight:"60vh"}}>
+    return <div className="excel" sx={{ overflow: "hidden", maxHeight: "60vh" }}>
         <form>
             <Paper sx={{ width: "87%", margin: "auto", mt: 7, padding: "20px", }}>
                 <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
@@ -360,27 +316,12 @@ const ReportDataManager = () => {
 
                         renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                     />
-                    <Autocomplete
-                        disablePortal
-
-                        options={directors}
-                        sx={{ m: 1, width: "22ch" }}
-                        getOptionLabel={(item) => item.firstName + " " + item.lastName}
-                        value={director}
-                        onChange={(event, newValue) => {
-                            setDirector(newValue);
-                            console.log(newValue)
-
-                        }}
 
 
-                        renderInput={(params) => directorsLoading ? <CircularProgress /> : <TextField {...params} label="רכזת" />}
-                    />
-                  
-                        <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px",  m: 1, width: '10ch'}} onClick={getData}>
-                              חפש
+                    <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={getData}>
+                        חפש
                     </Button>
-                  
+
                     <Button type="button" variant="outlined" onClick={exportToExcel} sx={{ m: 1, width: "15ch" }} >
                         הורדה לקובץ Excel
                 </Button>
@@ -418,4 +359,4 @@ const ReportDataManager = () => {
         </form>
     </div>;
 }
-export default ReportDataManager;
+export default ReportDataDirector;
