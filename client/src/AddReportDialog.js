@@ -186,7 +186,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         id="numHours"
                                         name="numHours"
                                         type="number"
-                                        disabled="true"
+                                       
                                         value={values.numHours}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
