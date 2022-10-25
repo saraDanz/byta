@@ -1,6 +1,6 @@
 import "./AddReportFormNot.css";
-import React, { useEffect, useState } from "react";
-import { Radio, RadioGroup,CircularProgress, FormControlLabel } from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import { Radio, RadioGroup, CircularProgress, FormControlLabel } from "@mui/material";
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
-import { getDayByNumber } from "./Utils";
+import { getDayByNumber, calculateLessons } from "./Utils";
 import {
     Dialog,
     TextField,
@@ -36,41 +36,53 @@ const reportSchema = Yup.object().shape({
     course: Yup.string()
         .required('שדה חובה'),
     fromTime: Yup.string()
-        .min(3, 'שם קצר מדי')
         .required('שדה חובה'),
 
     toTime: Yup.string()
         .required("שדה חובה")
-        .min(8, 'מספר זהות חייב להכיל 9 ספרות')
-        .max(9, 'תז חייבת להכיל 9 ספרות')
-        .matches(/^\d+$/, "מספר זהות מכיל רק ספרות"),
+    ,
 
-    numHours: Yup.number().min(0.1, 'שיעור קצר מדי'),
+    numHours: Yup.number(),
     type: Yup.string().required("שדה חובה"),
     comment: Yup.string(),
 
 
 });
 export default function AddReportDialog({ onClose, addReport, selectInfo }) {
-
+    // const formikRef = useRef();
+    // let [numHours, setNumHours] = useState(1);
     let courses = useSelector(st => st.index.courses);
+    useEffect(() => {
+
+    }, []);
+    const updateNumHours = (fromTime, toTime) => {
+        if (fromTime && toTime) {
+
+            // setNumHours(calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
+            return (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
+
+        }
+        return 0;
+    }
     useEffect(() => {
         setIsLoading(false);
     }, [courses])
-    useEffect(()=>{},)
+    useEffect(() => { })
     const [isLoading, setIsLoading] = useState(true);
     return <div className="add-report-form-not">
 
 
         <Formik
+
+            // innerRef={formikRef}
             initialValues={{
                 course: 0,
-                fromTime: 0,
-                toTime: 0,
-                numHours: 1, type: "", comment: ""
+                fromTime: undefined,
+                toTime: undefined,
+                numHours: 0, type: "distance", comment: ""
             }}
-        
 
+            validationSchema={reportSchema}
             onSubmit={(values, { setSubmitting }) => {
                 console.log(values)
                 if (values.type == "")
@@ -112,34 +124,36 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                 } = props;
 
                 return (
-                    <form id="myForm" onSubmit={handleSubmit}>
+                    <form id="myForm" onSubmit={handleSubmit} >
                         <Dialog dir="rtl" scroll="body" open={true} onClose={onClose} >
                             <DialogTitle >
                                 <Typography variant="h6" align="center">פרטי דווח חדש</Typography>
                             </DialogTitle>
                             <DialogContent >
-                                <DialogContentText sx={{ textAlign: "center" }}>
+                                <DialogContentText sx={{ textAlign: "center", m: 1 }}>
                                     <Typography variant="color.secondary" align="center">יום {getDayByNumber(selectInfo.start.getDay()) + "'"} תאריך {selectInfo.start.toLocaleDateString()}</Typography>
                                 </DialogContentText>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
 
                                     {isLoading ? <CircularProgress /> :
                                         <FormControl sx={{ m: 1, width: '25ch' }}>
-                                        <InputLabel id="demo-simple-select-autowidth-label">תפקיד</InputLabel>
-    
-                                        <Select
-                                            labelId="demo-simple-select-autowidth-label"
-                                            id="demo-simple-select-autowidth"
-                                            value={values.course}
-                                            onChange={handleChange}
-                                            autoWidth
-                                            label="קורס"
-                                            name="course"
-                                           
-                                        >
-                                            {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
+                                            <InputLabel id="demo-simple-select-autowidth-label">שם קורס</InputLabel>
 
-                                        </Select> </FormControl>}
+                                            <Select
+                                                labelId="demo-simple-select-autowidth-label"
+                                                id="demo-simple-select-autowidth"
+                                                value={values.course}
+                                                onChange={handleChange}
+                                                autoWidth
+                                                label="קורס"
+                                                name="course"
+                                                error={(errors.course && touched.course)}
+                                                helperText={touched.course && errors.course ? errors.course : " "}
+            
+                                            >
+                                                {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
+
+                                            </Select> </FormControl>}
                                     <TextField
                                         id="comment"
                                         name="comment"
@@ -159,10 +173,13 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         type="time"
                                         placeholder="הקש שעת התחלה"
                                         value={values.fromTime}
-                                        onChange={handleChange}
+                                        onChange={(e) => {
+                                            setFieldValue("fromTime", e.target.value)
+                                            setFieldValue("numHours", updateNumHours(e.target.value, values.toTime));
+                                        }}
                                         onBlur={handleBlur}
                                         className={errors.fromTime && touched.fromTime && "error"}
-                                        sx={{ m: 1, width: '15ch' }}
+                                        sx={{ m: 1, width: '19ch' }}
                                         error={(errors.fromTime && touched.fromTime)}
                                         helperText={touched.fromTime && errors.fromTime ? errors.fromTime : " "}
 
@@ -174,21 +191,24 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         type="time"
                                         placeholder="הקש שעת סיום"
                                         value={values.toTime}
-                                        onChange={handleChange}
+                                        onChange={(e) => {
+                                            setFieldValue("toTime", e.target.value)
+                                            setFieldValue("numHours", updateNumHours(values.fromTime, e.target.value));
+                                        }}
                                         onBlur={handleBlur}
                                         error={(errors.toTime && touched.toTime)}
                                         helperText={touched.toTime && errors.toTime ? errors.toTime : " "}
 
-                                        sx={{ m: 1, width: '15ch' }}
-                                        className={errors.toTime && touched.toTime && "error"} sx={{ m: 1, width: '25ch' }}
+                                        sx={{ m: 1, width: '19ch' }}
+                                        className={errors.toTime && touched.toTime && "error"}
                                     />
                                     <TextField
                                         id="numHours"
                                         name="numHours"
-                                        type="number"
-                                     
+
+
                                         value={values.numHours}
-                                        onChange={handleChange}
+
                                         onBlur={handleBlur}
                                         className={errors.numHours && touched.numHours && "error"}
                                         label="מספר שעורים"
@@ -202,11 +222,13 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         name="controlled-radio-buttons-group"
                                         value={values.type}
                                         row
-                                        sx={{ m: 1, width: '25ch' }}
+                                        sx={{ m: 1, width: '40ch' }}
                                         onChange={(e) => { setFieldValue("type", e.target.value) }}
                                     >
                                         <FormControlLabel value="frontal" control={<Radio />} label="פרונטלי" />
                                         <FormControlLabel value="distance" control={<Radio />} label="למידה מרחוק" />
+                                        <FormControlLabel value="absence" control={<Radio />} label="היעדרות" />
+
                                     </RadioGroup>
 
 

@@ -243,7 +243,7 @@ const ReportDataManager = () => {
                         toTime: toTime && (toTime.getHours() + ":" + toTime.getMinutes()) || "00:00",
                         date: date.toLocaleDateString(),
                         reportDate: new Date(reportDate).toLocaleDateString(),
-                        type: type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : null
+                        type: type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" :type=="absence"?"היעדרות": null
 
                     }
                 });
@@ -266,7 +266,7 @@ const ReportDataManager = () => {
                 }
             })
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
-            exportToCSV(rep, `report-${year}-${month}`, [['קורס', 'מורה', 'תאריך', "משעה", "עד שעה", "מספר שעות", "רכזת", "הערות"]])
+            exportToCSV(rep, `report-${year}-${month}`, [['קורס', 'מורה', 'תאריך', "משעה", "עד שעה", "מספר שעות", "סוג","רכזת","תאריך דוח", "הערות"]])
         }
     }
 
