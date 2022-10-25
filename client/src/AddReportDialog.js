@@ -36,23 +36,20 @@ const reportSchema = Yup.object().shape({
     course: Yup.string()
         .required('שדה חובה'),
     fromTime: Yup.string()
-        .min(3, 'שם קצר מדי')
         .required('שדה חובה'),
 
     toTime: Yup.string()
         .required("שדה חובה")
-        .min(8, 'מספר זהות חייב להכיל 9 ספרות')
-        .max(9, 'תז חייבת להכיל 9 ספרות')
-        .matches(/^\d+$/, "מספר זהות מכיל רק ספרות"),
+    ,
 
-    numHours: Yup.number().min(0.1, 'שיעור קצר מדי'),
+    numHours: Yup.number(),
     type: Yup.string().required("שדה חובה"),
     comment: Yup.string(),
 
 
 });
 export default function AddReportDialog({ onClose, addReport, selectInfo }) {
-    const formikRef = useRef();
+    // const formikRef = useRef();
     // let [numHours, setNumHours] = useState(1);
     let courses = useSelector(st => st.index.courses);
     useEffect(() => {
@@ -77,15 +74,15 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
 
         <Formik
 
-            innerRef={formikRef}
+            // innerRef={formikRef}
             initialValues={{
                 course: 0,
-                fromTime: 0,
-                toTime: 0,
+                fromTime: undefined,
+                toTime: undefined,
                 numHours: 0, type: "distance", comment: ""
             }}
 
-
+            validationSchema={reportSchema}
             onSubmit={(values, { setSubmitting }) => {
                 console.log(values)
                 if (values.type == "")
@@ -140,7 +137,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
 
                                     {isLoading ? <CircularProgress /> :
                                         <FormControl sx={{ m: 1, width: '25ch' }}>
-                                            <InputLabel id="demo-simple-select-autowidth-label">תפקיד</InputLabel>
+                                            <InputLabel id="demo-simple-select-autowidth-label">שם קורס</InputLabel>
 
                                             <Select
                                                 labelId="demo-simple-select-autowidth-label"
@@ -150,7 +147,9 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                                 autoWidth
                                                 label="קורס"
                                                 name="course"
-
+                                                error={(errors.course && touched.course)}
+                                                helperText={touched.course && errors.course ? errors.course : " "}
+            
                                             >
                                                 {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
 
@@ -209,7 +208,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
 
 
                                         value={values.numHours}
-                                    
+
                                         onBlur={handleBlur}
                                         className={errors.numHours && touched.numHours && "error"}
                                         label="מספר שעורים"
