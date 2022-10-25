@@ -46,12 +46,12 @@ export const shortStr = (str, len = 8) => {
 export const getDayByNumber = (num) => {
   return String.fromCharCode(1488 + num);
 }
-export const calculateLessons=(fromTime, toTime)=>{
+export const calculateLessons = (fromTime, toTime) => {
   console.log(fromTime)
-  let fullHours = toTime.getHour() - fromTime.getHour() + 1
-  let minutes = 60 - fromTime.getMinutes() + fullHours * 60 + toTime.getMinutes();
-  let breakes = Math.floor(minutes / 150);
-  return (minutes - breakes * 15) / 45;
+  let fullHours = toTime.getHours() - fromTime.getHours();
+  let minutes = fullHours * 60 + toTime.getMinutes() - fromTime.getMinutes();
+  let breakes = Math.floor(minutes / 135);
+  return ((minutes - breakes * 15) / 45).toFixed(2);
 }
 export const countTravelingDays = (reportsArr) => {
   //Nחשב את מספר הימים הפרונטליים אבל לא בודק מה קורה כאשר ישנם מספר שיעורים באותו יום
