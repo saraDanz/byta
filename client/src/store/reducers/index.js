@@ -9,7 +9,9 @@ export const reducer = (state = initialState, action) => {
         case ActionTypes.SAVE_USER:
             return {
                 ...state,
-                currentUser: action.payload
+                currentUser: action.payload,
+                courses: []
+
             }
 
         case ActionTypes.LOG_OUT:

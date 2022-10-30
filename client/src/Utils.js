@@ -55,5 +55,34 @@ export const calculateLessons = (fromTime, toTime) => {
 }
 export const countTravelingDays = (reportsArr) => {
   //Nחשב את מספר הימים הפרונטליים אבל לא בודק מה קורה כאשר ישנם מספר שיעורים באותו יום
-  return reportsArr.filter(item => item.type == "פרונטלי").length;
+  let frontalDays = reportsArr.filter(item => item.type == "פרונטלי");
+  let days = groupBy(frontalDays, "date",'teacherName');
+  console.log(days)
+  return Object.keys(days).length;
+
+}
+// export function groupBy(arr, property) {
+//   return arr.reduce(function (memo, x) {
+//     if (!memo[x[property]]) { memo[x[property]] = []; }
+//     memo[x[property]].push(x);
+//     return memo;
+//   }, {});
+// }
+export function groupBy(arr, property1, property2) {
+ 
+  var helper = {};
+  var result = arr.reduce(function (r, o) {
+    var key = o[property1] + '-' + o[property2];
+
+    if (!helper[key]) {
+      helper[key] = Object.assign({}, o); // create a copy of o
+      r.push(helper[key]);
+    } else {
+      helper[key].used += o.used;
+      helper[key].instances += o.instances;
+    }
+
+    return r;
+  }, []);
+  return result;
 }

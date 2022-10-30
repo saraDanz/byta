@@ -79,7 +79,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                 course: 0,
                 fromTime: undefined,
                 toTime: undefined,
-                numHours: 0, type: "distance", comment: ""
+                numHours: 0, type: "frontal", comment: ""
             }}
 
             validationSchema={reportSchema}
