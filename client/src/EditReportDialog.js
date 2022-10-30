@@ -2,10 +2,14 @@ import "./AddReportFormNot.css";
 import React, { useEffect, useState, useRef } from "react";
 import { Radio, RadioGroup, FormControlLabel } from "@mui/material";
 import { Formik } from "formik";
+import { calculateLessons } from "./Utils";
+
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
 import axios from "axios";
-import{getDayByNumber} from "./Utils";
+import { getDayByNumber } from "./Utils";
+
+import * as Yup from "yup";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
@@ -28,9 +32,37 @@ import {
 
 
 import { convertToTime, dateStringToTimeString } from "./Utils";
+
+
+const reportSchema = Yup.object().shape({
+
+    course: Yup.string()
+        .required('שדה חובה'),
+    fromTime: Yup.string()
+        .required('שדה חובה'),
+
+    toTime: Yup.string()
+        .required("שדה חובה")
+    ,
+
+    numHours: Yup.number(),
+    type: Yup.string().required("שדה חובה"),
+    comment: Yup.string(),
+});
+
 export default function EditReportDialog({ onClose, event, handleEditSave }) {
     // let dispatch = useDispatch();
     // let courses; 
+
+    const updateNumHours = (fromTime, toTime) => {
+        if (fromTime && toTime) {
+
+            // setNumHours(calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
+            return (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
+
+        }
+        return 0;
+    }
     const [changed, setChanged] = useState(false);
     const formikRef = useRef();
     let courses = useSelector(st => st.index.courses);
@@ -55,7 +87,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
 
 
         <Formik
-
+            validationSchema={reportSchema}
             innerRef={formikRef}
             initialValues={
                 /*event.event.extendedProps._id ? {
@@ -68,7 +100,8 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                     fromTime: dateStringToTimeString(event.event.extendedProps.fromTime),
                     toTime: dateStringToTimeString(event.event.extendedProps.toTime),
                     numHours: event.event.extendedProps.numHours,
-                    type: event.event.extendedProps.type, comment: event.event.extendedProps.comment
+                    type: event.event.extendedProps.type,
+                    comment: event.event.extendedProps.comment
 
                 }}
             onSubmit={(values, { setSubmitting }) => {
@@ -136,8 +169,8 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                         <Dialog dir="rtl" scroll="body" open={true} onClose={onClose} >
                             <DialogTitle  > <Typography variant="h6" align="center">עדכון פרטי דווח</Typography></DialogTitle>
                             <DialogContent >
-                                <DialogContentText  sx={{textAlign:"center"}}>
-                                <Typography variant="color.secondary" align="center">יום {getDayByNumber(event.event.start.getDay())+"'"} תאריך {event.event.start.toLocaleDateString()}</Typography>
+                                <DialogContentText sx={{ textAlign: "center" }}>
+                                    <Typography variant="color.secondary" align="center">יום {getDayByNumber(event.event.start.getDay()) + "'"} תאריך {event.event.start.toLocaleDateString()}</Typography>
 
                                 </DialogContentText>
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -156,7 +189,84 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
 
                                     </Select>
+
                                     <TextField
+                                        id="comment"
+                                        name="comment"
+                                        type="text"
+                                        label="הערה"
+                                        value={values.comment}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        sx={{ m: 1, width: '25ch' }}
+                                    />
+
+
+                                    <TextField
+                                        label="משעה"
+                                        id="fromTime"
+                                        name="fromTime"
+                                        type="time"
+                                        placeholder="הקש שעת התחלה"
+                                        value={values.fromTime}
+                                        onChange={(e) => {
+                                            setFieldValue("fromTime", e.target.value)
+                                            setFieldValue("numHours", updateNumHours(e.target.value, values.toTime));
+                                        }}
+                                        onBlur={handleBlur}
+                                        className={errors.fromTime && touched.fromTime && "error"}
+                                        sx={{ m: 1, width: '19ch' }}
+                                        error={(errors.fromTime && touched.fromTime)}
+                                        helperText={touched.fromTime && errors.fromTime ? errors.fromTime : " "}
+
+                                    />
+                                    <TextField
+                                        label="עד שעה"
+                                        id="toTime"
+                                        name="toTime"
+                                        type="time"
+                                        placeholder="הקש שעת סיום"
+                                        value={values.toTime}
+                                        onChange={(e) => {
+                                            setFieldValue("toTime", e.target.value)
+                                            setFieldValue("numHours", updateNumHours(values.fromTime, e.target.value));
+                                        }}
+                                        onBlur={handleBlur}
+                                        error={(errors.toTime && touched.toTime)}
+                                        helperText={touched.toTime && errors.toTime ? errors.toTime : " "}
+
+                                        sx={{ m: 1, width: '19ch' }}
+                                        className={errors.toTime && touched.toTime && "error"}
+                                    />
+                                    <TextField
+                                        id="numHours"
+                                        name="numHours"
+
+
+                                        value={values.numHours}
+
+                                        onBlur={handleBlur}
+                                        className={errors.numHours && touched.numHours && "error"}
+                                        label="מספר שעורים"
+
+                                        sx={{ m: 1, width: '10ch' }}
+                                    />
+
+                                    <RadioGroup
+
+                                        aria-labelledby="demo-controlled-radio-buttons-group"
+                                        name="controlled-radio-buttons-group"
+                                        value={values.type}
+                                        row
+                                        sx={{ m: 1, width: '40ch' }}
+                                        onChange={(e) => { setFieldValue("type", e.target.value) }}
+                                    >
+                                        <FormControlLabel value="frontal" control={<Radio />} label="פרונטלי" />
+                                        <FormControlLabel value="distance" control={<Radio />} label="למידה מרחוק" />
+                                        <FormControlLabel value="absence" control={<Radio />} label="היעדרות" />
+
+                                    </RadioGroup>
+                                    {/*<TextField
                                         id="numHours"
                                         label="מספר שיעורים"
                                         name="numHours"
@@ -218,7 +328,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         sx={{ m: 1, width: '25ch' }}
-                                    />
+                                    />/* }
 
                                     {/*} <FormControl sx={{ m: 1 }}>
                                     <TextField
@@ -262,7 +372,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
 
                             </DialogContent>
                             <DialogActions>
-                                <Button  onClick={onClose} >בטל</Button>
+                                <Button onClick={onClose} >בטל</Button>
                                 <Button type="submit" form="myForm" color="secondary">שמור</Button>
                             </DialogActions>
                         </Dialog>

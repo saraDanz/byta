@@ -38,12 +38,12 @@ export const EventTooltipContent = (props) => {
 
     //     <i className="hours" dir="rtl"> {eventInfo.event.extendedProps.numHours + "שע'"} </i>
     console.log(props);
-    return <Card sx={{minWidth:"200px"}} >
+    return <Card sx={{ minWidth: "200px" }} >
 
         <CardContent>
-            <div style={{display:"flex",justifyContent:"space-between",flexDirection:"row-reverse"}}>
+            <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "row-reverse" }}>
 
-                <Typography component="div" sx={{ textAlign: "right" ,fontWeight:400}} variant="h6">
+                <Typography component="div" sx={{ textAlign: "right", fontWeight: 400 }} variant="h6">
                     {props.event.event.extendedProps.courseId.name}
                 </Typography>
                 <div>
@@ -69,7 +69,7 @@ export const EventTooltipContent = (props) => {
                 {props.event.event.extendedProps.numHours}   שעורים
 
                 {props.event.event.extendedProps.type &&
-                    <>   {bull}  {props.event.event.extendedProps.type == lessonTypes.DISTANCE ? "למידה מרחוק" : "פרונטלי"}
+                    <>   {bull}  {props.event.event.extendedProps.type == lessonTypes.DISTANCE ? "למידה מרחוק" : props.event.event.extendedProps.type == lessonTypes.ABSENCE ? "היעדרות" : "פרונטלי"}
                     </>} </Typography>
             {props.event.event.extendedProps.comment && <Typography variant="subtitle2" sx={{ textAlign: "right" }} color="text.secondary" component="div">
                 {props.event.event.extendedProps.comment}

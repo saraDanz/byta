@@ -1,13 +1,13 @@
 import "./Login.css";
 import React, { useState } from "react";
 import { setStorage, removeStorage } from "./storageUtils";
-import { Formik, ErrorMessage } from "formik";
+import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { saveUser } from "./store/actions"
+import { saveUser ,saveCoursesOfCurrentUser} from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -50,6 +50,7 @@ export default function Login() {
                     console.log(res)
                     console.log("Logging in", values);
                     dispatch(saveUser(res.data))
+                 
                     setSubmitting(false);
                     setStorage(res.data)
 
