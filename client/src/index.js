@@ -9,6 +9,7 @@ import { createStore } from 'redux';
 import { reducer } from './store/reducers';
 import { composeWithDevTools } from "redux-devtools-extension";
 import { settingReducer } from './store/reducers/setting';
+import { configReducer } from './store/reducers/config';
 // import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 // import Spinner from './components/Spinner';
 // import SeasonDisplay from './components/seasonDisplay';
@@ -40,7 +41,7 @@ import { settingReducer } from './store/reducers/setting';
 //     }
 
 // }
-let store = createStore(combineReducers({ index: reducer, setting: settingReducer }), composeWithDevTools());
+let store = createStore(combineReducers({ index: reducer, setting: settingReducer ,config:configReducer}), composeWithDevTools());
 // const THEME = createMuiTheme({
 //     typography: {
 //      "fontFamily": `"Rubik", "Helvetica", "Arial", sans-serif`,

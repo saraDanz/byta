@@ -56,8 +56,8 @@ const getAllReportsByYearAndMonth = async (req, res) => {
 }
 const searchByParameters = async (req, res) => {
     //לא בדקתי לפי מורה וקורס יחד
-    //לא בדקתי לפי רכזת
-    let { year, month, directorId, courseId, teacherId } = req.params;
+
+    let { year, month, directorId, courseId, teacherId, searchFrom, searchTo } = req.params;
 
     // let first = new Date(year, month -1,0,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
@@ -77,14 +77,21 @@ const searchByParameters = async (req, res) => {
     // }
 
     // let prev = getDateXDaysAgo(1, new Date(year, month-1, 0));
-    let prev = new Date(year, month - 1, 0);
-    let next = new Date(year, month, 0);
-    // let next = getDateXDaysAgo(1, new Date(year, month , 0));
+    let prev, next;
+    if (searchFrom && searchTo) {
+        prev = getDateXDaysAgo(1, new Date(searchFrom));
+        next = new Date(searchTo);
+    }
+    else {
+        prev = new Date(year, month - 1, 0);
+        next = new Date(year, month, 0);
+    }
+
     console.log(prev)
     console.log(next)
 
     try {
-        //לא בדקתי על פי רכזת
+
         let reports;
         //     if (teacherId && courseId)
         //         reports = await Report.find({ date: { $gt: prev, $lt: next }, teacherId, courseId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
@@ -95,7 +102,7 @@ const searchByParameters = async (req, res) => {
         let ob = { courseId, teacherId, };
         ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
         reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
-        if (directorId!= 'null' && directorId != 'undefined' &&directorId )
+        if (directorId != 'null' && directorId != 'undefined' && directorId)
             reports = reports.filter(item => {
                 return !item.courseId || !item.courseId.directorId || item.courseId.directorId._id == directorId;
 

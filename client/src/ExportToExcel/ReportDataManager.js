@@ -7,10 +7,20 @@ import "./ReportDataManager.css";
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear, countTravelingDays } from "../Utils";
 import { useSelector, useDispatch } from "react-redux";
-import { DataGrid, GridFooterContainer, GridFooter, GridRowsProp, GridColDef, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarColumnsButton, GridToolbarExport } from '@mui/x-data-grid';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import SearchTypes from "./SearchTypes";
+import {
+    DataGrid, GridFooterContainer, GridFooter,
+    GridRowsProp, GridColDef, GridToolbarContainer,
+    GridToolbarDensitySelector, GridToolbarColumnsButton,
+    GridToolbarExport
+} from '@mui/x-data-grid';
 // import { useDemoData } from '@mui/x-data-grid-generator';
 import LinearProgress from '@mui/material/LinearProgress';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
+    Stack,
     Autocomplete
     , Tooltip, Paper, TablePagination,
     TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box
@@ -19,8 +29,16 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment } from "@mui/material";
 import { CustomPagination } from "./CustomPagination";
-// import {FiberManualRecordIcon}from "@mui/icons-material";
 
+// import {FiberManualRecordIcon}from "@mui/icons-material";
+const dayInMonthComparator = (v1, v2) => {
+    debugger;
+    v1 = v1.split(".");
+    v1 = v1[1] + "." + v1[0] + "." + v1[2];
+    v2 = v2.split(".");
+    v2 = v2[1] + "." + v2[0] + "." + v2[2]
+    return new Date(v2) - new Date(v1);
+}
 export function CustomFooterStatusComponent(props) {
     return (
         <Box sx={{ p: 1, display: 'flex' }}>
@@ -103,20 +121,20 @@ const ReportDataManager = () => {
 
     // }, [originalReports]);
     useEffect(() => {
-       
-                document.body.style.overflow = "hidden";
-       
-                return () => {
-                  document.body.style.overflow = "visible";
-                }
-              }, [])
+
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = "visible";
+        }
+    }, [])
     useEffect(() => {
         setTravelingDays(countTravelingDays(reports))
     }, [reports])
 
     useEffect(() => {
         let tempFilteredArrReports = originalReports.filter(item => {
-            if (item.courseName.indexOf(searchTerm) > -1 || item.teacherName.indexOf(searchTerm) > -1 || item.fromTime && item.fromTime.indexOf(searchTerm) > -1 || item.toTime && item.toTime.indexOf(searchTerm) > -1 || item.date.indexOf(searchTerm) > -1 || item.comments && item.comment.indexOf(searchTerm) > -1 || item.reportDate && item.reportDate.indexOf(searchTerm) > -1)
+            if (item.courseName.indexOf(searchTerm) > -1 || item.teacherName.indexOf(searchTerm) > -1 || item.fromTime && item.fromTime.indexOf(searchTerm) > -1 || item.toTime && item.toTime.indexOf(searchTerm) > -1 || item.date && item.date.toLocaleDateString().indexOf(searchTerm) > -1 || item.comments && item.comment.indexOf(searchTerm) > -1 || item.reportDate && item.reportDate.toLocaleDateString().indexOf(searchTerm) > -1)
                 return true;
             return false;
         });
@@ -127,14 +145,23 @@ const ReportDataManager = () => {
     let columns = [
         { field: "courseName", headerName: "קורס", flex: 4 },
         { field: "teacherName", headerName: "מורה", flex: 4 },
-        { field: "date", headerName: "תאריך", flex: 2 },
+        {
+            field: "date", headerName: "תאריך", flex: 2,
+            sortComparator: dayInMonthComparator,
+            type: "date",
+            valueGetter: param => { return param.value ? param.value.toLocaleDateString() : null }
+            //    ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}
+        },
+
         { field: "fromTime", headerName: "משעה", flex: 2 },
         { field: "toTime", headerName: "עד שעה", flex: 2 },
         { field: "numHours", headerName: "מספר שעות", flex: 2 },
         { field: "type", headerName: "סוג שיעור", flex: 3 },
         //    {field:"subject",headerName:"נושא"},
         { field: "directorName", headerName: "רכזת", flex: 3 },
-        { field: "reportDate", headerName: "תאריך דווח", flex: 2 },
+        // { field: "reportDate", headerName: "תאריך דווח", flex: 2
+        // ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}},
+
         { field: "comment", headerName: "הערות", flex: 3 }
 
     ];
@@ -200,6 +227,8 @@ const ReportDataManager = () => {
 
 
     let [month, setMonth] = useState(getCurrentViewMonthAndYear().month);
+    const [searchFrom, setSearchFrom] = useState(null);
+    const [searchTo, setSearchTo] = useState(null);
     let [teacher, setTeacher] = useState(null);
     let [course, setCourse] = useState(null);
     let currentUser = useSelector(st => st.index.currentUser);
@@ -215,7 +244,7 @@ const ReportDataManager = () => {
         }
     })
 
-    const getData = () => {
+    const getData = (type) => {
 
 
         if (currentUser) {
@@ -223,8 +252,10 @@ const ReportDataManager = () => {
             let courseIdparam = course ?._id;
             let teacherIdparam = teacher ?._id;
             let directorIdparam = director ?._id;
-            setReportsLoading(true)
-            axios.get(`${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`).then(res => {
+            setReportsLoading(true);
+            let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}/${searchFrom ?.$d}/${searchTo ?.$d}`;
+
+            axios.get(url).then(res => {
 
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
                 console.log(res);
@@ -241,9 +272,9 @@ const ReportDataManager = () => {
                         directorName: courseId.directorId.firstName + " " + courseId.directorId.lastName,
                         fromTime: fromTime && (fromTime.getHours() + ":" + fromTime.getMinutes()) || "00:00",
                         toTime: toTime && (toTime.getHours() + ":" + toTime.getMinutes()) || "00:00",
-                        date: date.toLocaleDateString(),
-                        reportDate: new Date(reportDate).toLocaleDateString(),
-                        type: type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" :type=="absence"?"היעדרות": null
+                        date: date,
+                        reportDate: new Date(reportDate),
+                        type: type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null
 
                     }
                 });
@@ -266,7 +297,7 @@ const ReportDataManager = () => {
                 }
             })
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
-            exportToCSV(rep, `report-${year}-${month}`, [['קורס', 'מורה', 'תאריך', "משעה", "עד שעה", "מספר שעות", "סוג","רכזת","תאריך דוח", "הערות"]])
+            exportToCSV(rep, `report-${year}-${month}`, [['קורס', 'מורה', 'תאריך', "משעה", "עד שעה", "מספר שעות", "סוג", "רכזת", "תאריך דוח", "הערות"]])
         }
     }
 
@@ -285,7 +316,7 @@ const ReportDataManager = () => {
         FileSaver.saveAs(data, fileName + fileExtension);
     }
     let da = new Date().getFullYear();
-    return <div className="excel" sx={{ overflow:"hidden" ,maxHeight:"60vh"}}>
+    return <div className="excel" sx={{ overflow: "hidden", maxHeight: "60vh" }}>
         <form>
             <Paper sx={{ width: "87%", margin: "auto", mt: 7, padding: "20px", }}>
                 <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
@@ -333,7 +364,7 @@ const ReportDataManager = () => {
                     <Autocomplete
                         disablePortal
 
-                        options={teachers}
+                        options={teachers || []}
                         sx={{ m: 1, width: "22ch" }}
                         getOptionLabel={(item) => item.firstName + " " + item.lastName}
                         value={teacher}
@@ -348,7 +379,7 @@ const ReportDataManager = () => {
                     />
                     <Autocomplete
                         disablePortal
-                        options={courses}
+                        options={courses || []}
                         sx={{ m: 1, width: "22ch" }}
                         getOptionLabel={(item) => item.name + " " + item.description}
                         value={course}
@@ -363,7 +394,7 @@ const ReportDataManager = () => {
                     <Autocomplete
                         disablePortal
 
-                        options={directors}
+                        options={directors || []}
                         sx={{ m: 1, width: "22ch" }}
                         getOptionLabel={(item) => item.firstName + " " + item.lastName}
                         value={director}
@@ -376,18 +407,61 @@ const ReportDataManager = () => {
 
                         renderInput={(params) => directorsLoading ? <CircularProgress /> : <TextField {...params} label="רכזת" />}
                     />
-                  
-                        <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px",  m: 1, width: '10ch'}} onClick={getData}>
-                              חפש
+
+                    <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
+                        חפש
                     </Button>
-                  
+
                     <Button type="button" variant="outlined" onClick={exportToExcel} sx={{ m: 1, width: "15ch" }} >
-                        הורדה לקובץ Excel
-                </Button>
+                    הורדה לקובץ Excel
+        </Button>
+
+                    <Stack direction="row" >
+                        <FormControl sx={{ m: 1, width: "20ch" }}>
+
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                inputFormat="DD/MM/YYYY"
+                                    label="מתאריך"
+                                    maxDate={searchTo}
+                                    value={searchFrom}
+                                    onChange={(newValue) => {
+                                        setSearchFrom(newValue);
+                                    }}
+                                    renderInput={(params) => <TextField {...params} />}
+                                />
+                            </LocalizationProvider>
+                        </FormControl>
+                        <FormControl sx={{ m: 1, width: "20ch" }}>
+
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                inputFormat="DD/MM/YYYY"
+                                    minDate={searchFrom}
+                                    label="עד תאריך"
+                                    disabled={!searchFrom}
+                                    value={searchTo}
+                                    onChange={(newValue) => {
+                                        setSearchTo(newValue);
+                                    }}
+                                    renderInput={(params) => <TextField {...params} />}
+                                />
+                            </LocalizationProvider>
+                        </FormControl>
+                        <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '13ch' }} onClick={() => { getData(SearchTypes.Range) }}>
+                            חפש בין תאריכים
+            </Button>
+                    </Stack>
+                   
                 </Box>
 
 
                 <DataGrid
+                    initialState={{
+                        sorting: {
+                            sortModel: [{ field: 'date', sort: 'desc' }],
+                        },
+                    }}
                     localeText={{
                         toolbarColumns: "עמודות",
                         toolbarFilters: "my filters",
@@ -412,7 +486,8 @@ const ReportDataManager = () => {
                     sx={{ mt: 3.5, height: "450px" }}
                     loading={reportsLoading}
                     getRowId={(row) => row._id} autoPageSize
-                    rows={reports} columns={columns} />
+                    rows={reports}
+                    columns={columns} />
 
             </Paper>
         </form>

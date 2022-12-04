@@ -17,6 +17,10 @@ import EditReportDialog from "./EditReportDialog";
 import AddReportDialog from "./AddReportDialog";
 import { EventTooltipContent } from './EventTooltipContent';
 import "./DisplayCalendar.css";
+
+import SaveIcon from '@mui/icons-material/Save';
+
+
 const AAAcopy = () => {
 
   let dispatch = useDispatch();
@@ -321,15 +325,24 @@ const AAAcopy = () => {
   }
   return (
     <div className='demo-app'>
-      <Button variant="contained" className="btn-sub" onClick={handleSubmit}>שמירה</Button>
+      {/*   <Button variant="outlined" className="btn-sub" endIcon={<SaveIcon />} onClick={handleSubmit}>  שמירה </Button>*/}
 
 
 
       <div className='demo-app-main'>
         <FullCalendar
 
+          customButtons={{
+            myCustomButton: {
+              text: 'שמירה',
+              click: function () {
+                handleSubmit()
+              }
+            }
+          }}
+          titleFormat={{ year: 'numeric', month: 'numeric' }}
           headerToolbar={{
-            start: 'prev next',
+            start: 'prev next myCustomButton',
             center: 'title',
             end: ''
           }}

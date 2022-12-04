@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import Login from "./Login.js";
 import AddTeacher from "./AddTeacher.js";
 import AddCourse from "./AddCourse.js";
+import { saveConfigs } from './store/actions/config';
+
 import AddTeacherToCourse from "./AddTeacherToCourse";
 import { useSelector, useDispatch } from "react-redux";
 import { logOut, saveUser } from "./store/actions/index.js";
@@ -57,8 +59,8 @@ export default function App() {
     }
     useEffect(() => {
         dispatch(saveUser(getStorage()));
-        axios.get(`${BASE_URL}settings/currentStatus`).then(res => {
-            dispatch(saveCurrentStatus(res.data))
+        axios.get(`${BASE_URL}configs/byYear/${new Date().getFullYear()}`).then(res => {
+            dispatch(saveConfigs(new Date().getFullYear(),res.data))
 
         }).
             catch(err => {
