@@ -42,9 +42,11 @@ const reportSchema = Yup.object().shape({
         .required("שדה חובה")
     ,
 
-    numHours: Yup.number(),
+    numHours: Yup.number().when(["fromTime", "toTime"], (fromTime, toTime, Scme) => {
+        if (fromTime && toTime) return Scme.positive("שעת סיום חייבות להיות אחרי שעת התחלה")
+    }),
     type: Yup.string().required("שדה חובה"),
-    comment: Yup.string(),
+    comment: Yup.string()
 
 
 });
@@ -120,8 +122,9 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                     isSubmitting,
                     handleChange,
                     handleBlur,
-                    handleSubmit, setFieldValue
+                    handleSubmit, setFieldValue, setFieldError
                 } = props;
+
 
                 return (
                     <form id="myForm" onSubmit={handleSubmit} >
@@ -149,7 +152,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                                 name="course"
                                                 error={(errors.course && touched.course)}
                                                 helperText={touched.course && errors.course ? errors.course : " "}
-            
+
                                             >
                                                 {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
 
@@ -176,6 +179,9 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         onChange={(e) => {
                                             setFieldValue("fromTime", e.target.value)
                                             setFieldValue("numHours", updateNumHours(e.target.value, values.toTime));
+                                            // if ( values.toTime && e.target.value>values.toTime)
+                                            // setFieldError("toTime", "שעת סיום חייבת להיות אחרי שעת התחלה")
+
                                         }}
                                         onBlur={handleBlur}
                                         className={errors.fromTime && touched.fromTime && "error"}
@@ -192,8 +198,10 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         placeholder="הקש שעת סיום"
                                         value={values.toTime}
                                         onChange={(e) => {
-                                            setFieldValue("toTime", e.target.value)
+                                            setFieldValue("toTime", e.target.value, false)
                                             setFieldValue("numHours", updateNumHours(values.fromTime, e.target.value));
+                                            // if (values.fromTime  && values.fromTime > e.target.value)
+                                            // setFieldError("toTime", "שעת סיום חייבת להיות אחרי שעת התחלה")
                                         }}
                                         onBlur={handleBlur}
                                         error={(errors.toTime && touched.toTime)}

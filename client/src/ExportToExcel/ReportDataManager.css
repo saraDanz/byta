@@ -5,3 +5,11 @@ body {
     max-height: 100vh;
   /*  overflow-y: hidden;*/
   }
+  .print-tbl{
+      display: none;
+  }
+  @media print{
+    .print-tbl{
+        display: block;
+    }
+  }

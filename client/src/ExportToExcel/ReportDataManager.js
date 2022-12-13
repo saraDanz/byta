@@ -4,20 +4,25 @@ import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
 import "./ReportDataManager.css";
+import PrintFormat from "./PrintFormat";
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear, countTravelingDays } from "../Utils";
 import { useSelector, useDispatch } from "react-redux";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useReactToPrint } from 'react-to-print';
+
 import SearchTypes from "./SearchTypes";
 import {
     DataGrid, GridFooterContainer, GridFooter,
     GridRowsProp, GridColDef, GridToolbarContainer,
     GridToolbarDensitySelector, GridToolbarColumnsButton,
-    GridToolbarExport
+    GridToolbarExport,
+    gridSortedRowIdsSelector, useGridApiContext
 } from '@mui/x-data-grid';
 // import { useDemoData } from '@mui/x-data-grid-generator';
 import LinearProgress from '@mui/material/LinearProgress';
+// import {ExportIcon} from "@mui/material/Icon"
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
     Stack,
@@ -29,15 +34,18 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment } from "@mui/material";
 import { CustomPagination } from "./CustomPagination";
+import { sort } from "../Utils";
 
 // import {FiberManualRecordIcon}from "@mui/icons-material";
+const getUnfilteredRows = ({ apiRef }) => gridSortedRowIdsSelector(apiRef);
+
 const dayInMonthComparator = (v1, v2) => {
-    debugger;
+
     v1 = v1.split(".");
     v1 = v1[1] + "." + v1[0] + "." + v1[2];
     v2 = v2.split(".");
     v2 = v2[1] + "." + v2[0] + "." + v2[2]
-    return new Date(v2) - new Date(v1);
+    return new Date(v1) - new Date(v2);
 }
 export function CustomFooterStatusComponent(props) {
     return (
@@ -48,6 +56,23 @@ export function CustomFooterStatusComponent(props) {
     );
 }
 function CustomToolbar(props) {
+    const apiRef = useGridApiContext();
+    const buttonBaseProps = {
+        color: 'primary',
+        size: 'small',
+        //    startIcon: <ExportIcon />,
+    };
+    const handlePrint = useReactToPrint({
+        content: () => {
+            componentRef
+        }
+    });
+    const handleExport = (options) => {
+        debugger;
+        console.log(options)
+        // apiRef.current.exportDataAsPrint(options)
+        // handlePrint(options)
+    };
     return (
         <GridToolbarContainer>
             <TextField
@@ -64,6 +89,15 @@ function CustomToolbar(props) {
                 }}
                 variant="filled"
             />
+            <Button
+                {...buttonBaseProps}
+                onClick={
+                    //  handleExport({ getRowsToExport: getUnfilteredRows })
+                    handlePrint
+                }
+            >
+                Current page rows
+          </Button>
 
             <GridToolbarColumnsButton />
             <GridToolbarDensitySelector />
@@ -98,28 +132,9 @@ const ReportDataManager = () => {
     const [reports, setReports] = useState([]);
     const [travelingDays, setTravelingDays] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
+    // const [sortOrder, setSortOrder] = useState("asc");
+    // const [sortBy, setSortBy] = useState("date");
 
-    // useEffect(() => {
-    //     // let list = originalReports.map((item, index) => {
-    //     //     let { courseId, teacherId, fromTime, toTime, date, reportDate, ...x } = item;
-    //     //     fromTime = new Date(fromTime);
-    //     //     toTime = new Date(toTime);
-    //     //     date = new Date(date)
-    //     //     return {
-    //     //         ...x, teacherFirstName: teacherId.firstName,
-    //     //         teacherlastName: teacherId.lastName,
-    //     //         courseName: courseId.name,
-    //     //         directorFirstName: courseId.directorId.firstName,
-    //     //         directorLastName: courseId.directorId.lastName,
-    //     //         fromTime: fromTime && (fromTime.getHours() + ":" + fromTime.getMinutes()) || "00:00",
-    //     //         toTime: toTime && (toTime.getHours() + ":" + toTime.getMinutes()) || "00:00",
-    //     //         date: date.toLocaleDateString()
-    //     //     }
-    //     // })
-
-    //     setReports(originalReports);
-
-    // }, [originalReports]);
     useEffect(() => {
 
         document.body.style.overflow = "hidden";
@@ -138,10 +153,15 @@ const ReportDataManager = () => {
                 return true;
             return false;
         });
+        tempFilteredArrReports = sort(tempFilteredArrReports, "date", "asc");
         setReports(tempFilteredArrReports);
     }, [originalReports, searchTerm]);
 
-
+    // useEffect(() => {
+    //     let tempFilteredArrReports = sort(reports, sortBy, sortOrder);
+    //     setReports(tempFilteredArrReports);
+    // }, [sortBy, sortOrder])
+l
     let columns = [
         { field: "courseName", headerName: "קורס", flex: 4 },
         { field: "teacherName", headerName: "מורה", flex: 4 },
@@ -161,7 +181,13 @@ const ReportDataManager = () => {
         { field: "directorName", headerName: "רכזת", flex: 3 },
         // { field: "reportDate", headerName: "תאריך דווח", flex: 2
         // ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}},
-
+        {
+            field: "reportDate", headerName: "תאריך דווח", flex: 2,
+            sortComparator: dayInMonthComparator,
+            type: "date",
+            valueGetter: param => { return param.value ? param.value.toLocaleDateString() : null }
+            //    ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}
+        },
         { field: "comment", headerName: "הערות", flex: 3 }
 
     ];
@@ -253,8 +279,10 @@ const ReportDataManager = () => {
             let teacherIdparam = teacher ?._id;
             let directorIdparam = director ?._id;
             setReportsLoading(true);
-            let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}/${searchFrom ?.$d}/${searchTo ?.$d}`;
-
+            let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`;
+            if (type == SearchTypes.Range)
+                url += `/${searchFrom ?.$d}/${searchTo ?.$d}`;
+            else url += `/${undefined}/${undefined}`;
             axios.get(url).then(res => {
 
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
@@ -293,7 +321,7 @@ const ReportDataManager = () => {
         if (reports.length) {
             let rep = reports.map(item => {
                 let { courseName, teacherName, date, fromTime, toTime, numHours, type, directorName, reportDate, comment } = item; return {
-                    courseName, teacherName, date, fromTime, toTime, numHours, type, directorName, reportDate, comment
+                    courseName, teacherName, date: date ? date.toLocaleDateString() : date, fromTime, toTime, numHours, type, directorName, reportDate: reportDate ? reportDate.toLocaleDateString() : reportDate, comment
                 }
             })
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
@@ -306,7 +334,13 @@ const ReportDataManager = () => {
         const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
         const fileExtension = '.xlsx';
         const ws = XLSX.utils.json_to_sheet(csvData);
-        const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+        const wb = {
+            Sheets: { 'data': ws }, SheetNames: ['data'], Workbook: {
+                Views: [
+                    { RTL: true }
+                ]
+            }
+        };
         // let heading = [['FirstName', 'Last Name', 'Email']];
         XLSX.utils.sheet_add_aoa(ws, heading);
         XLSX.utils.sheet_add_json(ws, csvData, { origin: 'A2', skipHeader: true });
@@ -318,8 +352,8 @@ const ReportDataManager = () => {
     let da = new Date().getFullYear();
     return <div className="excel" sx={{ overflow: "hidden", maxHeight: "60vh" }}>
         <form>
-            <Paper sx={{ width: "87%", margin: "auto", mt: 7, padding: "20px", }}>
-                <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
+            <Paper sx={{ width: "87%", margin: "auto", mt: 1, padding: "20px", height:"90vh" }}>
+                <Box sx={{ display: "flex", "flex-direction": "column" }}>  <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
                     <FormControl sx={{ m: 1, width: "15ch" }}>
                         <InputLabel id="demo-simple-select-autowidth-label">שנה</InputLabel>
                         <Select
@@ -413,7 +447,7 @@ const ReportDataManager = () => {
                     </Button>
 
                     <Button type="button" variant="outlined" onClick={exportToExcel} sx={{ m: 1, width: "15ch" }} >
-                    הורדה לקובץ Excel
+                        הורדה לקובץ Excel
         </Button>
 
                     <Stack direction="row" >
@@ -421,7 +455,7 @@ const ReportDataManager = () => {
 
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
-                                inputFormat="DD/MM/YYYY"
+                                    inputFormat="DD/MM/YYYY"
                                     label="מתאריך"
                                     maxDate={searchTo}
                                     value={searchFrom}
@@ -436,7 +470,7 @@ const ReportDataManager = () => {
 
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
-                                inputFormat="DD/MM/YYYY"
+                                    inputFormat="DD/MM/YYYY"
                                     minDate={searchFrom}
                                     label="עד תאריך"
                                     disabled={!searchFrom}
@@ -448,47 +482,55 @@ const ReportDataManager = () => {
                                 />
                             </LocalizationProvider>
                         </FormControl>
-                        <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '13ch' }} onClick={() => { getData(SearchTypes.Range) }}>
+                        <Button type="button" disabled={!searchFrom || !searchTo} variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '13ch' }} onClick={() => { getData(SearchTypes.Range) }}>
                             חפש בין תאריכים
             </Button>
                     </Stack>
-                   
+
                 </Box>
 
 
-                <DataGrid
-                    initialState={{
-                        sorting: {
-                            sortModel: [{ field: 'date', sort: 'desc' }],
-                        },
-                    }}
-                    localeText={{
-                        toolbarColumns: "עמודות",
-                        toolbarFilters: "my filters",
-                        toolbarDensity: "צפיפות תצוגה",
-                        toolbarExport: "שמירה "
-                    }}
+                    <DataGrid
+                        disableColumnMenu
+                        initialState={{
 
-                    disableColumnFilter
-                    components={{
-                        Footer: CustomFooter,
-                        Toolbar: CustomToolbar,
-                        LoadingOverlay: LinearProgress,
+                        }}
+                        localeText={{
+                            toolbarColumns: "עמודות",
+                            toolbarFilters: "my filters",
+                            toolbarDensity: "צפיפות תצוגה",
+                            toolbarExport: "שמירה "
+                        }}
+
+                        disableColumnFilter
+                        components={{
+                            Footer: CustomFooter,
+                            Toolbar: CustomToolbar,
+                            LoadingOverlay: LinearProgress,
 
 
-                    }}
-                    componentsProps={{
-                        footer: { travelingDays },
-                        toolbar: { setSearchTerm }
-                    }}
-                    hideFooterSelectedRowCount
-                    pagination
-                    sx={{ mt: 3.5, height: "450px" }}
-                    loading={reportsLoading}
-                    getRowId={(row) => row._id} autoPageSize
-                    rows={reports}
-                    columns={columns} />
+                        }}
+                        componentsProps={{
+                            footer: { travelingDays },
+                            toolbar: { setSearchTerm }
+                        }}
+                        hideFooterSelectedRowCount
 
+                        sx={{ mt: 0.5, flex: 1 ,minHeight:"70vh"}}
+                        loading={reportsLoading}
+                        getRowId={(row) => row._id}
+                        autoPageSize
+                        rows={reports}
+                        columns={columns} />
+
+                </Box>
+            // 
+              <PrintFormat columns={["courseName",
+              "teacherName", "date", "fromTime",
+              "toTime",
+              "numHours",
+              "type", "directorName", "ReportDate", "comment"]} ref={el => (componentRef = el)} />
+      
             </Paper>
         </form>
     </div>;

@@ -35,6 +35,7 @@ const AAAcopy = () => {
   const [editInfo, setEditInfo] = useState(null);
   let calendarComponentRef = useRef(null);
   const [changedEvents, setChangedEvents] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     let calendarApi = calendarComponentRef.current.getApi();
@@ -159,6 +160,9 @@ const AAAcopy = () => {
   }
 
   const handleSubmit = () => {
+    setIsSaving(true);
+    if (changedEvents.length == 0)
+      return;
     let eventsToSend = changedEvents.map(item => {
       if (item.modelState == "added")
         return {
@@ -201,7 +205,7 @@ const AAAcopy = () => {
       .catch(err => {
         alert('התרחשה שגיאה בהגשת הדווח')
         console.log(err);
-      });
+      }).finally(() => { setIsSaving(false) });
   }
   const handleEventClick = (clickInfo) => {
     //handleEdit(clickInfo)
@@ -342,7 +346,7 @@ const AAAcopy = () => {
           }}
           titleFormat={{ year: 'numeric', month: 'numeric' }}
           headerToolbar={{
-            start: 'prev next myCustomButton',
+            start: isSaving || changedEvents.length == 0 ? 'prev next':'prev next myCustomButton',
             center: 'title',
             end: ''
           }}

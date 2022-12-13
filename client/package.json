@@ -25,6 +25,7 @@
     "react-redux": "^7.2.8",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.0",
+    "react-to-print": "^2.14.10",
     "redux": "^4.1.2",
     "redux-devtools-extension": "^2.13.9",
     "semantic-ui-css": "^2.4.1",

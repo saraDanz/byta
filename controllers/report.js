@@ -78,7 +78,7 @@ const searchByParameters = async (req, res) => {
 
     // let prev = getDateXDaysAgo(1, new Date(year, month-1, 0));
     let prev, next;
-    if (searchFrom && searchTo) {
+    if (searchFrom&&searchFrom!="undefined" && searchTo&&searchTo!="undefined") {
         prev = getDateXDaysAgo(1, new Date(searchFrom));
         next = new Date(searchTo);
     }
