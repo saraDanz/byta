@@ -17,12 +17,12 @@ import EditReportDialog from "./EditReportDialog";
 import AddReportDialog from "./AddReportDialog";
 import { EventTooltipContent } from './EventTooltipContent';
 import "./DisplayCalendar.css";
-
+import useIsReportAvaliable from "./hooks/useIsReportAvailiable"
 import SaveIcon from '@mui/icons-material/Save';
 
 
 const AAAcopy = () => {
-
+  let isReportingAvailiable = useIsReportAvaliable();
   let dispatch = useDispatch();
   // let navigate = useNavigate();
   let [eve, setEve] = useState([
@@ -104,7 +104,10 @@ const AAAcopy = () => {
   }
 
   const handleDateClick = (selectInfo) => {
-    setSelectInfo(selectInfo)
+
+    //כאן המקום לבדוק האם אפשר לשנות או להוסיף דיווחים
+    if (isReportingAvailiable(selectInfo.start))
+      setSelectInfo(selectInfo)
 
 
     // let newEvent = {
@@ -156,7 +159,9 @@ const AAAcopy = () => {
   //   setChangedEvents([...changedEvents, { ...newEvent, modelState: "added" }])
   // }
   const handleEdit = (event) => {
-    setEditInfo(event);
+ 
+    if (isReportingAvailiable(event.event.start))
+      setEditInfo(event);
   }
 
   const handleSubmit = () => {
@@ -346,7 +351,7 @@ const AAAcopy = () => {
           }}
           titleFormat={{ year: 'numeric', month: 'numeric' }}
           headerToolbar={{
-            start: isSaving || changedEvents.length == 0 ? 'prev next':'prev next myCustomButton',
+            start: isSaving || changedEvents.length == 0 ? 'prev next' : 'prev next myCustomButton',
             center: 'title',
             end: ''
           }}

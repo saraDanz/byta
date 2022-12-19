@@ -46,6 +46,7 @@ export const shortStr = (str, len = 8) => {
 export const getDayByNumber = (num) => {
   return String.fromCharCode(1488 + num);
 }
+
 export const calculateLessons = (fromTime, toTime) => {
   console.log(fromTime)
   let fullHours = toTime.getHours() - fromTime.getHours();

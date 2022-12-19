@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 // import "./ExportToExcel.css";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
 import "./ReportDataManager.css";
+import PDFDocument from "./PdfDocument";
 import PrintFormat from "./PrintFormat";
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear, countTravelingDays } from "../Utils";
 import { useSelector, useDispatch } from "react-redux";
+import ReactPDF from '@react-pdf/renderer';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useReactToPrint } from 'react-to-print';
-
+import IconButton from '@mui/material/IconButton';
 import SearchTypes from "./SearchTypes";
 import {
     DataGrid, GridFooterContainer, GridFooter,
@@ -20,6 +22,7 @@ import {
     GridToolbarExport,
     gridSortedRowIdsSelector, useGridApiContext
 } from '@mui/x-data-grid';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 // import { useDemoData } from '@mui/x-data-grid-generator';
 import LinearProgress from '@mui/material/LinearProgress';
 // import {ExportIcon} from "@mui/material/Icon"
@@ -30,11 +33,13 @@ import {
     , Tooltip, Paper, TablePagination,
     TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box
 } from "@mui/material";
+import LocalPrintshopOutlinedIcon from '@mui/icons-material/LocalPrintshopOutlined';
 
 import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment } from "@mui/material";
 import { CustomPagination } from "./CustomPagination";
 import { sort } from "../Utils";
+import { PDFDownloadLink } from "@react-pdf/renderer"
 
 // import {FiberManualRecordIcon}from "@mui/icons-material";
 const getUnfilteredRows = ({ apiRef }) => gridSortedRowIdsSelector(apiRef);
@@ -47,6 +52,7 @@ const dayInMonthComparator = (v1, v2) => {
     v2 = v2[1] + "." + v2[0] + "." + v2[2]
     return new Date(v1) - new Date(v2);
 }
+
 export function CustomFooterStatusComponent(props) {
     return (
         <Box sx={{ p: 1, display: 'flex' }}>
@@ -57,21 +63,11 @@ export function CustomFooterStatusComponent(props) {
 }
 function CustomToolbar(props) {
     const apiRef = useGridApiContext();
-    const buttonBaseProps = {
-        color: 'primary',
-        size: 'small',
-        //    startIcon: <ExportIcon />,
-    };
-    const handlePrint = useReactToPrint({
-        content: () => {
-            componentRef
-        }
-    });
     const handleExport = (options) => {
         debugger;
         console.log(options)
         // apiRef.current.exportDataAsPrint(options)
-        // handlePrint(options)
+        // handlePrint()
     };
     return (
         <GridToolbarContainer>
@@ -89,21 +85,71 @@ function CustomToolbar(props) {
                 }}
                 variant="filled"
             />
-            <Button
-                {...buttonBaseProps}
-                onClick={
-                    //  handleExport({ getRowsToExport: getUnfilteredRows })
-                    handlePrint
-                }
-            >
-                Current page rows
-          </Button>
+
 
             <GridToolbarColumnsButton />
             <GridToolbarDensitySelector />
             <GridToolbarExport />
         </GridToolbarContainer>
     );
+}
+let columns = [
+    { field: "courseName", headerName: "קורס", flex: 4 },
+    { field: "teacherName", headerName: "מורה", flex: 4 },
+    {
+        field: "date", headerName: "תאריך", flex: 2,
+        sortComparator: dayInMonthComparator,
+        type: "date",
+        valueGetter: param => { return param.value ? param.value.toLocaleDateString() : null }
+        //    ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}
+    },
+
+    { field: "fromTime", headerName: "משעה", flex: 2 },
+    { field: "toTime", headerName: "עד שעה", flex: 2 },
+    { field: "numHours", headerName: "מספר שעות", flex: 2 },
+    { field: "type", headerName: "סוג שיעור", flex: 3 },
+    //    {field:"subject",headerName:"נושא"},
+    { field: "directorName", headerName: "רכזת", flex: 3 },
+    // { field: "reportDate", headerName: "תאריך דווח", flex: 2
+    // ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}},
+    {
+        field: "reportDate", headerName: "תאריך דווח", flex: 2,
+        sortComparator: dayInMonthComparator,
+        type: "date",
+        valueGetter: param => { return param.value ? param.value.toLocaleDateString() : null }
+        //    ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}
+    },
+    { field: "comment", headerName: "הערות", flex: 3 }
+
+];
+
+columns = columns.map(column => {
+    return {
+        ...column,
+        renderCell: (params) => (
+            <Tooltip title={params.value}>
+                <span>{params.value}</span>
+            </Tooltip>
+        ),
+    }
+})
+function useApiRef() {
+    const apiRef = useRef(null);
+    const _columns = useMemo(
+        () =>
+            columns.concat({
+                field: "__HIDDEN__",
+                width: 0,
+                hide: true,
+                renderCell: (params) => {
+                    apiRef.current = params.api;
+                    return null;
+                }
+            }),
+        [columns]
+    );
+
+    return { apiRef, columns: _columns };
 }
 
 let CustomFooter = (props) => {
@@ -116,7 +162,19 @@ let CustomFooter = (props) => {
         </GridFooterContainer>
     );
 }
+
 const ReportDataManager = () => {
+    const { apiRef, columns } = useApiRef();
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current
+    });
+    // const handleClickButton = () => {
+
+    //   };
+    const handlePdf = () => { console.log(apiRef.current.getRowModels()); }
+    // const handlePdf = () => { ReactPDF.render(<MyDocument />, `${__dirname}/example.pdf`); }
+
     const reduxDirectors = useSelector(st => st.index.directors);
     const reduxTeachers = useSelector(st => st.index.teachers);
     const reduxCourses = useSelector(st => st.index.courses);
@@ -161,36 +219,8 @@ const ReportDataManager = () => {
     //     let tempFilteredArrReports = sort(reports, sortBy, sortOrder);
     //     setReports(tempFilteredArrReports);
     // }, [sortBy, sortOrder])
-l
-    let columns = [
-        { field: "courseName", headerName: "קורס", flex: 4 },
-        { field: "teacherName", headerName: "מורה", flex: 4 },
-        {
-            field: "date", headerName: "תאריך", flex: 2,
-            sortComparator: dayInMonthComparator,
-            type: "date",
-            valueGetter: param => { return param.value ? param.value.toLocaleDateString() : null }
-            //    ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}
-        },
 
-        { field: "fromTime", headerName: "משעה", flex: 2 },
-        { field: "toTime", headerName: "עד שעה", flex: 2 },
-        { field: "numHours", headerName: "מספר שעות", flex: 2 },
-        { field: "type", headerName: "סוג שיעור", flex: 3 },
-        //    {field:"subject",headerName:"נושא"},
-        { field: "directorName", headerName: "רכזת", flex: 3 },
-        // { field: "reportDate", headerName: "תאריך דווח", flex: 2
-        // ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}},
-        {
-            field: "reportDate", headerName: "תאריך דווח", flex: 2,
-            sortComparator: dayInMonthComparator,
-            type: "date",
-            valueGetter: param => { return param.value ? param.value.toLocaleDateString() : null }
-            //    ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}
-        },
-        { field: "comment", headerName: "הערות", flex: 3 }
 
-    ];
 
     useEffect(() => {
         if (!reduxTeachers || !reduxTeachers.length) {
@@ -259,16 +289,6 @@ l
     let [course, setCourse] = useState(null);
     let currentUser = useSelector(st => st.index.currentUser);
 
-    columns = columns.map(column => {
-        return {
-            ...column,
-            renderCell: (params) => (
-                <Tooltip title={params.value}>
-                    <span>{params.value}</span>
-                </Tooltip>
-            ),
-        }
-    })
 
     const getData = (type) => {
 
@@ -350,189 +370,216 @@ l
         FileSaver.saveAs(data, fileName + fileExtension);
     }
     let da = new Date().getFullYear();
-    return <div className="excel" sx={{ overflow: "hidden", maxHeight: "60vh" }}>
-        <form>
-            <Paper sx={{ width: "87%", margin: "auto", mt: 1, padding: "20px", height:"90vh" }}>
-                <Box sx={{ display: "flex", "flex-direction": "column" }}>  <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
-                    <FormControl sx={{ m: 1, width: "15ch" }}>
-                        <InputLabel id="demo-simple-select-autowidth-label">שנה</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-autowidth-label"
-                            id="demo-simple-select-autowidth"
-                            value={year}
-                            onChange={(e) => { setYear(e.target.value) }}
-                            autoWidth
-                            label="Age"
-                        >
-                            {/* <MenuItem value="">
+    let minimumColumnsDetails = useMemo(() => {
+        return columns.map((item, index) => { return { field: item.field, headerName: item.headerName } })
+    }, [columns])
+    return <>
+
+        <PrintFormat columns={minimumColumnsDetails}
+            ref={componentRef} data={reports} />
+        <div className="excel" sx={{ overflow: "hidden", maxHeight: "60vh" }}>
+
+            <form>
+
+                <Paper sx={{ width: "87%", margin: "auto", mt: 1, padding: "20px", height: "90vh" }}>
+                    <Box sx={{ display: "flex", "flex-direction": "column" }}>
+                        <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
+                            <Stack direction="row" >
+                                <FormControl sx={{ m: 1, width: "15ch" }}>
+                                    <InputLabel id="demo-simple-select-autowidth-label">שנה</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-autowidth-label"
+                                        id="demo-simple-select-autowidth"
+                                        value={year}
+                                        onChange={(e) => { setYear(e.target.value) }}
+                                        autoWidth
+                                        label="Age"
+                                    >
+                                        {/* <MenuItem value="">
                         <em>בחר שנה</em>
                     </MenuItem> */}
-                            {[...Array(20)].map((item, index) => { return <MenuItem key={index} value={index + da - 19}>{index + da - 19}</MenuItem> })}
+                                        {[...Array(20)].map((item, index) => { return <MenuItem key={index} value={index + da - 19}>{index + da - 19}</MenuItem> })}
 
 
 
-                        </Select>
-                    </FormControl>
+                                    </Select>
+                                </FormControl>
 
-                    <FormControl sx={{ m: 1, width: "15ch" }}>
-                        <InputLabel id="demo-simple-select-autowidth-label">חודש</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-autowidth-label"
-                            id="demo-simple-select-autowidth"
-                            value={month}
-                            onChange={(e) => { setMonth(e.target.value) }}
-                            autoWidth
-                            label="Age"
-                        >
-                            {/* <MenuItem value="">
+                                <FormControl sx={{ m: 1, width: "15ch" }}>
+                                    <InputLabel id="demo-simple-select-autowidth-label">חודש</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-autowidth-label"
+                                        id="demo-simple-select-autowidth"
+                                        value={month}
+                                        onChange={(e) => { setMonth(e.target.value) }}
+                                        autoWidth
+                                        label="Age"
+                                    >
+                                        {/* <MenuItem value="">
                         <em>בחר חודש</em>
                     </MenuItem> */}
-                            {[...Array(12)].map((item, index) => { return <MenuItem key={index} value={index + 1}>{index + 1}</MenuItem> })}
+                                        {[...Array(12)].map((item, index) => { return <MenuItem key={index} value={index + 1}>{index + 1}</MenuItem> })}
 
-                        </Select>
-                    </FormControl>
-
-
+                                    </Select>
+                                </FormControl>
 
 
-                    <Autocomplete
-                        disablePortal
-
-                        options={teachers || []}
-                        sx={{ m: 1, width: "22ch" }}
-                        getOptionLabel={(item) => item.firstName + " " + item.lastName}
-                        value={teacher}
-                        onChange={(event, newValue) => {
-                            setTeacher(newValue);
-                            console.log(newValue)
-
-                        }}
 
 
-                        renderInput={(params) => teacherLoading ? <CircularProgress /> : <TextField {...params} label="מורה" />}
-                    />
-                    <Autocomplete
-                        disablePortal
-                        options={courses || []}
-                        sx={{ m: 1, width: "22ch" }}
-                        getOptionLabel={(item) => item.name + " " + item.description}
-                        value={course}
-                        onChange={(event, newValue) => {
-                            console.log(newValue)
-                            setCourse(newValue);
-                        }}
+                                <Autocomplete
+                                    disablePortal
+
+                                    options={teachers || []}
+                                    sx={{ m: 1, width: "22ch" }}
+                                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
+                                    value={teacher}
+                                    onChange={(event, newValue) => {
+                                        setTeacher(newValue);
+                                        console.log(newValue)
+
+                                    }}
 
 
-                        renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
-                    />
-                    <Autocomplete
-                        disablePortal
-
-                        options={directors || []}
-                        sx={{ m: 1, width: "22ch" }}
-                        getOptionLabel={(item) => item.firstName + " " + item.lastName}
-                        value={director}
-                        onChange={(event, newValue) => {
-                            setDirector(newValue);
-                            console.log(newValue)
-
-                        }}
+                                    renderInput={(params) => teacherLoading ? <CircularProgress /> : <TextField {...params} label="מורה" />}
+                                />
+                                <Autocomplete
+                                    disablePortal
+                                    options={courses || []}
+                                    sx={{ m: 1, width: "22ch" }}
+                                    getOptionLabel={(item) => item.name + " " + item.description}
+                                    value={course}
+                                    onChange={(event, newValue) => {
+                                        console.log(newValue)
+                                        setCourse(newValue);
+                                    }}
 
 
-                        renderInput={(params) => directorsLoading ? <CircularProgress /> : <TextField {...params} label="רכזת" />}
-                    />
+                                    renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
+                                />
+                                <Autocomplete
+                                    disablePortal
 
-                    <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
-                        חפש
+                                    options={directors || []}
+                                    sx={{ m: 1, width: "22ch" }}
+                                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
+                                    value={director}
+                                    onChange={(event, newValue) => {
+                                        setDirector(newValue);
+                                        console.log(newValue)
+
+                                    }}
+
+
+                                    renderInput={(params) => directorsLoading ? <CircularProgress /> : <TextField {...params} label="רכזת" />}
+                                />
+
+                                <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
+                                    חפש
                     </Button>
 
-                    <Button type="button" variant="outlined" onClick={exportToExcel} sx={{ m: 1, width: "15ch" }} >
-                        הורדה לקובץ Excel
+
+                                <Button type="button" variant="outlined" onClick={exportToExcel} sx={{ m: 1, width: "15ch" }} >
+                                    הורדה לקובץ Excel
+
         </Button>
+                                <Button type="button" startIcon={<LocalPrintshopOutlinedIcon />} variant="outlined" onClick={handlePrint} sx={{ m: 1 }} >
 
-                    <Stack direction="row" >
-                        <FormControl sx={{ m: 1, width: "20ch" }}>
+                                </Button>
+                                {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
+                                    "teacherName", "fromTime",
+                                    "toTime",
+                                    "numHours",
+                                    "type", "directorName", "comment"]}
+                                    data={reports} />}
+                                    fileName={searchFrom ?.$d && searchTo ?.$d ? `report-${searchFrom ?.$d}-${searchTo ?.$d}.pdf` : `report-${month}-${year}.pdf`}>
+                                    {({ blob, url, loading, error }) => (loading ? <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" disabled="true" sx={{ m: 1 }} >      </Button> :
+                                        <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" onClick={handlePdf} sx={{ m: 1 }} >
 
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                    inputFormat="DD/MM/YYYY"
-                                    label="מתאריך"
-                                    maxDate={searchTo}
-                                    value={searchFrom}
-                                    onChange={(newValue) => {
-                                        setSearchFrom(newValue);
-                                    }}
-                                    renderInput={(params) => <TextField {...params} />}
-                                />
-                            </LocalizationProvider>
-                        </FormControl>
-                        <FormControl sx={{ m: 1, width: "20ch" }}>
+                                        </Button>)}
+                                </PDFDownloadLink>}
 
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                    inputFormat="DD/MM/YYYY"
-                                    minDate={searchFrom}
-                                    label="עד תאריך"
-                                    disabled={!searchFrom}
-                                    value={searchTo}
-                                    onChange={(newValue) => {
-                                        setSearchTo(newValue);
-                                    }}
-                                    renderInput={(params) => <TextField {...params} />}
-                                />
-                            </LocalizationProvider>
-                        </FormControl>
-                        <Button type="button" disabled={!searchFrom || !searchTo} variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '13ch' }} onClick={() => { getData(SearchTypes.Range) }}>
-                            חפש בין תאריכים
+
+                            </Stack>
+                            <Stack direction="row" >
+                                <FormControl sx={{ m: 1, width: "20ch" }}>
+
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            inputFormat="DD/MM/YYYY"
+                                            label="מתאריך"
+                                            maxDate={searchTo}
+                                            value={searchFrom}
+                                            onChange={(newValue) => {
+                                                setSearchFrom(newValue);
+                                            }}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </FormControl>
+                                <FormControl sx={{ m: 1, width: "20ch" }}>
+
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            inputFormat="DD/MM/YYYY"
+                                            minDate={searchFrom}
+                                            label="עד תאריך"
+                                            disabled={!searchFrom}
+                                            value={searchTo}
+                                            onChange={(newValue) => {
+                                                setSearchTo(newValue);
+                                            }}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </FormControl>
+                                <Button type="button" disabled={!searchFrom || !searchTo} variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '13ch' }} onClick={() => { getData(SearchTypes.Range) }}>
+                                    חפש בין תאריכים
             </Button>
-                    </Stack>
+                            </Stack>
 
-                </Box>
-
-
-                    <DataGrid
-                        disableColumnMenu
-                        initialState={{
-
-                        }}
-                        localeText={{
-                            toolbarColumns: "עמודות",
-                            toolbarFilters: "my filters",
-                            toolbarDensity: "צפיפות תצוגה",
-                            toolbarExport: "שמירה "
-                        }}
-
-                        disableColumnFilter
-                        components={{
-                            Footer: CustomFooter,
-                            Toolbar: CustomToolbar,
-                            LoadingOverlay: LinearProgress,
+                        </Box>
 
 
-                        }}
-                        componentsProps={{
-                            footer: { travelingDays },
-                            toolbar: { setSearchTerm }
-                        }}
-                        hideFooterSelectedRowCount
+                        <DataGrid
+                            disableColumnMenu
+                            initialState={{
 
-                        sx={{ mt: 0.5, flex: 1 ,minHeight:"70vh"}}
-                        loading={reportsLoading}
-                        getRowId={(row) => row._id}
-                        autoPageSize
-                        rows={reports}
-                        columns={columns} />
+                            }}
+                            localeText={{
+                                toolbarColumns: "עמודות",
+                                toolbarFilters: "my filters",
+                                toolbarDensity: "צפיפות תצוגה",
+                                toolbarExport: "שמירה "
+                            }}
 
-                </Box>
-            // 
-              <PrintFormat columns={["courseName",
-              "teacherName", "date", "fromTime",
-              "toTime",
-              "numHours",
-              "type", "directorName", "ReportDate", "comment"]} ref={el => (componentRef = el)} />
-      
-            </Paper>
-        </form>
-    </div>;
+                            disableColumnFilter
+                            components={{
+                                Footer: CustomFooter,
+                                Toolbar: CustomToolbar,
+                                LoadingOverlay: LinearProgress,
+
+
+                            }}
+                            componentsProps={{
+                                footer: { travelingDays },
+                                toolbar: { setSearchTerm }
+                            }}
+                            hideFooterSelectedRowCount
+
+                            sx={{ mt: 0.5, flex: 1, minHeight: "70vh" }}
+                            loading={reportsLoading}
+                            getRowId={(row) => row._id}
+                            autoPageSize
+                            rows={reports}
+                            columns={columns} />
+
+                    </Box>
+
+
+
+                </Paper>
+            </form>
+        </div>
+    </>;
 }
 export default ReportDataManager;
