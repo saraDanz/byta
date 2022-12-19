@@ -1,7 +1,44 @@
 .MuiTablePagination-root.css-rtrcn9-MuiTablePagination-root {
     direction: ltr;
 }
+
 body {
-    max-height: 100vh;
-  /*  overflow-y: hidden;*/
+    max-height    : 100vh;
+    /*  overflow-y: hidden;*/
+    overflow      : auto;
+}
+
+.print-tbl {
+    height       : 0px;
+    /* visibility: hidden; */
+    /* display   : none; */
+    text-align: start;
+}
+
+.css-1ex1afd-MuiTableCell-root {
+    text-align: right !important;
+}
+
+@media print {
+    .print-tbl {
+        height   : auto;
+        direction: rtl;
+
+        /* display: block !important; */
+
+        /* background-color: greenyellow !important; */
+    }
+}
+/* @page:left{
+  @bottom-left {
+    content: "Page " counter(page) " of " counter(pages);
   }
+} */
+#pageFooter {
+    display: table-footer-group;
+}
+
+#pageFooter:after {
+    counter-increment: page;
+    content: counter(page);
+}

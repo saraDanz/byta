@@ -17,6 +17,7 @@ import EditReportDialog from "./EditReportDialog";
 import AddReportDialog from "./AddReportDialog";
 import { EventTooltipContent } from './EventTooltipContent';
 import "./DisplayCalendar.css";
+import SaveIcon from '@mui/icons-material/Save';
 const DisplayCalendar = () => {
 
   let dispatch = useDispatch();
@@ -170,9 +171,9 @@ const DisplayCalendar = () => {
 
     let calendarApi = editInfo.view.calendar
 
-   // calendarApi.unselect() // clear date selection
+    // calendarApi.unselect() // clear date selection
     let updatedEvent = {
-        id:clickInfo.event.id,
+      id: clickInfo.event.id,
       courseName: object.course.name,
       // teacherId: currentUser._id,
       courseId: object.course,
@@ -186,24 +187,24 @@ const DisplayCalendar = () => {
       //  course:object.course,
       allDay: false
     }
-   // clickInfo.event.extendedProps.courseId=object.course;
-//     clickInfo.event.extendedProps.type=object.type;
-//     clickInfo.event.extendedProps.comment=object.comment;
-//     clickInfo.event.extendedProps.fromTime=object.fromTime;
-//     clickInfo.event.extendedProps.toTime=object.toTime;
-//     clickInfo.event.extendedProps.numHours=object.numHours;
-//     clickInfo.event.extendedProps.allDay=false;
-// clickInfo.event.updateEvent();
-clickInfo.event.remove();
-calendarApi.addEvent(updatedEvent);
+    // clickInfo.event.extendedProps.courseId=object.course;
+    //     clickInfo.event.extendedProps.type=object.type;
+    //     clickInfo.event.extendedProps.comment=object.comment;
+    //     clickInfo.event.extendedProps.fromTime=object.fromTime;
+    //     clickInfo.event.extendedProps.toTime=object.toTime;
+    //     clickInfo.event.extendedProps.numHours=object.numHours;
+    //     clickInfo.event.extendedProps.allDay=false;
+    // clickInfo.event.updateEvent();
+    clickInfo.event.remove();
+    calendarApi.addEvent(updatedEvent);
     // clickInfo.event.extendedProps=updatedEvent;
 
 
 
 
-        //console.log("update", updatedEvent)
+    //console.log("update", updatedEvent)
     //calendarApi.updateEvent(updatedEvent)
-//to do להוסיף בדיקה שאירוע זה טרם עודכן לפי שמוסיפים שוב למערך
+    //to do להוסיף בדיקה שאירוע זה טרם עודכן לפי שמוסיפים שוב למערך
     setChangedEvents([...changedEvents, { ...updatedEvent, modelState: "updated" }])
   }
   const handleEvents = (events) => {
@@ -227,7 +228,7 @@ calendarApi.addEvent(updatedEvent);
     let isPast = !(eventInfo.event.start.getMonth() == d.month && eventInfo.event.start.getFullYear() == d.year)
     return (
       <>
-        <Tooltip  arrow title={<><EventTooltipContent event={eventInfo}
+        <Tooltip arrow title={<><EventTooltipContent event={eventInfo}
           onDelete={() => handleEventClick(eventInfo)}
           onEdit={() => handleEdit(eventInfo)}
         />
@@ -265,9 +266,17 @@ calendarApi.addEvent(updatedEvent);
 
       <div className='demo-app-main'>
         <FullCalendar
-
+          customButtons={{
+            myCustomButton: {
+              text: 'שמירה',
+              click: function () {
+                alert('clicked the custom button!');
+              }
+            }
+          }}
+          titleFormat={{ year: 'numeric', month: 'numeric' }}
           headerToolbar={pastSendingEnabled ? {
-            start: 'prev next',
+            start: 'prev next muCustomButton' ,
             center: 'title',
             end: ''
           } : {

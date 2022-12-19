@@ -46,6 +46,7 @@ export const shortStr = (str, len = 8) => {
 export const getDayByNumber = (num) => {
   return String.fromCharCode(1488 + num);
 }
+
 export const calculateLessons = (fromTime, toTime) => {
   console.log(fromTime)
   let fullHours = toTime.getHours() - fromTime.getHours();
@@ -56,7 +57,7 @@ export const calculateLessons = (fromTime, toTime) => {
 export const countTravelingDays = (reportsArr) => {
   //Nחשב את מספר הימים הפרונטליים אבל לא בודק מה קורה כאשר ישנם מספר שיעורים באותו יום
   let frontalDays = reportsArr.filter(item => item.type == "פרונטלי");
-  let days = groupBy(frontalDays, "date",'teacherName');
+  let days = groupBy(frontalDays, "date", 'teacherName');
   console.log(days)
   return Object.keys(days).length;
 
@@ -69,7 +70,7 @@ export const countTravelingDays = (reportsArr) => {
 //   }, {});
 // }
 export function groupBy(arr, property1, property2) {
- 
+
   var helper = {};
   var result = arr.reduce(function (r, o) {
     var key = o[property1] + '-' + o[property2];
@@ -85,4 +86,12 @@ export function groupBy(arr, property1, property2) {
     return r;
   }, []);
   return result;
+}
+
+export const sort = (arr, by, order = "asc") => {
+
+  if (order == "asc")
+    return arr.sort((a, b) => (a[by] > b[by]) ? 1 : -1);
+
+  return arr.sort((a, b) => (a.title > b.title) ? -1 : 1);
 }

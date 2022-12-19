@@ -17,8 +17,12 @@ import EditReportDialog from "./EditReportDialog";
 import AddReportDialog from "./AddReportDialog";
 import { EventTooltipContent } from './EventTooltipContent';
 import "./DisplayCalendar.css";
-const AAAcopy = () => {
+import useIsReportAvaliable from "./hooks/useIsReportAvailiable"
+import SaveIcon from '@mui/icons-material/Save';
 
+
+const AAAcopy = () => {
+  let isReportingAvailiable = useIsReportAvaliable();
   let dispatch = useDispatch();
   // let navigate = useNavigate();
   let [eve, setEve] = useState([
@@ -31,6 +35,7 @@ const AAAcopy = () => {
   const [editInfo, setEditInfo] = useState(null);
   let calendarComponentRef = useRef(null);
   const [changedEvents, setChangedEvents] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     let calendarApi = calendarComponentRef.current.getApi();
@@ -99,7 +104,10 @@ const AAAcopy = () => {
   }
 
   const handleDateClick = (selectInfo) => {
-    setSelectInfo(selectInfo)
+
+    //כאן המקום לבדוק האם אפשר לשנות או להוסיף דיווחים
+    if (isReportingAvailiable(selectInfo.start))
+      setSelectInfo(selectInfo)
 
 
     // let newEvent = {
@@ -151,10 +159,15 @@ const AAAcopy = () => {
   //   setChangedEvents([...changedEvents, { ...newEvent, modelState: "added" }])
   // }
   const handleEdit = (event) => {
-    setEditInfo(event);
+ 
+    if (isReportingAvailiable(event.event.start))
+      setEditInfo(event);
   }
 
   const handleSubmit = () => {
+    setIsSaving(true);
+    if (changedEvents.length == 0)
+      return;
     let eventsToSend = changedEvents.map(item => {
       if (item.modelState == "added")
         return {
@@ -197,7 +210,7 @@ const AAAcopy = () => {
       .catch(err => {
         alert('התרחשה שגיאה בהגשת הדווח')
         console.log(err);
-      });
+      }).finally(() => { setIsSaving(false) });
   }
   const handleEventClick = (clickInfo) => {
     //handleEdit(clickInfo)
@@ -321,15 +334,24 @@ const AAAcopy = () => {
   }
   return (
     <div className='demo-app'>
-      <Button variant="contained" className="btn-sub" onClick={handleSubmit}>שמירה</Button>
+      {/*   <Button variant="outlined" className="btn-sub" endIcon={<SaveIcon />} onClick={handleSubmit}>  שמירה </Button>*/}
 
 
 
       <div className='demo-app-main'>
         <FullCalendar
 
+          customButtons={{
+            myCustomButton: {
+              text: 'שמירה',
+              click: function () {
+                handleSubmit()
+              }
+            }
+          }}
+          titleFormat={{ year: 'numeric', month: 'numeric' }}
           headerToolbar={{
-            start: 'prev next',
+            start: isSaving || changedEvents.length == 0 ? 'prev next' : 'prev next myCustomButton',
             center: 'title',
             end: ''
           }}

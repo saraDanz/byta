@@ -3,12 +3,14 @@ import React, { useState, useEffect } from "react";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
+import ReactToPrint from 'react-to-print';
 
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear } from "../Utils";
 import { useSelector } from "react-redux";
 
 import { Autocomplete, Paper,TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box } from "@mui/material";
+import PrintFormat from "./PrintFormat";
 
 const ExportToExcelManager = () => {
     const reduxTeachers = useSelector(st => st.index.teachers);
@@ -119,10 +121,11 @@ const ExportToExcelManager = () => {
         const data = new Blob([excelBuffer], { type: fileType });
         FileSaver.saveAs(data, fileName + fileExtension);
     }
+    
     let da = new Date().getFullYear();
     return <div className="excel">
         <form>
-            <Paper sx={{ width: "60ch", margin: "auto", mt: 7, padding: "20px" }}>
+            <Paper sx={{ width: "60ch", margin: "auto", mt: 3, padding: "20px" }}>
                 <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
 
 
@@ -202,6 +205,7 @@ const ExportToExcelManager = () => {
                     <Button type="button" variant="outlined" sx={{ m: 1, width: "25ch" }} onClick={getData}>
                         הורדה לקובץ Excel
                     </Button>
+                 
                 </Box>
             </Paper>
         </form>

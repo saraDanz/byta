@@ -8,7 +8,7 @@ router.get("/byYearAndMonth/:year/:month", reportController.getAllReportsByYearA
 router.get("/byDirectorIdYearAndMonth/:directorId/:year/:month", reportController.getAllReportsByDirectorIdYearAndMonth);
 router.post("", reportController.addReport);
 router.post("/addReports", reportController.addReports);
-router.get("/searchByParameters/:year/:month/:directorId/:courseId/:teacherId", reportController.searchByParameters);
+router.get("/searchByParameters/:year/:month/:directorId/:courseId/:teacherId/:searchFrom/:searchTo", reportController.searchByParameters);
 router.put("",reportController.saveReportChanges);
 
 
