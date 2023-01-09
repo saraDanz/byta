@@ -163,7 +163,7 @@ let CustomFooter = (props) => {
     );
 }
 
-const ReportDataManager = () => {
+const ReportDataManagerDirector = () => {
     const { apiRef, columns } = useApiRef();
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
@@ -175,15 +175,14 @@ const ReportDataManager = () => {
     const handlePdf = () => { console.log(apiRef.current.getRowModels()); }
     // const handlePdf = () => { ReactPDF.render(<MyDocument />, `${__dirname}/example.pdf`); }
 
-    const reduxDirectors = useSelector(st => st.index.directors);
+    // const reduxDirectors = useSelector(st => st.index.directors);
     const reduxTeachers = useSelector(st => st.index.teachers);
     const reduxCourses = useSelector(st => st.index.courses);
     const [courses, setCourses] = useState(reduxCourses);
     const [teachers, setTeachers] = useState(reduxTeachers);
-    const [directors, setDirectors] = useState(reduxDirectors);
-    const [director, setDirector] = useState(null);
+
     const [teacherLoading, setTeacherLoading] = useState(false);
-    const [directorsLoading, setDirectorsLoading] = useState(false);
+
     const [reportsLoading, setReportsLoading] = useState(false);
     const [courseLoading, setCourseLoading] = useState(false);
     const [originalReports, setOriginalReports] = useState([]);
@@ -225,7 +224,7 @@ const ReportDataManager = () => {
     useEffect(() => {
         if (!reduxTeachers || !reduxTeachers.length) {
             setTeacherLoading(true)
-            axios.get(BASE_URL + "users/teachers").
+            axios.get(BASE_URL + "users/byDirectorId/" + currentUser._id).
                 then(res => {
                     console.log(res.data);
                     let t = res.data;
@@ -240,30 +239,12 @@ const ReportDataManager = () => {
         }
 
     }, [reduxTeachers]);
-    useEffect(() => {
-        if (!reduxDirectors || !reduxDirectors.length) {
-            setDirectorsLoading(true)
-            axios.get(BASE_URL + "users/directors").
-                then(res => {
-                    console.log(res.data);
-                    let t = res.data;
-                    setDirectors(res.data)
-
-
-                }).
-                catch(err => {
-                    console.log(err);
-                    alert("תקלה בהצגת הרכזות")
-                }).finally(() => { setDirectorsLoading(false) })
-
-        }
-
-    }, [reduxDirectors]);
+   
 
     useEffect(() => {
         if (!reduxCourses || !reduxCourses.length) {
             setCourseLoading(true);
-            axios.get(BASE_URL + "courses").
+            axios.get(BASE_URL + "courses/byDirectorId/" + currentUser._id).
                 then(res => {
                     console.log(res.data);
                     let t = res.data;
@@ -297,9 +278,9 @@ const ReportDataManager = () => {
 
             let courseIdparam = course ?._id;
             let teacherIdparam = teacher ?._id;
-            let directorIdparam = director ?._id;
+  
             setReportsLoading(true);
-            let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`;
+            let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${currentUser._id}/${courseIdparam}/${teacherIdparam}`;
             if (type == SearchTypes.Range)
                 url += `/${searchFrom ?.$d}/${searchTo ?.$d}`;
             else url += `/${undefined}/${undefined}`;
@@ -373,7 +354,7 @@ const ReportDataManager = () => {
     let minimumColumnsDetails = useMemo(() => {
         return columns.map((item, index) => { return { field: item.field, headerName: item.headerName } })
     }, [columns])
-    
+
     return <>
 
         <PrintFormat columns={minimumColumnsDetails}
@@ -457,22 +438,7 @@ const ReportDataManager = () => {
 
                                     renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                                 />
-                                <Autocomplete
-                                    disablePortal
-
-                                    options={directors || []}
-                                    sx={{ m: 1, width: "22ch" }}
-                                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
-                                    value={director}
-                                    onChange={(event, newValue) => {
-                                        setDirector(newValue);
-                                        console.log(newValue)
-
-                                    }}
-
-
-                                    renderInput={(params) => directorsLoading ? <CircularProgress /> : <TextField {...params} label="רכזת" />}
-                                />
+                              
 
                                 <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
                                     חפש
@@ -486,7 +452,7 @@ const ReportDataManager = () => {
                                 <Button type="button" startIcon={<LocalPrintshopOutlinedIcon />} variant="outlined" onClick={handlePrint} sx={{ m: 1 }} >
 
                                 </Button>
-                            {/*    {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
+                              {/*  {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
                                     "teacherName", "fromTime",
                                     "toTime",
                                     "numHours",
@@ -583,4 +549,4 @@ const ReportDataManager = () => {
         </div>
     </>;
 }
-export default ReportDataManager;
+export default ReportDataManagerDirector;

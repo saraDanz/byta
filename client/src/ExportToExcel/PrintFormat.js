@@ -27,14 +27,14 @@ const ss = React.forwardRef((props, ref) => {
 const PrintFormat = React.forwardRef((props, ref) => {
     return (
         <>
-
+        // <div class="page-number"></div>
             <TableContainer component={Paper} ref={ref} className="print-tbl" >
                 <Table sx={{ textAlign: "right" }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
 
                             <TableCell> </TableCell>
-                            {props.columns.map((item, index) => { return <TableCell key={index} align="right">{item.headerName}&nbsp;</TableCell> })}
+                            {props.columns.map((item, index) => { return <TableCell key={index} component='th' align="right">{item.headerName}&nbsp;</TableCell> })}
 
                         </TableRow>
                     </TableHead>

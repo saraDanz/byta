@@ -38,6 +38,7 @@ import axios from "axios";
 import { BASE_URL } from "./VARIABLES.js";
 import { saveCurrentStatus } from "./store/actions/setting.js";
 import ReportDataManager from "./ExportToExcel/ReportDataManager"
+import ReportDataManagerDirector from "./ExportToExcel/ReportDataManagerDirector"
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -178,6 +179,7 @@ export default function App() {
 
             <Route path="directorList" element={<DirectorList />} />
             <Route path="tableManager" element={<ReportDataManager />} />
+            <Route path="tableDirector" element={<ReportDataManagerDirector />} />
             <Route path="export" element={<ExportToExcel />} />
             <Route path="exportManager" element={<ExportToExcelManager />} />
             <Route path="setting" element={<Setting />} />
