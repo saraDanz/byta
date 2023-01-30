@@ -43,8 +43,8 @@ const PrintFormat = React.forwardRef((props, ref) => {
                             return <TableRow key={row._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                 <TableCell>{(ind + 1)}</TableCell> {
                                     props.columns.map((col, index) => 
-                                                      {if(typeof (row[col.field]) != "object" ||!row[col.field])return <TableCell key={index}>{row[col.field]}</TableCell> else 
-                                                       return <TableCell key={index}>{row[col.field].toLocaleDateString()}</TableCell>})
+                                                      (typeof (row[col.field]) != "object" ||!row[col.field])? <TableCell key={index}>{row[col.field]}</TableCell> : 
+                                                        <TableCell key={index}>{row[col.field].toLocaleDateString()}</TableCell>)
                                 }
 
 
