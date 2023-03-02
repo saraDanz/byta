@@ -341,7 +341,7 @@ const ReportDataManager = () => {
         if (reports.length) {
             let rep = reports.map(item => {
                 let { courseName, teacherName, date, fromTime, toTime, numHours, type, directorName, reportDate, comment } = item; return {
-                    courseName, teacherName, date: date ? date.toLocaleDateString() : date, fromTime, toTime, numHours, type, directorName, reportDate: reportDate ? reportDate.toLocaleDateString() : reportDate, comment
+                    courseName, teacherName, date: date? 25569.0 + ((date.getTime() - (date.getTimezoneOffset() * 60 * 1000)) / (1000 * 60 * 60 * 24)):date, fromTime, toTime, numHours, type, directorName, reportDate: reportDate ? reportDate.toLocaleDateString() : reportDate, comment
                 }
             })
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות

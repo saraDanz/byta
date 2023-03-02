@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import { Formik } from "formik";
 
-import { Paper, Box, Button, Typography } from "@mui/material";
+import { Paper, Box, Button, Typography ,Radio,RadioGroup,FormControlLabel} from "@mui/material";
 
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField,FormControl,FormLabel } from "@mui/material";
 
 import * as Yup from "yup";
 
@@ -46,7 +46,7 @@ export default function AddCourse() {
         <Formik
         validationSchema={courseSchema}
         
-            initialValues={{ name: "", description: "", directorId: "", symbol: "" }}
+            initialValues={{ name: "", description: "", directorId: "", symbol: "",lessonDuration:45 }}
             onSubmit={(values, { setSubmitting }) => {
 
                 if (!values.directorId && directors)
@@ -192,10 +192,28 @@ className="select-add-course"
                                     // }}
                                     renderInput={(params) => <TextField {...params} label="רכזת קורס"  helperText={errors.directorId} />}
                                 />
+                               {/**/}   <FormControl>
+  <FormLabel >משך שיעור </FormLabel>
+                                <RadioGroup
 
-                                <Button className="button-add-course" variant="outlined" type="submit" disabled={isSubmitting}>
+                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                name="controlled-radio-buttons-group"
+                                value={values.lessonDuration}
+                                row
+                                sx={{ m: 1, width: '40ch' }}
+                                onChange={(e) => { setFieldValue("lessonDuration", e.target.value) }}
+                            >
+                               
+                                     <FormControlLabel value="45" control={<Radio />}  label="45 דקות"/>
+                                <FormControlLabel value="60" control={<Radio />}  label="60 דקות"/>
+                               
+                            </RadioGroup> 
+</FormControl>
+<Button className="button-add-course" variant="outlined" type="submit" disabled={isSubmitting}>
                                     הוסף      </Button>
-                            </Box></Paper>
+</Box>
+                               
+                            </Paper>
                     </form>
                 );
 
