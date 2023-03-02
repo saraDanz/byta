@@ -27,14 +27,14 @@ const ss = React.forwardRef((props, ref) => {
 const PrintFormat = React.forwardRef((props, ref) => {
     return (
         <>
-
+        // <div class="page-number"></div>
             <TableContainer component={Paper} ref={ref} className="print-tbl" >
                 <Table sx={{ textAlign: "right" }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
 
                             <TableCell> </TableCell>
-                            {props.columns.map((item, index) => { return <TableCell key={index} align="right">{item.headerName}&nbsp;</TableCell> })}
+                            {props.columns.map((item, index) => { return <TableCell key={index} component='th' align="right">{item.headerName}&nbsp;</TableCell> })}
 
                         </TableRow>
                     </TableHead>
@@ -42,9 +42,11 @@ const PrintFormat = React.forwardRef((props, ref) => {
                         {props.data.map((row, ind) => {
                             return <TableRow key={row._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                 <TableCell>{(ind + 1)}</TableCell> {
+
                                     props.columns.map((col, index) => 
                                                       (typeof (row[col.field]) != "object" ||!row[col.field])? <TableCell key={index}>{row[col.field]}</TableCell> : 
                                                         <TableCell key={index}>{row[col.field].toLocaleDateString()}</TableCell>)
+
                                 }
 
 

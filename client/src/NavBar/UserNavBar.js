@@ -8,12 +8,12 @@ const UserNavBar = ({ userRole }) => {
     return( <>  <Menu.Item >  <Link to="displayCalendar">לוח שנה</Link></Menu.Item>
 
         {userRole >= 2 && <DirectorNavBar />}
-        {userRole == 2 &&
+        {/*userRole == 2 &&
       
             
             <Menu.Item >       <Link to="export" title="excel הורדה לקובץ">
             <FileDownloadOutlinedIcon /></Link></Menu.Item>
-        }
+        */}
         {userRole == 3 && <ManagerNavBar />}
     </>)
 

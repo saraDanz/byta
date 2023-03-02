@@ -42,3 +42,8 @@ body {
     counter-increment: page;
     content: counter(page);
 }
+
+
+.page-number{
+    content: counter(page)
+  }
