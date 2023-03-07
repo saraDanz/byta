@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import "./EditCourseDialog.css"
 import {
   IconButton, InputAdornment, OutlinedInput, FormControl, InputLabel,
-  Box, MenuItem, Typography, Autocomplete
+  Box, MenuItem, Typography, Autocomplete,FormGroup,FormLabel,Radio,RadioGroup,FormControlLabel
 } from "@mui/material";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -36,7 +36,7 @@ export default function EditCourseDialog({ course, handleClose, saveChanges }) {
     <div>
 
       {course && (
-        <Formik initialValues={{ name: course.name, description: course.description, directorId: course.directorId, symbol: course.symbol }}
+        <Formik initialValues={{ name: course.name, description: course.description, directorId: course.directorId, symbol: course.symbol ,lessonDuration:course.lessonDuration}}
           onSubmit={(values, { setSubmitting }) => {
 
             if (!values.directorId && directors)
@@ -44,7 +44,8 @@ export default function EditCourseDialog({ course, handleClose, saveChanges }) {
               if(values.directorId._id)
               values.directorId=values.directorId._id;//במקרה ולא שינו את הרכזת
               //בגלל שהערך ברירת מחדל של האוטוקומפליט צריך להיות אובייקט אבל צריך לשמור רק את קוד הרכזת
-            axios.put(BASE_URL + "courses/" + course._id, values).then(res => {
+       debugger;
+              axios.put(BASE_URL + "courses/" + course._id, values).then(res => {
               console.log(res)
               console.log("course updated in", values);
 
@@ -193,6 +194,23 @@ export default function EditCourseDialog({ course, handleClose, saveChanges }) {
                         // }}
                         renderInput={(params) => <TextField {...params} />}
                       />
+                      <FormControl>
+                      <FormLabel >משך שיעור </FormLabel>
+                                                    <RadioGroup
+                    
+                                                    aria-labelledby="demo-controlled-radio-buttons-group"
+                                                    name="controlled-radio-buttons-group"
+                                                    value={values.lessonDuration}
+                                                    row
+                                                    sx={{ m: 1, width: '40ch' }}
+                                                    onChange={(e) => { setFieldValue("lessonDuration", e.target.value) }}
+                                                >
+                                                   
+                                                         <FormControlLabel value="45" control={<Radio />}  label="45 דקות"/>
+                                                    <FormControlLabel value="60" control={<Radio />}  label="60 דקות"/>
+                                                   
+                                                </RadioGroup> 
+                    </FormControl>
                     </Box>
 
                   </DialogContent>

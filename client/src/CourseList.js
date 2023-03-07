@@ -138,7 +138,7 @@ export default function CourseList() {
                             />
                             <ListItemText
                                 primary={item.symbol}
-                                secondary={""}
+                                secondary={item.lessonDuration?"אורך שיעור: "+item.lessonDuration+" דקות":""}
                             /> <ListItemText
                                 primary={item.directorId.firstName + " " + item.directorId.lastName}
                                 secondary={"רכזת"}

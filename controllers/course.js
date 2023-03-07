@@ -101,7 +101,7 @@ const getCourseByName = async (req, res) => {
 
 const addNewCourse = async (req, res) => {
     try {
-        let { name, description, directorId, startDate, symbol } = req.body;
+        let { name, description, directorId, startDate, symbol,lessonDuration } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(directorId))
             return res.status(400).send("director id is not valid");
@@ -122,7 +122,7 @@ const addNewCourse = async (req, res) => {
         // if (!teacher)
         //     return res.status(400).send("no such teacher");
         // let course = new Course({ name, description, directorId, startDate: startDate || Date.now(), teachers: [teacherId] })
-        course = new Course({ name, description, directorId, startDate: startDate || Date.now(), symbol })
+        course = new Course({ name, description, directorId, startDate: startDate || Date.now(), symbol ,lessonDuration})
         await course.save();
         return res.send(course);
     }
@@ -133,7 +133,7 @@ const addNewCourse = async (req, res) => {
 }
 const updateCourse = async (req, res) => {
     try {
-        let { name, description, directorId, startDate, symbol } = req.body;
+        let { name, description, directorId, startDate, symbol,lessonDuration } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(directorId))
             return res.status(400).send("director id is not valid");
@@ -152,7 +152,7 @@ const updateCourse = async (req, res) => {
                 return res.status(409).send("course with same symbol already exists");
         }
 
-        course = await Course.findByIdAndUpdate(id, { name, description, directorId, startDate: startDate || Date.now(), symbol }, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
+        course = await Course.findByIdAndUpdate(id, { name, description, directorId, startDate: startDate || Date.now(), symbol ,lessonDuration}, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
         console.log(course)
         return res.send(course);
     }
