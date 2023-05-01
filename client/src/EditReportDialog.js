@@ -54,11 +54,13 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
     // let dispatch = useDispatch();
     // let courses; 
 
-    const updateNumHours = (fromTime, toTime) => {
+    const updateNumHours = (fromTime, toTime, courseIndex) => {
+        let duration = courses[courseIndex].courseId.lessonDuration || 45;
         if (fromTime && toTime) {
 
             // setNumHours(calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
-            return (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
+         let x= (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime), duration))
+         return x;
 
         }
         return 0;
@@ -180,7 +182,13 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         labelId="demo-simple-select-autowidth-label"
                                         id="demo-simple-select-autowidth"
                                         value={values.course}
-                                        onChange={handleChange}
+                                        onChange={(e)=>{handleChange(e);
+                                           // updateNumHours(values.fromTime,values.toTime,values.course);
+                                            setFieldValue("numHours", updateNumHours(values.fromTime, values.toTime, e.target.value));
+                                        }
+                                        
+                                        }
+
                                         autoWidth
                                         label="קורס"
                                         name="course"
@@ -211,7 +219,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         value={values.fromTime}
                                         onChange={(e) => {
                                             setFieldValue("fromTime", e.target.value)
-                                            setFieldValue("numHours", updateNumHours(e.target.value, values.toTime));
+                                            setFieldValue("numHours", updateNumHours(e.target.value, values.toTime, values.course));
                                         }}
                                         onBlur={handleBlur}
                                         className={errors.fromTime && touched.fromTime && "error"}
@@ -229,7 +237,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         value={values.toTime}
                                         onChange={(e) => {
                                             setFieldValue("toTime", e.target.value)
-                                            setFieldValue("numHours", updateNumHours(values.fromTime, e.target.value));
+                                            setFieldValue("numHours", updateNumHours(values.fromTime, e.target.value, values.course));
                                         }}
                                         onBlur={handleBlur}
                                         error={(errors.toTime && touched.toTime)}
