@@ -47,12 +47,14 @@ export const getDayByNumber = (num) => {
   return String.fromCharCode(1488 + num);
 }
 
-export const calculateLessons = (fromTime, toTime) => {
+export const calculateLessons = (fromTime, toTime,lessonDuration) => {
   console.log(fromTime)
   let fullHours = toTime.getHours() - fromTime.getHours();
   let minutes = fullHours * 60 + toTime.getMinutes() - fromTime.getMinutes();
   let breakes = Math.floor(minutes / 135);
-  return ((minutes - breakes * 15) / 45).toFixed(2);
+  if(lessonDuration==60)
+  breakes=Math.floor(minutes/180)
+  return ((minutes - breakes * 15) / lessonDuration).toFixed(2);
 }
 export const countTravelingDays = (reportsArr) => {
   //Nחשב את מספר הימים הפרונטליים אבל לא בודק מה קורה כאשר ישנם מספר שיעורים באותו יום
