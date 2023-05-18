@@ -1,0 +1,22 @@
+.print-area table,
+
+.print-area td {
+    border         : 0.2px solid rgb(85, 85, 85);
+    border-collapse: collapse
+}
+.print-area table{
+    width:85%;
+    margin: auto;
+}
+
+.print-area tr {
+    display: flex;
+    justify-content: space-between;
+}
+.print-area td{
+    
+    flex:1;
+}
+.print-area th{
+    background-color: rgb(200, 200, 200);
+}

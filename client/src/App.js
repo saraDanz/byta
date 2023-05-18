@@ -39,6 +39,10 @@ import { BASE_URL } from "./VARIABLES.js";
 import { saveCurrentStatus } from "./store/actions/setting.js";
 import ReportDataManager from "./ExportToExcel/ReportDataManager"
 import ReportDataManagerDirector from "./ExportToExcel/ReportDataManagerDirector"
+import AllReports from "./ExportToExcel/Reports/AllReports";
+import ReportTeacherSpacious from "./ExportToExcel/Reports/ReportTeacherSpacious";
+import ReportCourseSpacious from "./ExportToExcel/Reports/ReportCourseSpacious.js";
+import ReportTeacherSum from "./ExportToExcel/Reports/ReportTeacherSum.js";
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -61,7 +65,7 @@ export default function App() {
     useEffect(() => {
         dispatch(saveUser(getStorage()));
         axios.get(`${BASE_URL}configs/byYear/${new Date().getFullYear()}`).then(res => {
-            dispatch(saveConfigs(new Date().getFullYear(),res.data))
+            dispatch(saveConfigs(new Date().getFullYear(), res.data))
 
         }).
             catch(err => {
@@ -173,12 +177,18 @@ export default function App() {
 
 
         <Routes>
-
+            <Route path="reportbyTeacherSpacious" element={<ReportTeacherSpacious />} />
+            <Route path="reportbyCourseSpacious" element={<ReportCourseSpacious />} />
+            <Route path="reportByTeacherSum" element={<ReportTeacherSum />} />
             <Route path="login" element={<Login />} />
 
+            <Route path="allReports" element={<AllReports />} />
 
             <Route path="directorList" element={<DirectorList />} />
-            <Route path="tableManager" element={<ReportDataManager />} />
+            <Route path="tableManager" element={<ReportDataManager />} >
+
+
+            </Route>
             <Route path="tableDirector" element={<ReportDataManagerDirector />} />
             <Route path="export" element={<ExportToExcel />} />
             <Route path="exportManager" element={<ExportToExcelManager />} />

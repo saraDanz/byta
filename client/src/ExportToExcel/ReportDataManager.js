@@ -9,7 +9,8 @@ import PrintFormat from "./PrintFormat";
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear, countTravelingDays } from "../Utils";
 import { useSelector, useDispatch } from "react-redux";
-import ReactPDF from '@react-pdf/renderer';
+import ReactPDF, { Link } from '@react-pdf/renderer';
+import { Link as LinkRoute, Outlet } from "react-router-dom";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useReactToPrint } from 'react-to-print';
@@ -35,12 +36,18 @@ import {
 } from "@mui/material";
 import LocalPrintshopOutlinedIcon from '@mui/icons-material/LocalPrintshopOutlined';
 
+// import { PDFDocumentt } from 'pdf-lib';
+// import { PDFDocumentt } from 'react-pdf'
 import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment } from "@mui/material";
 import { CustomPagination } from "./CustomPagination";
 import { sort } from "../Utils";
 import { PDFDownloadLink } from "@react-pdf/renderer"
+import ReportTeacherDense from "./Reports/AllReports";
+import ReportCourseSpacious from "./Reports/ReportCourseSpacious";
 
+import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Button as BButton } from "semantic-ui-react";
 // import {FiberManualRecordIcon}from "@mui/icons-material";
 const getUnfilteredRows = ({ apiRef }) => gridSortedRowIdsSelector(apiRef);
 
@@ -109,7 +116,7 @@ let columns = [
     { field: "numHours", headerName: "מספר שעות", flex: 2 },
     { field: "type", headerName: "סוג שיעור", flex: 3 },
     //    {field:"subject",headerName:"נושא"},
-    { field: "directorName", headerName: "רכזת", flex: 3 },
+    { field: "directorName", headerName: "רכזת", flex: 3, valueGetter: type => type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null },
     // { field: "reportDate", headerName: "תאריך דווח", flex: 2
     // ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}},
     {
@@ -295,13 +302,13 @@ const ReportDataManager = () => {
 
         if (currentUser) {
 
-            let courseIdparam = course ?._id;
-            let teacherIdparam = teacher ?._id;
-            let directorIdparam = director ?._id;
+            let courseIdparam = course?._id;
+            let teacherIdparam = teacher?._id;
+            let directorIdparam = director?._id;
             setReportsLoading(true);
             let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`;
             if (type == SearchTypes.Range)
-                url += `/${searchFrom ?.$d}/${searchTo ?.$d}`;
+                url += `/${searchFrom?.$d}/${searchTo?.$d}`;
             else url += `/${undefined}/${undefined}`;
             axios.get(url).then(res => {
 
@@ -315,6 +322,11 @@ const ReportDataManager = () => {
                     date = new Date(date)
                     return {
                         ...x,
+                        courseId: courseId,
+                        teacherId: teacherId,
+                        symbol: courseId.symbol,
+                        tz: teacherId.tz,
+                        workerNum: teacherId.workerNum,
                         teacherName: teacherId.firstName + " " + teacherId.lastName,
                         courseName: courseId.name,
                         directorName: courseId.directorId.firstName + " " + courseId.directorId.lastName,
@@ -322,7 +334,7 @@ const ReportDataManager = () => {
                         toTime: toTime && (toTime.getHours() + ":" + toTime.getMinutes()) || "00:00",
                         date: date,
                         reportDate: new Date(reportDate),
-                        type: type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null
+                        type
 
                     }
                 });
@@ -340,12 +352,12 @@ const ReportDataManager = () => {
     const exportToExcel = () => {
         if (reports.length) {
             let rep = reports.map(item => {
-                let { courseName, teacherName, date, fromTime, toTime, numHours, type, directorName, reportDate, comment } = item; return {
-                    courseName, teacherName, date: date? new Date(date):date, fromTime, toTime, numHours, type, directorName, reportDate: reportDate ? reportDate.toLocaleDateString() : reportDate, comment
+                let { symbol, courseName, teacherName, workerNum, date, fromTime, toTime, numHours, type, directorName, reportDate, comment } = item; return {
+                    symbol, courseName, teacherName, workerNum, date: date ? new Date(date) : date, fromTime, toTime, numHours, type, directorName, reportDate: reportDate ? reportDate.toLocaleDateString() : reportDate, comment
                 }
             })
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
-            exportToCSV(rep, `report-${year}-${month}`, [['קורס', 'מורה', 'תאריך', "משעה", "עד שעה", "מספר שעות", "סוג", "רכזת", "תאריך דוח", "הערות"]])
+            exportToCSV(rep, `report-${year}-${month}`, [['סמל קורס', 'קורס', 'מורה', 'מספר עובד', 'תאריך', "משעה", "עד שעה", "מספר שעות", "סוג", "רכזת", "תאריך דוח", "הערות"]])
         }
     }
 
@@ -373,11 +385,66 @@ const ReportDataManager = () => {
     let minimumColumnsDetails = useMemo(() => {
         return columns.map((item, index) => { return { field: item.field, headerName: item.headerName } })
     }, [columns])
-    
-    return <>
 
+    // const handleDownload = async () => {
+    // //     const data = { reports };
+    // // const fileName = 'my-document.pdf';
+    // // const doc = await PDFDocumentt.create();
+    // // const page = doc.addPage();
+    // // const pageContent = await page.drawSvg(
+    // //   await ReportCourseSpacious.exportSVG(data)
+    // // );
+    // // const pdfBytes = await doc.save();
+    // // const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    // // const url = URL.createObjectURL(blob);
+    // // const link = document.createElement('a');
+    // // link.href = url;
+    // // link.download = fileName;
+    // // link.click();
+    //   };
+
+    // const handleGeneratePDF = () => {
+    //   const blob = new Blob([<PDFViewer>
+    //     <Document>
+    //       <Page>
+    //         <ReportCourseSpacious data={{ reports: reports ,searchFrom,searchTo,year,month}} />
+    //       </Page>
+    //     </Document>
+    //   </PDFViewer>], { type: 'application/pdf' });
+    //   const url = URL.createObjectURL(blob);
+    // //   window.open(url);
+    // };
+    return <>
+        {/* <ReportTeacherDense reports={reports}/>*/}
+        <Outlet />
+        {reports.length > 0 &&
+            <>
+                <BButton><LinkRoute to="/allReports" state={{ reports: reports, searchFrom, searchTo, year, month }}>הורדת הדיווחים</LinkRoute>
+                </BButton><BButton> <LinkRoute to="/reportbyTeacherSpacious" state={{ reports: reports, searchFrom, searchTo, year, month }}>סיכום דווחים למורה לפי קורסים </LinkRoute>
+                </BButton><BButton> {/* <LinkRoute to="/reportbyCourseSpacious" state={{ reports: reports ,searchFrom,searchTo,year,month }}>לדווח לפי קורס מרווח</LinkRoute>  */}
+                    <LinkRoute to="/reportByTeacherSum" state={{ reports: reports, searchFrom, searchTo, year, month }}>סיכום דווחים למורה</LinkRoute>
+                </BButton>
+            </>
+        }
+        <div>
+            {/* <button onClick={handleGeneratePDF}>Generate PDF</button> */}
+            {/* <button onClick={handleDownload}>Generate donload</button> */}
+        </div>
+        {/*{reports.length&&<button>
+  <PDFDownloadLink document={
+      <ReportCourseSpacious data={{ reports: reports ,searchFrom,searchTo,year,month}} />
+  } fileName="x.pdf">
+    {({ blob, url, loading, error }) =>{ 
+        console.log('blob:', blob);
+          console.log('url:', url);
+          console.log('loading:', loading);
+          console.log('error:', error);
+        return (error?<p>erorr.message</p>:loading ? "Loading document..." : "Download now!")}}
+  </PDFDownloadLink>
+</button>}*/}
         <PrintFormat columns={minimumColumnsDetails}
             ref={componentRef} data={reports} />
+
         <div className="excel" sx={{ overflow: "hidden", maxHeight: "60vh" }}>
 
             <form>
@@ -476,17 +543,17 @@ const ReportDataManager = () => {
 
                                 <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
                                     חפש
-                    </Button>
+                                </Button>
 
 
                                 <Button type="button" variant="outlined" onClick={exportToExcel} sx={{ m: 1, width: "15ch" }} >
                                     הורדה לקובץ Excel
 
-        </Button>
+                                </Button>
                                 <Button type="button" startIcon={<LocalPrintshopOutlinedIcon />} variant="outlined" onClick={handlePrint} sx={{ m: 1 }} >
 
                                 </Button>
-                            {/*    {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
+                                {/*    {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
                                     "teacherName", "fromTime",
                                     "toTime",
                                     "numHours",
@@ -535,7 +602,7 @@ const ReportDataManager = () => {
                                 </FormControl>
                                 <Button type="button" disabled={!searchFrom || !searchTo} variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '13ch' }} onClick={() => { getData(SearchTypes.Range) }}>
                                     חפש בין תאריכים
-            </Button>
+                                </Button>
                             </Stack>
 
                         </Box>

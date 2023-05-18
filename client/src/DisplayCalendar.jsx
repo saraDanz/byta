@@ -18,6 +18,7 @@ import AddReportDialog from "./AddReportDialog";
 import { EventTooltipContent } from './EventTooltipContent';
 import "./DisplayCalendar.css";
 import SaveIcon from '@mui/icons-material/Save';
+require('moment/locale/he.js')
 const DisplayCalendar = () => {
 
   let dispatch = useDispatch();
@@ -292,8 +293,10 @@ const DisplayCalendar = () => {
           initialView='dayGridMonth'
           editable={true}
           disableDragging={true}
+        
           selectable={true}
           selectMirror={true}
+          fixedWeekCount={false}
           dayMaxEvents={true}
 
           weekends={weekendsVisible}
