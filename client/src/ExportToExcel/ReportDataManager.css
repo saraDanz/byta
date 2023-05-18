@@ -47,3 +47,4 @@ body {
 .page-number{
     content: counter(page)
   }
+  

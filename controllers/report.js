@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const Report = require("../models/report").reportModel;
 const User = require("../models/user").userModel;
 const Course = require("../models/course").courseModel;
+
+const fs=require('fs')
+
 const getAllReports = async (req, res) => {
     try {
         const reports = await Report.find();
@@ -101,12 +104,13 @@ const searchByParameters = async (req, res) => {
         // let ob = { courseId, teacherId, directorId };
         let ob = { courseId, teacherId, };
         ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
-        reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
+        reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName tz workerNum -_id " }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
         if (directorId != 'null' && directorId != 'undefined' && directorId)
             reports = reports.filter(item => {
                 return !item.courseId || !item.courseId.directorId || item.courseId.directorId._id == directorId;
 
             });
+            fs.writeFileSync("allreports.json", JSON.stringify(reports), 'utf8')
         console.log(reports)
         return res.send(reports);
     }

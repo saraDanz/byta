@@ -27,7 +27,7 @@ const ss = React.forwardRef((props, ref) => {
 const PrintFormat = React.forwardRef((props, ref) => {
     return (
         <>
-        // <div class="page-number"></div>
+        
             <TableContainer component={Paper} ref={ref} className="print-tbl" >
                 <Table sx={{ textAlign: "right" }} aria-label="simple table">
                     <TableHead>

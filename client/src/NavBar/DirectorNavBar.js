@@ -8,10 +8,7 @@ const DirectorNavBar = () => {
         <Menu.Item >     <Link to="addTeacherToCourse" >הוספת מורה לקורס</Link></Menu.Item>
         <Menu.Item >     <Link to="teacherList" >מורות</Link></Menu.Item>
         <Menu.Item >     <Link to="courseList" >קורסים</Link></Menu.Item>
-        <Menu.Item >
-        <Link to="tableDirector">  <Tooltip title={"excel הורדה לקובץ"} >
-            <FileDownloadOutlinedIcon />
-        </Tooltip></Link></Menu.Item>
+       
 
 
        {/* <Menu.Item><Link to="">הורדה לאקסל</Link></Menu.Item>*/}
