@@ -4,19 +4,46 @@
     border         : 0.2px solid rgb(85, 85, 85);
     border-collapse: collapse
 }
-.print-area table{
-    width:85%;
+
+.print-area table {
+    width : 95%;
     margin: auto;
+    font-size: 23px
+    
 }
 
 .print-area tr {
-    display: flex;
-    justify-content: space-between;
+  
 }
-.print-area td{
+
+.print-area td {
+    padding: 8px 4px 8px 4px;
     
-    flex:1;
+
+     flex-grow: 0;
+     flex-shrink: 0; 
+     flex-basis: 0px
 }
-.print-area th{
+
+.print-area th {
     background-color: rgb(200, 200, 200);
+}
+
+.print-area td.flex1 {
+    width:  2.564%;
+}
+
+.print-area td.flex2 {
+    width: 5.12% ;
+}
+
+.print-area td.flex3 {
+    width: 7.69%;
+}
+.print-area td.flex4 {
+    width:10.25%;
+}
+
+.print-area td.flex5 {
+    width: 12.82%;
 }

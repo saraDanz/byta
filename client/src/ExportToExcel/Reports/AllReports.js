@@ -14,7 +14,7 @@ export default function AllReports({ props }) {//spacious
     const navigate = useNavigate();
 
     reports.sort((a, b) => {
-        if (a.teacherId?.lastName > b.teacherId?.lastName) return 1;
+        if (a.teacherId ?.lastName > b.teacherId ?.lastName) return 1;
         return -1;
 
     }
@@ -26,7 +26,7 @@ export default function AllReports({ props }) {//spacious
             let rep = reports.map((item, index) => {
                 let { tz, teacherName, workerNum, courseName, symbol, numHours, directorName, fromTime, toTime, date, type } = item;
                 return {
-                    tz, teacherName, workerNum, courseName, symbol, date, fromTime, toTime, numHours, type: type == "distance" ? "למידה מרחוק" : type == "frontal" ? "פרונטלי" : "", directorName
+                    tz, teacherName, workerNum, courseName, symbol, date, fromTime, toTime, numHours, type, directorName
 
                 }
             })
@@ -34,14 +34,28 @@ export default function AllReports({ props }) {//spacious
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
             exportToCSV(rep, fromDate && toDate ? `סכום שעות  לתאריכים ${fromDate.$d.toLocaleDateString()}-${toDate.$d.toLocaleDateString()}: ` :
                 `דווח שעות לחודש -${year}-${month}`,
-                [['שם מורה', "תז", "מספר עובד", "שם קורס", "סמל קורס", "תאריך", "משעה", "עד שעה", "מספר שעות", "סוג", "שם רכזת"]])
+                [['תז', "שם מורה", "מספר עובד", "שם קורס", "סמל קורס", "תאריך", "משעה", "עד שעה", "שעות", "סוג", "שם רכזת"]],
+                 [
+                    { wch: 9},
+                    { wch: 17 },
+                    { wch: 8 },
+                    { wch: 20 },
+                    { wch: 8 },
+                    { wch: 10 },
+                    { wch: 7 },
+                    { wch: 7 },
+                    { wch: 6 },
+                    { wch: 10 },
+                    { wch: 15 },
+                ]
+            )
         }
     }
     const handleDownloadPdf = async () => {
         const element = printRef.current;
         const canvas = await html2canvas(element);
 
-        var imgData = canvas.toDataURL('image/png');
+        var imgData = canvas.toDataURL("image/jpeg", 0.3);
         var imgWidth = 210;
         var pageHeight = 295;
         var imgHeight = canvas.height * imgWidth / canvas.width;
@@ -49,13 +63,13 @@ export default function AllReports({ props }) {//spacious
         var doc = new jsPDF('p', 'mm');
         var position = 0;
 
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight, undefined, "FAST");
         heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
             position = heightLeft - imgHeight;
             doc.addPage();
-            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight, undefined, "FAST");
             heightLeft -= pageHeight;
         }
         // -----------
@@ -102,8 +116,8 @@ export default function AllReports({ props }) {//spacious
                         <th>שם</th>
                         <th>מספר עובד</th>
                         <th>שם קורס</th>
-                        <th>סמל קורס קורס</th>
-                        <th>מספר שעות</th>
+                        <th>סמל קורס </th>
+                        <th>שעות</th>
                         <th>תאריך</th>
                         <th>משעה</th>
                         <th>עד שעה</th>
@@ -114,23 +128,23 @@ export default function AllReports({ props }) {//spacious
                     </tr>
                     {reports.map((item, index) => {
                         return <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{item.tz}</td>
-                            <td>{item.teacherName}</td>
+                            <td className="flex1">{index + 1}</td>
+                            <td className="flex4">{item.tz}</td>
+                            <td className="flex5">{item.teacherName}</td>
 
-                            <td>{item.workerNum}</td>
+                            <td className="flex3">{item.workerNum}</td>
 
-                            <td>{item.courseName}</td>
-                            <td>{item.symbol}</td>
+                            <td className="flex5">{item.courseName}</td>
+                            <td className="flex2">{item.symbol}</td>
 
-                            <td>{item.numHours}</td>
+                            <td className="flex2">{item.numHours}</td>
 
-                            <td>{item.date ? item.date.toLocaleDateString() : ""}</td>
-                            <td>{item.fromTime}</td>
-                            <td>{item.toTime}</td>
+                            <td className="flex4">{item.date ? item.date.toLocaleDateString() : ""}</td>
+                            <td className="flex2">{item.fromTime}</td>
+                            <td className="flex2">{item.toTime}</td>
                             {/* <td>{item.travel ? item.travel : 0}</td> */}
-                            <td>{item.type == "distance" ? "למידה מרחוק" : item.type == "frontal" ? "פרונטלי" : ""}</td>
-                            <td>{item.directorName}</td>
+                            <td className="flex4">{ item.type}</td>
+                            <td className="flex5">{item.directorName}</td>
                         </tr>
                     })}
                 </table></div>

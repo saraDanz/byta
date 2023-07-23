@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import FullCalendar, { formatDate, CalendarApi } from '@fullcalendar/react'
+import heLocale from '@fullcalendar/core/locales/he'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -11,7 +12,9 @@ import { BASE_URL } from './VARIABLES';
 import { useNavigate } from 'react-router';
 import AddReportForm from './AddReportFormNot';
 import { Popover, Tooltip, Button } from "@mui/material";
-import { getCurrentViewMonthAndYear, dateStringToTimeString, shortStr } from "./Utils";
+
+// import { } from 'react-router';
+import { getCurrentViewMonthAndYear, dateStringToTimeString, shortStr, calculateTimeByDate } from "./Utils";
 // import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 import EditReportDialog from "./EditReportDialog";
 import AddReportDialog from "./AddReportDialog";
@@ -19,7 +22,7 @@ import { EventTooltipContent } from './EventTooltipContent';
 import "./DisplayCalendar.css";
 import useIsReportAvaliable from "./hooks/useIsReportAvailiable"
 import SaveIcon from '@mui/icons-material/Save';
-
+// import{ Prompt }from "react-router";
 
 const AAAcopy = () => {
   let isReportingAvailiable = useIsReportAvaliable();
@@ -36,6 +39,24 @@ const AAAcopy = () => {
   let calendarComponentRef = useRef(null);
   const [changedEvents, setChangedEvents] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
+  useEffect(() => {
+    const handleTabClose = event => {
+      if (changedEvents.length === 0)
+        return;
+      event.preventDefault();
+
+      console.log('beforeunload event triggered');
+
+      return (event.returnValue =
+        'Are you sure you want to exit?');
+    };
+
+    window.addEventListener('beforeunload', handleTabClose);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleTabClose);
+    };
+  }, [changedEvents]);
 
   useEffect(() => {
     let calendarApi = calendarComponentRef.current.getApi();
@@ -98,9 +119,29 @@ const AAAcopy = () => {
 
 
     }
+    let flag = false;
+    let v = eve.filter(item => new Date(item.date).toDateString() == newEvent.start.toDateString() || new Date(item.start).toDateString() == newEvent.start.toDateString())
+    v = v.map(item => { let start = calculateTimeByDate(item.fromTime); let end = calculateTimeByDate(item.toTime); return { start, end } })
+
+
+    v.forEach(item => {
+
+      if (!(item.start > calculateTimeByDate(newEvent.fromTime) && item.start >= calculateTimeByDate(newEvent.toTime) ||//התחיל תוך כדי
+        item.end <= calculateTimeByDate(newEvent.fromTime)))//התחיל לפני והסתיים תוך כדי
+        flag = true;
+
+      // if (item.start.getTime() <= newEvent.fromTime.getTime() && item.end.getTime() >= newEvent.toTime.getTime() ||
+      // item.start.getTime() >= newEvent.fromTime.getTime() && item.start.getTime() >= newEvent.toTime.getTime() )
+      //   flag = true;
+    })
+    if (flag == true) {
+      alert("קיים דווח אחר בשעות אלו")
+      return false;
+    }
+    console.log([...eve, newEvent])
     setEve([...eve, newEvent])
     setChangedEvents([...changedEvents, { ...newEvent, modelState: "added" }])
-
+    return true;
   }
 
   const handleDateClick = (selectInfo) => {
@@ -159,7 +200,7 @@ const AAAcopy = () => {
   //   setChangedEvents([...changedEvents, { ...newEvent, modelState: "added" }])
   // }
   const handleEdit = (event) => {
- 
+
     if (isReportingAvailiable(event.event.start))
       setEditInfo(event);
   }
@@ -275,6 +316,24 @@ const AAAcopy = () => {
     let e = [...eve];
     let index = editInfo.event.id ? e.findIndex(o => o.id == editInfo.event.id) : e.findIndex(o => o._id == editInfo.event.extendedProps._id)
 
+    let v = eve.filter((item, ind) => index != ind && (new Date(item.date).toDateString() == updatedEvent.start.toDateString() || new Date(item.start).toDateString() == updatedEvent.start.toDateString()))
+    v = v.map(item => { let start = calculateTimeByDate(item.fromTime); let end = calculateTimeByDate(item.toTime); return { start, end } })
+    let flag = false;
+    v.forEach(item => {
+
+      if (!(item.start > calculateTimeByDate(updatedEvent.fromTime) && item.start >= calculateTimeByDate(updatedEvent.toTime) ||//התחיל תוך כדי
+        item.end <= calculateTimeByDate(updatedEvent.fromTime)))//התחיל לפני והסתיים תוך כדי
+        flag = true;
+
+      // if (item.start.getTime() <= newEvent.fromTime.getTime() && item.end.getTime() >= newEvent.toTime.getTime() ||
+      // item.start.getTime() >= newEvent.fromTime.getTime() && item.start.getTime() >= newEvent.toTime.getTime() )
+      //   flag = true;
+    })
+    if (flag == true) {
+      alert("קיים דווח אחר בשעות אלו")
+      return false;
+    }
+
 
     e = e.map((item, ind) => { if (index == ind) return updatedEvent; return item; })
 
@@ -284,6 +343,7 @@ const AAAcopy = () => {
     // console.log("update", updatedEvent)
     // calendarApi.updateEvent(updatedEvent)
     //to do להוסיף בדיקה שאירוע זה טרם עודכן לפי שמוסיפים שוב למערך
+    return true;
   }
   const handleEvents = (events) => {
     setCurrentEvents(events);
@@ -338,6 +398,7 @@ const AAAcopy = () => {
 
 
 
+
       <div className='demo-app-main'>
         <FullCalendar
 
@@ -349,6 +410,7 @@ const AAAcopy = () => {
               }
             }
           }}
+          locale={heLocale}
           titleFormat={{ year: 'numeric', month: 'numeric' }}
           headerToolbar={{
             start: isSaving || changedEvents.length == 0 ? 'prev next' : 'prev next myCustomButton',

@@ -30,7 +30,7 @@ export default function ReportTeacherSum({ props }) {//
         const element = printRef.current;
         const canvas = await html2canvas(element);
 
-        var imgData = canvas.toDataURL('image/png');
+        var imgData = canvas.toDataURL("image/jpeg", 0.9);
         var imgWidth = 210;
         var pageHeight = 295;
         var imgHeight = canvas.height * imgWidth / canvas.width;
@@ -38,13 +38,13 @@ export default function ReportTeacherSum({ props }) {//
         var doc = new jsPDF('p', 'mm');
         var position = 0;
 
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight, undefined, "FAST");
         heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
             position = heightLeft - imgHeight;
             doc.addPage();
-            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight, undefined, "FAST");
             heightLeft -= pageHeight;
         }
         // -----------
@@ -85,12 +85,12 @@ export default function ReportTeacherSum({ props }) {//
         });
         return sum.toFixed(2);
     }
-    const countField = (field, arr,) => {
+    const countField = (field, arr, ) => {
         let sum = 0;
         arr.forEach(item => { sum++ });
         return sum;
     }
-    const groupByDateGetGroupsCnt = (dateField, arr,) => {
+    const groupByDateGetGroupsCnt = (dateField, arr, ) => {
 
         let result = arr.reduce((a, c) => (a[c[dateField]] = (a[c[dateField]] || 0) + 1, a), Object.create(null));
         return Math.floor(Object.keys(result).length);
@@ -105,14 +105,14 @@ export default function ReportTeacherSum({ props }) {//
                 reports: [...a[teacherTz][courseId]],
                 totalNumHours: sumByField('numHours', a[teacherTz][courseId]),
                 totalDays: groupByDateGetGroupsCnt('date', a[teacherTz][courseId]),//.......group by date
-                totalFrontalDays: groupByDateGetGroupsCnt('date', a[teacherTz][courseId].filter(u => u.type == "frontal")),///.......group by date
+                totalFrontalDays: groupByDateGetGroupsCnt('date', a[teacherTz][courseId].filter(u => u.type == "פרונטלי")),///.......group by date
 
 
             })
         b.push({ ...a[teacherTz][0], courses: courses, totalNumOfCourses: courses.length, totalNumHours: sumByField('totalNumHours', courses), totalFrontalDays: sumByField('totalFrontalDays', courses), totalDays: sumByField('totalDays', courses) })
     }
     b.sort((a, b) => {
-        if (a.courses[0].reports[0].teacherName.split(" ").filter(item=>item!="")[1] >= b.courses[0].reports[0].teacherName.split(" ").filter(item=>item!="")[1])
+        if (a.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[0] >= b.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[0])
             return 1;
         return -1;
     });
@@ -134,16 +134,22 @@ export default function ReportTeacherSum({ props }) {//
             })
 
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
-            exportToCSV(rep, fromDate && toDate ? `סכום שעות למורה לתאריכים ${fromDate.$d.toLocaleDateString()}-${toDate.$d.toLocaleDateString()}: ` : `סכום שעות למורה -${year}-${month}`, [['שם מורה', "תז", "מספר עובד", "מספר שעות", "מספר ימי נוכחות", "מספר ימים פרונטליים", "מספר קורסים בהם לימדה"]])
+            exportToCSV(rep, fromDate && toDate ? `סכום שעות למורה לתאריכים ${fromDate.$d.toLocaleDateString()}-${toDate.$d.toLocaleDateString()}: ` : `סכום שעות למורה -${year}-${month}`, [['שם מורה', "תז", "מספר עובד", "מספר שעות", "מספר ימי נוכחות", "מספר ימים פרונטליים", "מספר קורסים בהם לימדה"]],
+            [
+                { wch: 15},
+                { wch: 15 }
+              
+            ])
+      
         }
     }
 
     return (
         <div className="all">
             <Button type="button" onClick={handleDownloadPdf}>
-               pdf
+                pdf
             </Button> <Button type="button" onClick={exportToExcel}>
-              Excel
+                Excel
             </Button>
 
 

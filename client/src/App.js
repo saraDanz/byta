@@ -32,6 +32,8 @@ import DirectorList from "./DirectorList";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Avatar, Typography } from "@mui/material";
 import DisplayCalendar from "./DisplayCalendar";
+// import AddVariable from "./AddVariable";
+import VariableList from "./DataVariables/VariableList";
 import ExportToExcelManager from "./ExportToExcel/ExportToExcelManager.js";
 import NavBar from "./NavBar/NavBar.js";
 import axios from "axios";
@@ -43,6 +45,14 @@ import AllReports from "./ExportToExcel/Reports/AllReports";
 import ReportTeacherSpacious from "./ExportToExcel/Reports/ReportTeacherSpacious";
 import ReportCourseSpacious from "./ExportToExcel/Reports/ReportCourseSpacious.js";
 import ReportTeacherSum from "./ExportToExcel/Reports/ReportTeacherSum.js";
+import {
+    createBrowserRouter,
+    createRoutesFromElements,
+    // Route,
+    RouterProvider,
+  } from "react-router-dom";
+
+// import {} from "./Prompt";
 export default function App() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -175,6 +185,8 @@ export default function App() {
         </M>
 
 
+      
+
 
         <Routes>
             <Route path="reportbyTeacherSpacious" element={<ReportTeacherSpacious />} />
@@ -191,11 +203,12 @@ export default function App() {
             </Route>
             <Route path="tableDirector" element={<ReportDataManagerDirector />} />
             <Route path="export" element={<ExportToExcel />} />
-            <Route path="exportManager" element={<ExportToExcelManager />} />
+            <Route path="exportManager"  element={<ExportToExcelManager />} />
             <Route path="setting" element={<Setting />} />
             <Route path="addUser" element={<AddTeacher />} />
             <Route path="addCourse" element={<AddCourse />} />
             <Route path="teacherList" element={<TeacherList />} />
+            <Route path="variableList" element={<VariableList />} />
             <Route path="courseList" element={<CourseList />} />
             <Route path="displayCalendar" element={<AAAcopy />} />
             <Route path="addTeacherToCourse" element={<AddTeacherToCourse />} />

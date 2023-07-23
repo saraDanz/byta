@@ -151,24 +151,25 @@ export default function AddTeacher() {
                                     className={errors.workerNum && touched.workerNum && "error"}
                                 />
                                 <FormControl sx={{ m: 1, width: '10ch' }}>
+                              
                                 <InputLabel id="demo-simple-select-autowidth-label">תפקיד</InputLabel>
 
-                                <Select
-                                    id="rolrr"
-                                    value={values.role}
-
-                                 
-                                    onChange={(eve) => { setFieldValue("role", eve.target.value) }}>
+                                    <Select
+                                        id="rolrr"
+                                        value={values.role}
 
 
-                                    <MenuItem value="1">
-                                        <em>מורה</em>
-                                    </MenuItem>
-                                    <MenuItem value="2">
-                                        <em>רכזת</em>
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
+                                        onChange={(eve) => { setFieldValue("role", eve.target.value) }}>
+
+
+                                        <MenuItem value="1">
+                                            <em>מורה</em>
+                                        </MenuItem>
+                                        <MenuItem value="2">
+                                            <em>רכזת</em>
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
 
 
 
@@ -266,7 +267,7 @@ export default function AddTeacher() {
                                     className={errors.password && touched.password && "error"}
                                 />
                                 {/**/}
-                               
+
 
                                 <Button type="submit" variant="outlined" form="myForm" disabled={isSubmitting}>הוסף</Button>
                             </Box>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import "./index.css";
+import {createRoot} from "react-dom/client";
 import App from "./App";
 import { combineReducers } from "redux";
 import { BrowserRouter } from 'react-router-dom';
@@ -49,12 +50,16 @@ let store = createStore(combineReducers({ index: reducer, setting: settingReduce
 //     }
 //  });
 
+const app = document.getElementById('root');
 
-ReactDOM.render(
-  
-    <BrowserRouter>
+// create a root
+const root = createRoot(app);
+
+//render app to root
+root.render(<BrowserRouter>
     <Provider store={store}>
         <div dir="rtl">
             <App /></div>
     </Provider>
-</BrowserRouter>, document.getElementById('root'));
+</BrowserRouter>);
+

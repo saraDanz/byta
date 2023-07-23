@@ -14,6 +14,29 @@ const getAllTeacherCourses = async (req, res) => {
     }
 
 }
+const getAllTeacherWithTheirCourses = async (req, res) => {
+    try {
+
+        const teachersCourses = await TeacherCourses.find().populate("courseId").populate("teacherId");
+        let teachers = {};
+        teachersCourses.forEach((item, index) => {
+            if (!item.teacherId || !item.courseId) { console.log(index); return; }
+            if (!teachers[item.teacherId._id])
+                teachers[item.teacherId._id] = [{ teacher: item.teacherId, course: item.courseId }]
+            else
+                teachers[item.teacherId._id].push({ teacher: item.teacherId, course: item.courseId })
+        })
+
+
+
+        return res.send(Object.values(teachers));
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+
+}
 const getTeacherCoursesByDirectorId = async (req, res) => {
     try {
         let { directorId } = req.params;
@@ -44,7 +67,7 @@ const getCoursesByTeacherId = async (req, res) => {
 }
 const addTeacherToCourse = async (req, res) => {
     try {
-        let { teacherId, courseId } = req.body;
+        let { teacherId, courseId, fare } = req.body;
         if (!mongoose.Types.ObjectId.isValid(teacherId))
             return res.status(400).send("teacher id is not valid");
 
@@ -54,7 +77,7 @@ const addTeacherToCourse = async (req, res) => {
         if (teacherInCourse)
             return res.status(400).send("teacher already exists in this course");
 
-        teacherInCourse = new TeacherCourses({ courseId, teacherId });
+        teacherInCourse = new TeacherCourses({ courseId, teacherId, fare });
         await teacherInCourse.save();
         return res.send(teacherInCourse);
     }
@@ -87,9 +110,30 @@ const deleteTecherFromCourse = async (req, res) => {
     }
 
 }
+const updateFare = async (req, res) => {
+    try {
+        let { teacherInCourseId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(teacherInCourseId))
+            return res.status(400).send("teacherInCourseId is not valid");
+
+        const teacherInCourse = await TeacherCourses.findById(teacherInCourseId);
+        if (!teacherInCourse || !teacherInCourse.length)
+            return res.status(404).send("no such teacherCourseId");
+
+        // let updated = await TeacherCourses.findOneAndUpdate({ _id: id }, , { new: true });
+        teacherInCourse.fare = req.body.fare;
+        await teacherInCourse.save();
+        return res.send(teacherInCourse);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+
+}
 module.exports = {
-    getCoursesByTeacherId,
-    getTeacherCoursesByDirectorId,
+    getCoursesByTeacherId,updateFare,
+    getTeacherCoursesByDirectorId, getAllTeacherWithTheirCourses,
     addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse
 }
 // const addTeacherToCoure = async (req, res) => {

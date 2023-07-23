@@ -7,12 +7,20 @@ body {
     /*  overflow-y: hidden;*/
     overflow      : auto;
 }
+.css-b7k0tb-MuiAutocomplete-listbox .MuiAutocomplete-option{
+     justify-content: space-between !important;
+}
+
+
+.tz-autocomplete {
+    color: grey
+}
 
 .print-tbl {
     height       : 0px;
     /* visibility: hidden; */
     /* display   : none; */
-    text-align: start;
+    text-align   : start;
 }
 
 .css-1ex1afd-MuiTableCell-root {
@@ -29,6 +37,7 @@ body {
         /* background-color: greenyellow !important; */
     }
 }
+
 /* @page:left{
   @bottom-left {
     content: "Page " counter(page) " of " counter(pages);
@@ -40,11 +49,10 @@ body {
 
 #pageFooter:after {
     counter-increment: page;
-    content: counter(page);
+    content          : counter(page);
 }
 
 
-.page-number{
+.page-number {
     content: counter(page)
-  }
-  
+}

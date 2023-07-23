@@ -46,7 +46,7 @@ export default function ReportTeacherSpacious({ props }) {//
         const element = printRef.current;
         const canvas = await html2canvas(element);
 
-        var imgData = canvas.toDataURL('image/png');
+        var imgData = canvas.toDataURL("image/jpeg", 0.9);
         var imgWidth = 210;
         var pageHeight = 295;
         var imgHeight = canvas.height * imgWidth / canvas.width;
@@ -54,7 +54,7 @@ export default function ReportTeacherSpacious({ props }) {//
         var doc = new jsPDF('p', 'mm');
         var position = 0;
 
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight,undefined,"FAST");
         heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
@@ -174,7 +174,7 @@ export default function ReportTeacherSpacious({ props }) {//
          })
     }
     b.sort((a, b) => {
-        if (a.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[1] >= b.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[1])
+        if (a.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[0] >= b.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[0])
             return 1;
         return -1;
     });
@@ -210,9 +210,9 @@ export default function ReportTeacherSpacious({ props }) {//
                                     <th>#</th>
                                     <th>שם הקורס</th>
                                     <th>סמל קורס</th>
-                                    <th>מספר שעות</th>
+                                    <th>שעות</th>
                                     {/* <th>מספר ימי נוכחות</th> */}
-                                    <th>מספר שעות פרונטליות</th>
+                                    <th>שעות פרונטליות</th>
                                     <th>שם רכזת</th>
                                 </tr>
                                 {item.courses.map((it, ind) => {

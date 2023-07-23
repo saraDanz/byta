@@ -43,7 +43,7 @@ const reportSchema = Yup.object().shape({
     ,
 
     numHours: Yup.number().when(["fromTime", "toTime"], (fromTime, toTime, Scme) => {
-        if (fromTime && toTime) return Scme.positive("שעת סיום חייבות להיות אחרי שעת התחלה")
+        if (fromTime && toTime) return Scme.positive("סיום השיעור יהיה רק אחרי התחלתו")
     }),
     type: Yup.string().required("שדה חובה"),
     comment: Yup.string()
@@ -54,15 +54,12 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
     // const formikRef = useRef();
     // let [numHours, setNumHours] = useState(1);
     let courses = useSelector(st => st.index.courses);
-    useEffect(() => {
-
-    }, []);
-    const updateNumHours = (fromTime, toTime,courseIndex) => {
+    const updateNumHours = (fromTime, toTime, courseIndex) => {
         let duration = courses[courseIndex].courseId.lessonDuration || 45;
         if (fromTime && toTime) {
 
             // setNumHours(calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
-            return (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime),duration))
+            return (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime), duration))
 
         }
         return 0;
@@ -104,8 +101,9 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                 console.log(details)
 
                 // details = { ...details }
-                addReport(details)
-                onClose()
+                let result = addReport(details)
+                if (result)
+                    onClose()
             }}
 
             validate={values => {
@@ -147,10 +145,11 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                                 labelId="demo-simple-select-autowidth-label"
                                                 id="demo-simple-select-autowidth"
                                                 value={values.course}
-                                                onChange={(e)=>{handleChange(e);
-                                               // updateNumHours(values.fromTime,values.toTime,values.course);
-                                                setFieldValue("numHours", updateNumHours(values.fromTime, values.toTime,  e.target.value));
-                                            }}
+                                                onChange={(e) => {
+                                                    handleChange(e);
+                                                    // updateNumHours(values.fromTime,values.toTime,values.course);
+                                                    setFieldValue("numHours", updateNumHours(values.fromTime, values.toTime, e.target.value));
+                                                }}
                                                 autoWidth
                                                 label="קורס"
                                                 name="course"
@@ -182,7 +181,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         value={values.fromTime}
                                         onChange={(e) => {
                                             setFieldValue("fromTime", e.target.value)
-                                            setFieldValue("numHours", updateNumHours(e.target.value, values.toTime,values.course));
+                                            setFieldValue("numHours", updateNumHours(e.target.value, values.toTime, values.course));
                                             // if ( values.toTime && e.target.value>values.toTime)
                                             // setFieldError("toTime", "שעת סיום חייבת להיות אחרי שעת התחלה")
 
@@ -203,7 +202,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         value={values.toTime}
                                         onChange={(e) => {
                                             setFieldValue("toTime", e.target.value, false)
-                                            setFieldValue("numHours", updateNumHours(values.fromTime, e.target.value,values.course));
+                                            setFieldValue("numHours", updateNumHours(values.fromTime, e.target.value, values.course));
                                             // if (values.fromTime  && values.fromTime > e.target.value)
                                             // setFieldError("toTime", "שעת סיום חייבת להיות אחרי שעת התחלה")
                                         }}
@@ -226,6 +225,8 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                         label="מספר שעורים"
 
                                         sx={{ m: 1, width: '10ch' }}
+                                        error={(errors.numHours)}
+                                        helperText={errors.numHours ? errors.numHours : " "}
                                     />
 
                                     <RadioGroup

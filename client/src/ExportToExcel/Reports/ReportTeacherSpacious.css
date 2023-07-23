@@ -4,38 +4,41 @@
 
 .print-area table,
 .print-area th,
-.print-area  td {
+.print-area td {
     border         : 0.5px solid black;
     border-collapse: collapse;
 }
 
 .print-area table {
-    width: 80%;
+    /* width: 80%; */
 
 }
 
 .print-area tr {
-    display: flex;
+    /* display: flex; */
 }
 
-.print-area  td,
-.print-area  th {
+.print-area td,
+.print-area th {
     flex: 1;
 }
 
-.print-area  table {
+.print-area table {
     margin: auto;
 }
 
-.print-area  h2.date-desc {
+.print-area h2.date-desc {
     text-align: center;
 }
-.print-area .depth1 h2{display: flex;
-justify-content: space-around;
-width: 80%;
-margin: auto;
+
+.print-area .depth1 h2 {
+    display        : flex;
+    justify-content: space-around;
+    width          : 80%;
+    margin         : auto;
 }
-.print-area  .depth1 li {
+
+.print-area .depth1 li {
     margin : 2.5em 0;
     padding: 0;
 }
@@ -63,7 +66,14 @@ margin: auto;
     font-weight: bold;
     border     : 1px solid black;
 }
-.depth1 td,th{padding-right: 4px;
-    font-size: 22px; }
-    .depth1 td:first-child, .depth1 th:first-child{
-       flex:0.25 }
+
+.depth1 td,
+.depth1 th {
+    padding-right: 4px;
+    font-size    : 22px;
+}
+
+.depth1 td:first-child,
+.depth1 th:first-child {
+    flex: 0.25
+}

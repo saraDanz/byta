@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useTransition, useMemo, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment, TextField } from "@mui/material";
@@ -18,6 +18,8 @@ import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import FolderIcon from '@mui/icons-material/Folder';
+import LinearProgress from '@mui/material/LinearProgress';
+// import Box from '@mui/material/Box';
 // import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { BASE_URL } from './VARIABLES';
@@ -48,28 +50,22 @@ export default function TeacherList() {
     }
     const [teachers, setTeachers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredTeacherList, setFilteredTeacherList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    // const [filteredTeacherList, setFilteredTeacherList] = useState([]);
     const [editTeacherDialogVisible, setEditTeacherDialogVisible] = useState(null)
-    useEffect(() => {
-        let tempFilteredArrTeachers = teachers.filter(item => {
-            if ((item.firstName + " " + item.lastName).indexOf(searchTerm) > -1 || item.firstName.indexOf(searchTerm) > -1 || item.lastName.indexOf(searchTerm) > -1 || item.tz.indexOf(searchTerm) > -1 || item.email && item.email.indexOf(searchTerm) > -1)
-                return true;
-            return false;
-        });
-        setFilteredTeacherList(tempFilteredArrTeachers);
-    }, [teachers, searchTerm])
+
     const saveUpdateChanges = (updated) => {
         setTeachers(teachers.map(teacher => {
             if (teacher._id != updated._id)
                 return teacher;
             return updated;
         }).sort(
-            function(a, b) {          
-               if (a.lastName === b.lastName) {
-                  // Price is only important when cities are the same
-                  return a.firstName > b.firstName ? 1 : -1;
-               }
-               return a.lastName > b.lastName ? 1 : -1;
+            function (a, b) {
+                if (a.lastName === b.lastName) {
+                    // Price is only important when cities are the same
+                    return a.firstName > b.firstName ? 1 : -1;
+                }
+                return a.lastName > b.lastName ? 1 : -1;
             }));
 
     }
@@ -81,56 +77,92 @@ export default function TeacherList() {
         // })
         // setTeachers(res)
     }
+    // useEffect(() => {
+    //     setIsLoading(true)
+    //     axios.get(BASE_URL + "users/teachers").
+    //         then(res => {
+    //             console.log(res.data);
+    //             let t = res.data;
+    //             axios.get(BASE_URL + "teacherCourses").
+    //                 then(resp => {
+
+    //                     console.log(resp.data);
+
+    //                     t = t.map(item => { return { ...item, courses: resp.data.filter(a => a.teacherId && a.teacherId._id == item._id).map(x => x.courseId) } });
+    //                     setTeachers(t)
+    //                     console.log(t)
+    //                 }).
+    //                 catch(err => {
+    //                     console.log(err);
+    //                     alert("תקלה בהצגת קורסים בהם מלמדות המורות")
+    //                     setTeachers(t);
+    //                 })
+
+    //         }).
+    //         catch(err => {
+    //             console.log(err);
+    //             alert("תקלה בהצגת המורות")
+    //         }).finally(()=>{ setIsLoading(false)})
+
+
+
+    // }, []);
     useEffect(() => {
-        
-        axios.get(BASE_URL + "users/teachers").
+        setIsLoading(true)
+        axios.get(BASE_URL + "teacherCourses/withTheirCourses").
             then(res => {
                 console.log(res.data);
                 let t = res.data;
-                axios.get(BASE_URL + "teacherCourses").
-                    then(resp => {
-                        console.log(resp.data);
 
-                        t = t.map(item => { return { ...item, courses: resp.data.filter(a => a.teacherId && a.teacherId._id == item._id).map(x => x.courseId) } });
-                        setTeachers(t)
-                        console.log(t)
-                    }).
-                    catch(err => {
-                        console.log(err);
-                        alert("תקלה בהצגת קורסים בהם מלמדות המורות")
-                        setTeachers(t);
-                    })
 
+
+
+
+                setTeachers(t)
+                console.log(t)
             }).
+
             catch(err => {
                 console.log(err);
                 alert("תקלה בהצגת המורות")
-            })
+            }).finally(() => { setIsLoading(false) })
 
 
 
     }, []);
-    const [dense, setDense] = useState(false);
-    // const [secondary, setSecondary] = React.useState(false);
+
+    const [isPending, startTransition] = useTransition();
+    let filteredTeacherList = useMemo(() => {
+        return teachers.filter(item => {
+            if ((item.firstName + " " + item.lastName).indexOf(searchTerm) > -1 || item.firstName.indexOf(searchTerm) > -1 || item.lastName.indexOf(searchTerm) > -1 || item.tz.indexOf(searchTerm) > -1 || item.email && item.email.indexOf(searchTerm) > -1)
+                return true;
+            return false;
+        })
+    }, [searchTerm, teachers]);
 
     return (<div >
         <Box sx={{ flexGrow: 1 }}>
-        <TextField 
-    sx={{float:"left" ,m:1}}
-            id="input-with-icon-textfield"
-            label=""
-            onChange={(e) => { setSearchTerm(e.target.value) }}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <SearchIcon />
-                    </InputAdornment>
-                ),
-            }}
-            variant="outlined"
-        />
+            <TextField
+                sx={{ float: "left", m: 1 }}
+                id="input-with-icon-textfield"
+                label=""
+                onChange={(e) => {
+                    startTransition(() => {
+                        setSearchTerm(e.target.value)
+                    })
 
-       
+                }}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    ),
+                }}
+                variant="outlined"
+            />
+
+
 
 
 
@@ -138,8 +170,9 @@ export default function TeacherList() {
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
                 מורות
             </Typography>
+            {isLoading && <Box sx={{ display: "block", width: '100%' }}><LinearProgress /></Box>}
             <Demo>
-                <List dense={dense} dir="ltr">
+                <List dense={false} dir="ltr">
                     {filteredTeacherList.map(item => {
                         return <TeacherListItem deleteTeacherFromCourse={deleteTeacherFromCourse} key={item._id} editTeacher={() => { setEditTeacherDialogVisible(item) }} deleteTeacher={deleteTeacher} item={item} />
                     })}

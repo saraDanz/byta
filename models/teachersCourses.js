@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const teachersCoursesSchema = new mongoose.Schema({
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: "courses" },
-    teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "users" }
+    teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+    fare: Number
 
 });
 const teachersCoursesModel = mongoose.model("teachersCourses", teachersCoursesSchema);
