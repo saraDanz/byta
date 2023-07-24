@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { Tooltip } from "@mui/material";
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import DataObjectOutlinedIcon from '@mui/icons-material/DataObjectOutlined';
+
 const ManagerNavBar = () => {
     return <>
         <Menu.Item >
@@ -13,9 +15,12 @@ const ManagerNavBar = () => {
                 <FileDownloadOutlinedIcon />
             </Tooltip></Link></Menu.Item>
 
-        <Menu.Item >
+            <Menu.Item >
             <Link to="setting" title="הגדרות"><SettingsOutlinedIcon /></Link>
         </Menu.Item>
+        <Menu.Item >
+        <Link to="variableList" title="משתני מערכת"><DataObjectOutlinedIcon /></Link>
+    </Menu.Item>
 
     </>
 }

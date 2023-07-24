@@ -25,45 +25,40 @@ const variableSchema = Yup.object().shape({
     dataType: Yup.string(),
 
 });
-export default function AddEditVariableDialog({ handleClose, status, onAdd, onEdit }) {
+export default function AddEditVariableDialog({ handleClose, status, variable, onSave, onEdit }) {
 
 
     return <div className="add-user">
         <Formik
             validationSchema={variableSchema}
 
-            initialValues={{ key: "", name: "", value: "", dataType: "String" }}
+            initialValues={status == 1 ? { key: "", name: "", value: "", dataType: "String" } :
+                { key: variable.key, name: variable.name, value: variable.value, dataType: variable.dataType }}
             onSubmit={(values, { setSubmitting }) => {
-                //  let x= await  teacherSchema.isValid(values);
-                //     if(!x)
-                //     return;
 
-                // if (Object.keys(errors).length > 0)
-                //     return;
                 axios.post(BASE_URL + "variables", values).then(res => {
                     console.log(res)
                     console.log("variable added in", values);
-                    // dispatch(saveUser(res.data))
                     setSubmitting(false);
-
-                    // if (res.data.role == 1)
-                    //     navigate("/report")
-                    // else
-                    // navigate("/director")
                     alert("נתון נשמר בהצלחה")
-
-                    handleClose();
+                    onSave(res.data)
+                  
 
                 }).catch(err => {
                     console.log(err);
-
                     alert("התרחשה תקלה בשמירת הנתון");
-                    // alert("שגיאה באח מפרטי הזיהוי");
                     setSubmitting(false);
+
                 }).finally(() => {
-                    handleClose();
+                   
                 })
 
+
+                if (status == 2) {
+                    onEdit();
+
+                }
+                handleClose();
             }}
 
 
@@ -82,7 +77,7 @@ export default function AddEditVariableDialog({ handleClose, status, onAdd, onEd
 
                 return (
                     <form onSubmit={handleSubmit} id="myForm">
-                        <Dialog dir="rtl" scroll="paper" open={true } onClose={handleClose}>
+                        <Dialog dir="rtl" scroll="paper" open={true} onClose={handleClose}>
                             <DialogTitle > <Typography variant="h6" align="center"> פרטי נתון מערכת</Typography></DialogTitle>
                             <DialogContent>
                                 <DialogContentText>
@@ -189,5 +184,5 @@ export default function AddEditVariableDialog({ handleClose, status, onAdd, onEd
             }}
         </Formik>
         );
-    </div>
+    </div >
 }

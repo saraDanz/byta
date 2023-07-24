@@ -20,7 +20,7 @@ export default function AddTeacherToCourse() {
     const [defaultFare, setDefaultFare] = useState(0);
     const [teachers, setTeachers] = useState([]);
     useEffect(() => {
-        axios.get(BASE_URL + "variables/fare/תעריף ברירת מחדל").then((res) => {
+        axios.get(BASE_URL + "variables/fare/defaultFare").then((res) => {
             setDefaultFare( res.data.value);
             console.log(res.data)
 
@@ -129,7 +129,7 @@ export default function AddTeacherToCourse() {
 
 
                                     sx={{ m: 1, width: 300 }}
-                                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
+                                    getOptionLabel={(item) => item.firstName + " " + item.lastName+" "+item.tz}
                                     onChange={(event, newValue) => {
                                         debugger;
                                         console.log(newValue)

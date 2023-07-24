@@ -57,7 +57,12 @@ export default function VariableList() {
     const [isPending, startTransition] = useTransition();
 
     const [variableDialogStatus, setVariableDialogStatus] = useState(0)
-
+    const handleEdit = () => {
+        setSelectedVariable(null);
+    }
+    const handleSave = (newItem) => {
+        setVariables([newItem, ...variables])
+    }
     // const saveUpdateChanges = (updated) => {
     //     setTeachers(teachers.map(teacher => {
     //         if (teacher._id != updated._id)
@@ -73,8 +78,8 @@ export default function VariableList() {
     //         }));
 
     // }
-   
-  
+
+
     useEffect(() => {
         setIsLoading(true)
         axios.get(BASE_URL + "variables").
@@ -101,7 +106,7 @@ export default function VariableList() {
 
     let filteredVariableList = useMemo(() => {
         return variables.filter(item => {
-            if (item.name?.indexOf(searchTerm) > -1 || item.key?.indexOf(searchTerm) > -1 )
+            if (item.name ?.indexOf(searchTerm) > -1 || item.key ?.indexOf(searchTerm) > -1 )
                 return true;
             return false;
         })
@@ -128,7 +133,7 @@ export default function VariableList() {
                 }}
                 variant="outlined"
             />
-            <Button onClick={()=>{setVariableDialogStatus(1)}}>הוסף משתנה</Button>
+            <Button variant="contained" onClick={() => { setVariableDialogStatus(1) }}>הוסף נתון</Button>
 
 
 
@@ -136,23 +141,28 @@ export default function VariableList() {
 
 
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
-                 נתוני מערכת 
+                נתוני מערכת
             </Typography>
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
-           ראשית מוצגים הנתונים העדכניים ביותר
+                ראשית מוצגים הנתונים העדכניים ביותר
        </Typography>
             {isLoading && <Box sx={{ display: "block", width: '100%' }}><LinearProgress /></Box>}
             <Demo>
                 <List dense={false} dir="ltr">
                     {filteredVariableList.map(item => {
-                        return <VariableListItem key={item._id} editVariable={() => { setVariableDialogStatus(2) ;setSelectedVariable(item)}}  item={item} />
+                        return <VariableListItem key={item._id} editVariable={() => { setVariableDialogStatus(2); setSelectedVariable(item) }} item={item} />
                     })}
                 </List>
             </Demo>
 
         </Box>
 
-       {variableDialogStatus&& <AddEditVariableDialog status={variableDialogStatus} variable={selectedVariable}  handleClose={() => { setVariableDialogStatus(0) }} />}
+        {variableDialogStatus && <AddEditVariableDialog
+            status={variableDialogStatus}
+            variable={selectedVariable}
+            onSave={handleSave}
+            onEdit={handleEdit}
+            handleClose={() => { setVariableDialogStatus(0) }} />}
     </div>
 
     );

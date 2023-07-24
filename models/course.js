@@ -7,7 +7,8 @@ const courseSchema = new mongoose.Schema({
     description: String,
     symbol: String,
     teachers: [{ type: mongoose.Types.ObjectId, ref: "users" }],
-    lessonDuration: { type: Number, default: 45 }
+    lessonDuration: { type: Number, default: 45 },
+    years: { type: [Number], default: [] }
 
 
 

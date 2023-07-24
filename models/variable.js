@@ -9,7 +9,7 @@ const variableSchema = new mongoose.Schema({
     setDate: { type: Date, default: Date.now() },
 
 });
-const variableModel = mongoose.model("fares", variableSchema);
+const variableModel = mongoose.model("variables", variableSchema);
 module.exports = {
     variableModel,
     variableSchema

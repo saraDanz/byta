@@ -162,7 +162,7 @@ function useApiRef() {
 let CustomFooter = (props) => {
     return (
         <GridFooterContainer>
-            סה"כ ימי נסיעות:{props.travelingDays}
+            סה"כ ימי נסיעות: {props.travelingDays}
             <GridFooter sx={{
                 border: 'none', // To delete double border.
             }} />
@@ -611,6 +611,7 @@ const ReportDataManager = () => {
 
 
                         <DataGrid
+                
                             disableColumnMenu
                             initialState={{
 
@@ -632,14 +633,17 @@ const ReportDataManager = () => {
                             }}
                             componentsProps={{
                                 footer: { travelingDays },
-                                toolbar: { setSearchTerm }
+                                toolbar: { setSearchTerm },
+                                pagination: {
+                                    labelRowsPerPage: "מספר שורות בעמוד",
+                                  }
                             }}
                             hideFooterSelectedRowCount
 
-                            sx={{ mt: 0.5, flex: 1, minHeight: "70vh" }}
+                            sx={{ mt: 0.5, flex: 1, minHeight: "60vh" }}
                             loading={reportsLoading}
                             getRowId={(row) => row._id}
-                            autoPageSize
+                        
                             rows={reports}
                             columns={columns} />
 

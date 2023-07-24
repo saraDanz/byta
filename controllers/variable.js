@@ -4,13 +4,15 @@ const Variable = require("../models/variable").variableModel;
 
 const getLastVariableByFieldName = async (req, res) => {
     try {
-        const { name } = req.params;
+        const { name, key } = req.params;
         if (!name)
             return res.status(400).send("name is required!");
+        if (!key)
+            return res.status(400).send("key is required!");
+        let variables = await Variable.find({ name, key }).sort({ "setDate": -1 });
 
-        let variables = await Variable.findByIdAndDelete({ name }).sort({ "setDate": -1 });
-
-
+        if (!variables.length)
+            return res.status(404).send("no such variable!");
         return res.send(variables[0]);
     }
     catch (e) {
@@ -30,7 +32,7 @@ const addNewVariable = async (req, res) => {
 
 
         let newVariable = new Variable({
-            valueType, value, name, key, setDate
+            valueType, value, name, key,setDate:new Date()
         })
 
         await newVariable.save();
@@ -47,7 +49,7 @@ const addNewVariable = async (req, res) => {
 
 const getVariables = async (req, res) => {
     try {
-      
+
 
         let variables = await Variable.find().sort({ "setDate": -1 });
         //איך מביאים מכל סוג את האחרון
@@ -65,5 +67,5 @@ const getVariables = async (req, res) => {
 
 module.exports = {
 
-    addNewVariable, getLastVariableByFieldName,getVariables
+    addNewVariable, getLastVariableByFieldName, getVariables
 }
