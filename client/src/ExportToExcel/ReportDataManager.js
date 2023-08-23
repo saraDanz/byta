@@ -114,9 +114,12 @@ let columns = [
     { field: "fromTime", headerName: "משעה", flex: 2 },
     { field: "toTime", headerName: "עד שעה", flex: 2 },
     { field: "numHours", headerName: "שעות", flex: 2 },
-    { field: "type", headerName: "סוג שיעור", flex: 3 },
+    { field: "type", headerName: "סוג שיעור", flex: 3,
+    //valueGetter: type => type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null
+  },
     //    {field:"subject",headerName:"נושא"},
-    { field: "directorName", headerName: "רכזת", flex: 3, valueGetter: type => type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null },
+    { field: "directorName", headerName: "רכזת", flex: 3, 
+    },
     // { field: "reportDate", headerName: "תאריך דווח", flex: 2
     // ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}},
     {

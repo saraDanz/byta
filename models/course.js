@@ -8,7 +8,8 @@ const courseSchema = new mongoose.Schema({
     symbol: String,
     teachers: [{ type: mongoose.Types.ObjectId, ref: "users" }],
     lessonDuration: { type: Number, default: 45 },
-    years: { type: [Number], default: [] }
+    // years: { type: [Number], default: [] },
+    status: { type: Boolean, default: true }
 
 
 

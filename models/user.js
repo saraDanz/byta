@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
     password: String,
     role: Number,
     workerNum:Number,
-    years: { type: [Number], default: [] }
+    // years: { type: [Number], default: [] },
+    status:{ type: Boolean, default: true}
 
 
 });

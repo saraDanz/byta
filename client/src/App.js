@@ -51,6 +51,8 @@ import {
     // Route,
     RouterProvider,
   } from "react-router-dom";
+import { saveDefaultFare } from "./store/actions/variable.js";
+import ReportInformation from "./ExportToExcel/Reports/ReportInformation.js";
 
 // import {} from "./Prompt";
 export default function App() {
@@ -82,7 +84,14 @@ export default function App() {
                 console.log(err);
                 alert("תקלה בקליטת ההגדרות")
             })
-
+            axios.get(BASE_URL + "variables/fare/defaultFare").then((res) => {
+                dispatch( saveDefaultFare(res.data));
+                console.log(res.data)
+    
+            })  .catch(err => {
+                    console.log(err);
+                    alert("תקלה בקליטת תעריף ברירת מחדל")
+                })
     }, []);
 
     return (<>
@@ -212,6 +221,7 @@ export default function App() {
             <Route path="courseList" element={<CourseList />} />
             <Route path="displayCalendar" element={<AAAcopy />} />
             <Route path="addTeacherToCourse" element={<AddTeacherToCourse />} />
+            <Route path="printInformation" element={<ReportInformation />} />
 
 
 

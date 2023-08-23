@@ -24,6 +24,11 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { InputAdornment, TextField } from "@mui/material";
 import { BASE_URL } from './VARIABLES';
 import axios from 'axios';
+import ExportMenu from './Menu/ExportMenu';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import LocalPrintshopOutlinedIcon from '@mui/icons-material/LocalPrintshopOutlined';
+import ExportDrawer from './Menu/ExportDrawer';
+import { exportToCSV } from "./ExportToExcel/exportToExcelUtils";
 
 // function generate(element) {
 //     return [0, 1, 2].map((value) =>
@@ -96,6 +101,7 @@ export default function CourseList() {
     // const [secondary, setSecondary] = React.useState(false);
 
     return (<div id="course-list">
+  
         <Box sx={{ flexGrow: 1 }}>
 
             <TextField
@@ -112,7 +118,28 @@ export default function CourseList() {
                 }}
                 variant="outlined"
             />
+            <ExportMenu items={[
+                {
+                    text: "excelהורדה ל",
+                    onClick: () => { exportToCSV(courses,'', [[""]],
+                    [
+                        { wch: 15},
+                        { wch: 15 }
+                      
+                    ]) }
+                    ,
+                    icon: <FileDownloadOutlinedIcon />
 
+                },
+                {
+                    text: "הדפסה",
+                    onClick: () => {
+                        alert("כאן צריך להדפיס")
+                    },
+                    icon: <LocalPrintshopOutlinedIcon />
+
+                }
+            ]} />
             <Typography sx={{ mt: 4, mb: 2 }} variant="h5" component="div">
                 קורסים
           </Typography>
@@ -138,7 +165,7 @@ export default function CourseList() {
                             />
                             <ListItemText
                                 primary={item.symbol}
-                                secondary={item.lessonDuration?"אורך שיעור: "+item.lessonDuration+" דקות":""}
+                                secondary={item.lessonDuration ? "אורך שיעור: " + item.lessonDuration + " דקות" : ""}
                             /> <ListItemText
                                 primary={item.directorId.firstName + " " + item.directorId.lastName}
                                 secondary={"רכזת"}

@@ -7,7 +7,7 @@ import { Formik } from "formik";
 import { Paper, Box, Button, Typography } from "@mui/material";
 
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
@@ -17,17 +17,10 @@ import CourseSelectListItem from "./CourseSelectListItem";
 export default function AddTeacherToCourse() {
     let dispatch = useDispatch();
     const [courses, setCourses] = useState([]);
-    const [defaultFare, setDefaultFare] = useState(0);
-    const [teachers, setTeachers] = useState([]);
+    const defaultFare=useSelector(st=>st.variable.defaultFare);
+      const [teachers, setTeachers] = useState([]);
     useEffect(() => {
-        axios.get(BASE_URL + "variables/fare/defaultFare").then((res) => {
-            setDefaultFare( res.data.value);
-            console.log(res.data)
-
-        })  .catch(err => {
-                console.log(err);
-                alert("תקלה בהצגת תעריף ברירת מחדל")
-            })
+        
         axios.get(BASE_URL + "courses").
             then(res => {
                 console.log(res.data);

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import "./index.css";
-import {createRoot} from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import App from "./App";
 import { combineReducers } from "redux";
 import { BrowserRouter } from 'react-router-dom';
@@ -11,6 +11,10 @@ import { reducer } from './store/reducers';
 import { composeWithDevTools } from "redux-devtools-extension";
 import { settingReducer } from './store/reducers/setting';
 import { configReducer } from './store/reducers/config';
+import { BASE_URL } from './VARIABLES';
+import axios from "axios";
+import {saveCurrentYear} from "./store/actions/variable"
+import { variableReducer } from './store/reducers/variable';
 // import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 // import Spinner from './components/Spinner';
 // import SeasonDisplay from './components/seasonDisplay';
@@ -42,11 +46,15 @@ import { configReducer } from './store/reducers/config';
 //     }
 
 // }
-let store = createStore(combineReducers({ index: reducer, setting: settingReducer ,config:configReducer}), composeWithDevTools());
+let store = createStore(combineReducers({ 
+    index: reducer, 
+    setting: settingReducer,
+    variable: variableReducer,
+     config: configReducer }), composeWithDevTools());
 // const THEME = createMuiTheme({
 //     typography: {
 //      "fontFamily": `"Rubik", "Helvetica", "Arial", sans-serif`,
-   
+
 //     }
 //  });
 
@@ -54,6 +62,14 @@ const app = document.getElementById('root');
 
 // create a root
 const root = createRoot(app);
+axios.get(BASE_URL + "variables/years/currentYear").then((res) => {
+    console.log(res.data);
+    store.dispatch(saveCurrentYear(res.data.value))
+})
+    .catch((er) => {
+        console.log(er)
+        alert("תקלה בהגדרת שנה נוכחית")
+    })
 
 //render app to root
 root.render(<BrowserRouter>

@@ -11,9 +11,9 @@ const ManagerNavBar = () => {
             <Link to="directorList" title="רכזות">רכזות</Link>
         </Menu.Item>
         <Menu.Item >
-            <Link to="tableManager">  <Tooltip title={"excel הורדה לקובץ"} >
+            <Link to="tableManager" title="הורדת דיווחים">  
                 <FileDownloadOutlinedIcon />
-            </Tooltip></Link></Menu.Item>
+           </Link></Menu.Item>
 
             <Menu.Item >
             <Link to="setting" title="הגדרות"><SettingsOutlinedIcon /></Link>

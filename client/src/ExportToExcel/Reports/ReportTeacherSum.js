@@ -4,14 +4,10 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./ReportTeacherSpacious.css";
 import { exportToCSV } from "../exportToExcelUtils.js";
-// import { exportToCSV } from "../exportToExcelUtils.js";
-
-
 import flatten from 'flat'
-
-
-import { pipe, groupBy, prop, map, pluck, sum } from 'ramda';
+import { pipe, groupBy, prop, map } from 'ramda';
 import { Button } from 'semantic-ui-react';
+
 
 export default function ReportTeacherSum({ props }) {//
     //מקבל את כל הדיווחחים של המורה הזאת לתקופה מסויימת
@@ -47,20 +43,7 @@ export default function ReportTeacherSum({ props }) {//
             doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight, undefined, "FAST");
             heightLeft -= pageHeight;
         }
-        // -----------
 
-
-        /*  const element = printRef.current;
-          const canvas = await html2canvas(element);
-          const data = canvas.toDataURL('image/png');
-  
-          const pdf = new jsPDF();
-          const imgProperties = pdf.getImageProperties(data);
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight =
-              (imgProperties.height * pdfWidth) / imgProperties.width;
-  
-          pdf.addImage(data, 'JPEG', 0, 0, pdfWidth, pdfHeight);*/
         doc.save('print.pdf');
         navigate(-1);
 
@@ -75,8 +58,6 @@ export default function ReportTeacherSum({ props }) {//
     const consolidate = pipe(
         groupBy(prop('teacherId.tz')),
         map(groupBy(prop('courseId._id'))),
-        // map(map(pluck('numHours'))),
-        // map(map(sum))
     )
     const sumByField = (field, arr) => {
         let sum = 0;
@@ -135,12 +116,12 @@ export default function ReportTeacherSum({ props }) {//
 
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
             exportToCSV(rep, fromDate && toDate ? `סכום שעות למורה לתאריכים ${fromDate.$d.toLocaleDateString()}-${toDate.$d.toLocaleDateString()}: ` : `סכום שעות למורה -${year}-${month}`, [['שם מורה', "תז", "מספר עובד", "מספר שעות", "מספר ימי נוכחות", "מספר ימים פרונטליים", "מספר קורסים בהם לימדה"]],
-            [
-                { wch: 15},
-                { wch: 15 }
-              
-            ])
-      
+                [
+                    { wch: 15 },
+                    { wch: 15 }
+
+                ])
+
         }
     }
 
@@ -174,7 +155,7 @@ export default function ReportTeacherSum({ props }) {//
                         <th>מספר עובד</th>
                         <th>מספר שעות</th>
                         <th>מספר ימי נוכחות</th>
-                        <th>מספר ימים פרונטליים</th>
+                        {/*<th>מספר ימים פרונטליים</th>*/}
                         <th>מספר קורסים בהם לימדה</th>
                     </tr>
                     {b.map((item, index) => {
@@ -184,11 +165,12 @@ export default function ReportTeacherSum({ props }) {//
                             <td>   {item.courses[0].reports[0].tz}     </td>
                             <td>   {item.courses[0].reports[0].workerNum}</td>                                     <td> {item.totalNumHours}</td>
                             <td>  {Number(item.totalDays).toFixed(0)}</td>
-                            <td>  {Number(item.totalFrontalDays).toFixed(0)}</td>
+                            {/*  <td>  {Number(item.totalFrontalDays).toFixed(0)}</td>*/}
                             <td>  {item.courses.length}</td>
                         </tr>
                     })}
-                </table>  </div>
+                </table>
+            </div>
 
         </div>
 

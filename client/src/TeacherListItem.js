@@ -10,9 +10,10 @@ import IconButton from '@mui/material/IconButton';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ListItemButton from '@mui/material/ListItemButton';
 import axios from "axios";
+import { Paper, Table, TableContainer, TableRow, TableCell, TableHead, TableBody } from "@mui/material"
 // import ListItemIcon from '@mui/material/ListItemIcon';
 // import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
 // import IconButton from '@mui/material/IconButton';
 import { useState } from "react"
 import Tooltip from '@mui/material/Tooltip';
@@ -27,20 +28,22 @@ import { BASE_URL } from './VARIABLES';
 // import {DeleteIcon }from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-export default function TeacherListItem({ item, deleteTeacher, editTeacher, deleteTeacherFromCourse }) {
+import { Typography } from '@mui/material';
+export default function TeacherListItem({ item, deleteTeacher,editFare, editTeacher, deleteTeacherFromCourse }) {
     const [open, setOpen] = useState(false);
     const deleteCourse = (course) => {
-        if (window.confirm("האם המורה אינה מלמדת בקורס " + course.name)) {
+        if (window.confirm("האם המורה לא מלמדת בקורס " + course.name)) {
             try {
 
 
-                axios.delete(BASE_URL + `users/${item._id}/${course._id}`)
+                axios.delete(BASE_URL + `teacherCourses/${item._id}/${course._id}`)
                     .then(res => {
                         deleteTeacherFromCourse(item._id, course._id)
+                        alert("הסרת המורה מקורס" + course.name + "בוצעה בהצלחה")
                     })
                     .catch(err => {
                         console.log(err)
-                        alert("שגיאה בהסרת המורה מהקורס")
+                        alert("שגיאה בהסרת המורה מהקורס\n לא ניתן להסיר מורה מקורס שלימדה בו בעבר")
                     })
             } catch (e) {
                 console.log(e)
@@ -79,7 +82,7 @@ export default function TeacherListItem({ item, deleteTeacher, editTeacher, dele
             <KeyboardArrowDown
 
                 sx={{
-                   
+
 
                     transform: open ? 'rotate(-180deg)' : 'rotate(0)',
                     transition: '0.2s',
@@ -90,28 +93,92 @@ export default function TeacherListItem({ item, deleteTeacher, editTeacher, dele
             <EditOutlinedIcon />
         </IconButton>
     </ListItem>
-        {open &&
-            item.courses.map((c, index) => (
+        {open && item.courses && (
+            <TableContainer component={Paper}>
+                <Table >
+                    <TableHead>
+                        <TableRow>
+
+                            <TableCell align="right">שם</TableCell>
+                            <TableCell align="right">תאור</TableCell>
+                            <TableCell align="right">סמל</TableCell>
+                            <TableCell align="right">תעריף נסיעות</TableCell>
+                            <TableCell component="th" scope="row">
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+
+                        {item.courses.map((row) => (
+                            <TableRow key={row.name}>
+                                <TableCell component="th" scope="row">
+                                    {row.name}
+                                </TableCell>
+                                <TableCell style={{ width: 160 }} align="right">
+                                    {row.description}
+                                </TableCell>
+                                <TableCell style={{ width: 160 }} align="right">
+                                    {row.symbol}
+                                </TableCell>
+                                <TableCell style={{ width: 160 }} align="right">
+                                    {row.fares && row.fares.length ? row.fares[row.fares.length - 1].rate : ""}
+                                </TableCell>
+                                <TableCell style={{ width: 160 }} align="right">
+                                    <IconButton edge="end" aria-label="delete" onClick={() => { deleteCourse(row) }}>
+                                        <DeleteOutlineIcon size="small" />
+                                    </IconButton>
+                                    <IconButton edge="end" aria-label="delete" onClick={() => { editFare(row,item) }}>
+                                     
+                                    <EditOutlinedIcon  size="small"/>
+                                    </IconButton>
+                                </TableCell>
+
+                            </TableRow>
+                        ))}
+
+                    </TableBody>
+
+
+                </Table>
+            </TableContainer>
+
+
+
+
+            /* (
                 <ListItem
-                    onClick={() => { deleteCourse(c) }}
-                    key={c._id}
-                    sx={{ py: 0, minHeight: 32, color: 'rgb(113 157 202)' }}
-                >
-                    <IconButton aria-label="delete" disabled color="primary">
-                        <ArrowRight />
+            secondaryAction={
+                <>   <IconButton edge="end" aria-label="delete" onClick={() => { deleteCourse(c) }}>
+                    <DeleteOutlineIcon />
+                </IconButton>
 
-                    </IconButton>
-                    <ListItemIcon sx={{ color: 'inherit' }}>
-                        <LibraryBooksIcon />
-                    </ListItemIcon>
-                    <ListItemText
+                </>
+            }
 
-                        primary={c.name}
-                        primaryTypographyProps={{ fontSize: 13, fontWeight: '400', color: 'rgb(113 157 202)' }}
-                        secondary={c.description + "-" + c.symbol}
+            key={c._id}
+            sx={{ py: 0, minHeight: 32, color: 'rgb(113 157 202)' }}
+        >
+            <IconButton aria-label="delete" disabled color="primary">
+                <ArrowRight />
 
-                        secondaryTypographyProps={{ color: 'rgb(113 157 202)' }}
-                    />
-                </ListItem>))}</>
+            </IconButton>
+            <ListItemIcon sx={{ color: 'inherit' }}>
+                <LibraryBooksIcon />
+            </ListItemIcon>
+            <ListItemText
+
+                primary={c.name}
+                primaryTypographyProps={{ fontSize: 13, fontWeight: '400', color: 'rgb(113 157 202)' }}
+                secondary={c.description + (c.symbol ? "-" : "") + c.symbol + (c.fares ? c.fares[c.fares.length - 1].rate + "!!!!" : "")}
+
+                secondaryTypographyProps={{ color: 'rgb(113 157 202)' }}
+            />
+
+            {c.fares && <ListItemText
+                primary=" תעריף נסיעות"
+                secondary={c.fares[c.fares.length - 1].rate}
+            />}
+        </ListItem>)*/
+        )}</>
 
 }

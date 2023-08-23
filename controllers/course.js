@@ -5,6 +5,7 @@ const TeacherCourses = require("../models/teachersCourses").teachersCoursesModel
 
 
 const getAllCourses = async (req, res) => {
+
     try {
         const courses = await Course.find().populate("directorId", "firstName lastName").populate("teachers").sort({ "name": 1 });
         return res.send(courses);
@@ -14,6 +15,18 @@ const getAllCourses = async (req, res) => {
 
     }
 }
+// const getAllCoursesByYear = async (req, res) => {
+//     let { year } = req.params;
+//     try {
+//         const courses = await Course.find().populate("directorId", "firstName lastName").populate("teachers").sort({ "name": 1 });
+//         return res.send(courses);
+//     }
+//     catch (e) {
+//         return res.status(400).send(e.message);
+
+//     }
+// }
+
 const getCoursesByDirectorId = async (req, res) => {
     const { directorId } = req.params;
     try {
@@ -54,7 +67,7 @@ const deleteCourseById = async (req, res) => {
         let count = TeacherCourses.find({ courseId: course._id }).count();
         //check
         if (count > 0)
-            return res.status(404).send("teachers already in course");
+            return res.status(404).send("there are teachers already in this course");
 
         const y = await Course.findByIdAndDelete(id);
         return res.send(y);
@@ -100,8 +113,9 @@ const getCourseByName = async (req, res) => {
 }
 
 const addNewCourse = async (req, res) => {
+
     try {
-        let { name, description, directorId, startDate, symbol,lessonDuration } = req.body;
+        let { name, description, directorId, startDate, symbol, lessonDuration } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(directorId))
             return res.status(400).send("director id is not valid");
@@ -122,7 +136,7 @@ const addNewCourse = async (req, res) => {
         // if (!teacher)
         //     return res.status(400).send("no such teacher");
         // let course = new Course({ name, description, directorId, startDate: startDate || Date.now(), teachers: [teacherId] })
-        course = new Course({ name, description, directorId, startDate: startDate || Date.now(), symbol ,lessonDuration})
+        course = new Course({ name, description, directorId, startDate: startDate || Date.now(), symbol, lessonDuration, years: [year] })
         await course.save();
         return res.send(course);
     }
@@ -133,7 +147,7 @@ const addNewCourse = async (req, res) => {
 }
 const updateCourse = async (req, res) => {
     try {
-        let { name, description, directorId, startDate, symbol,lessonDuration } = req.body;
+        let { name, description, directorId, startDate, symbol, lessonDuration } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(directorId))
             return res.status(400).send("director id is not valid");
@@ -152,7 +166,7 @@ const updateCourse = async (req, res) => {
                 return res.status(409).send("course with same symbol already exists");
         }
 
-        course = await Course.findByIdAndUpdate(id, { name, description, directorId, startDate: startDate || Date.now(), symbol ,lessonDuration}, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
+        course = await Course.findByIdAndUpdate(id, { name, description, directorId, startDate: startDate || Date.now(), symbol, lessonDuration }, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
         console.log(course)
         return res.send(course);
     }
@@ -162,6 +176,72 @@ const updateCourse = async (req, res) => {
     }
 }
 
+const toggleStatusOff = async (req, res) => {
+    try {
+
+        let id = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(id))
+            return res.status(400).send("course id is not valid");
+
+
+
+
+        course = await Course.findByIdAndUpdate(id, { status: false }, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
+        console.log(course)
+        return res.send(course);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
+// const removeYear = async (req, res) => {
+//     try {
+//         let { year } = req.body;
+
+//         let id = req.params.id;
+//         if (!mongoose.Types.ObjectId.isValid(id))
+//             return res.status(400).send("course id is not valid");
+
+//         let course = await Course.findOne({ _id: id, years: year });
+
+//         if (course)
+//             return res.status(409).send("this  course is already in " + year);
+
+
+//         course = await Course.findByIdAndUpdate(id, { $pull: { years: year } }, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
+//         console.log(course)
+//         return res.send(course);
+//     }
+//     catch (e) {
+//         return res.status(400).send(e.message);
+
+//     }
+// }
+
+// const addYear = async (req, res) => {
+//     try {
+//         let { year } = req.body;
+
+//         let id = req.params.id;
+//         if (!mongoose.Types.ObjectId.isValid(id))
+//             return res.status(400).send("course id is not valid");
+
+//         let course = await Course.findOne({ _id: id, years: year });
+
+//         if (course)
+//             return res.status(409).send("this  course is already in " + year);
+
+
+//         course = await Course.findByIdAndUpdate(id, { $push: { years: year } }, { new: true }).populate("directorId", "firstName lastName").populate("teachers")
+//         console.log(course)
+//         return res.send(course);
+//     }
+//     catch (e) {
+//         return res.status(400).send(e.message);
+
+//     }
+// }
 module.exports = {
-    getCourseByName, updateCourse, getCoursesByDirectorId, getCourseById, addNewCourse, deleteCourseById, getAllCourses, getCourseBySymbol
+    getCourseByName, toggleStatusOff, updateCourse, getCoursesByDirectorId, getCourseById, addNewCourse, deleteCourseById, getAllCourses, getCourseBySymbol
 }
