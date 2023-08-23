@@ -3,10 +3,12 @@ import * as FileSaver from 'file-saver';
 
 
 
-export const exportToCSV = (csvData, fileName, heading) => {
+export const exportToCSV = (csvData, fileName, heading, colWidth) => {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
     const ws = XLSX.utils.json_to_sheet(csvData);
+    if (colWidth)
+        ws['!cols'] = colWidth;
     const wb = {
         Sheets: { 'data': ws }, SheetNames: ['data'], Workbook: {
             Views: [

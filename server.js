@@ -8,6 +8,7 @@ const reportRoute = require("./routes/report");
 const coursesRoute = require("./routes/courses");
 const settingsRoute = require("./routes/settings");
 const configsRoute = require("./routes/config");
+const variablesRoute = require("./routes/variables");
 const teacherCoursesRoute = require("./routes/teacherCourses");
 const path = require("path")
 
@@ -31,6 +32,7 @@ app.use("/reports", reportRoute)
 app.use("/courses", coursesRoute)
 app.use("/teacherCourses", teacherCoursesRoute)
 app.use("/configs", configsRoute)
+app.use("/variables", variablesRoute)
 // if (process.env.NODE_ENV === 'production') {
 //     app.use(express.static('client/build')); // serve the static react app
 //     app.get(/^\/(?!api).*/, (req, res) => { // don't serve api routes to react app

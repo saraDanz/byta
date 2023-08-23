@@ -222,7 +222,7 @@ const ReportDataManagerDirector = () => {
 
 
     useEffect(() => {
-        if (!reduxTeachers || !reduxTeachers.length) {
+        if ((!reduxTeachers || !reduxTeachers.length)) {
             setTeacherLoading(true)
             axios.get(BASE_URL + "users/byDirectorId/" + currentUser._id).
                 then(res => {
@@ -413,7 +413,7 @@ const ReportDataManagerDirector = () => {
 
                                     options={teachers || []}
                                     sx={{ m: 1, width: "22ch" }}
-                                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
+                                    getOptionLabel={(item) => item.firstName + " " + item.lastName+" "+item.tz}
                                     value={teacher}
                                     onChange={(event, newValue) => {
                                         setTeacher(newValue);
@@ -452,18 +452,20 @@ const ReportDataManagerDirector = () => {
                                 <Button type="button" startIcon={<LocalPrintshopOutlinedIcon />} variant="outlined" onClick={handlePrint} sx={{ m: 1 }} >
 
                                 </Button>
-                              {/*  {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
+                               {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
                                     "teacherName", "fromTime",
                                     "toTime",
                                     "numHours",
                                     "type", "directorName", "comment"]}
                                     data={reports} />}
                                     fileName={searchFrom ?.$d && searchTo ?.$d ? `report-${searchFrom ?.$d}-${searchTo ?.$d}.pdf` : `report-${month}-${year}.pdf`}>
-                                    {({ blob, url, loading, error }) => (loading ? <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" disabled="true" sx={{ m: 1 }} >      </Button> :
+                                    {({ blob, url, loading, error }) =>{
+                                        debugger;
+                                        return (loading ? <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" disabled="true" sx={{ m: 1 }} >      </Button> :
                                         <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" onClick={handlePdf} sx={{ m: 1 }} >
 
-                                        </Button>)}
-                                </PDFDownloadLink>}*/}
+                                        </Button>)}}
+                                </PDFDownloadLink>}
 
 
                             </Stack>

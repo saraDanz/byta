@@ -28,7 +28,7 @@ export default function ReportTeacherSum({ props }) {//
         const element = printRef.current;
         const canvas = await html2canvas(element);
 
-        var imgData = canvas.toDataURL('image/png');
+        var imgData = canvas.toDataURL("image/jpeg", 0.3);
         var imgWidth = 210;
         var pageHeight = 295;
         var imgHeight = canvas.height * imgWidth / canvas.width;
@@ -36,13 +36,13 @@ export default function ReportTeacherSum({ props }) {//
         var doc = new jsPDF('p', 'mm');
         var position = 0;
 
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight,undefined,"FLAT");
         heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
             position = heightLeft - imgHeight;
             doc.addPage();
-            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight,undefined,"FAST");
             heightLeft -= pageHeight;
         }
         // -----------

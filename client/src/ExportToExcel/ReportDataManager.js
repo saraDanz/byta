@@ -113,10 +113,13 @@ let columns = [
 
     { field: "fromTime", headerName: "משעה", flex: 2 },
     { field: "toTime", headerName: "עד שעה", flex: 2 },
-    { field: "numHours", headerName: "מספר שעות", flex: 2 },
-    { field: "type", headerName: "סוג שיעור", flex: 3 },
+    { field: "numHours", headerName: "שעות", flex: 2 },
+    { field: "type", headerName: "סוג שיעור", flex: 3,
+    //valueGetter: type => type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null
+  },
     //    {field:"subject",headerName:"נושא"},
-    { field: "directorName", headerName: "רכזת", flex: 3, valueGetter: type => type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null },
+    { field: "directorName", headerName: "רכזת", flex: 3, 
+    },
     // { field: "reportDate", headerName: "תאריך דווח", flex: 2
     // ,valueFormatter:param=>{return param.value?param.value.toLocaleDateString():null}},
     {
@@ -162,7 +165,7 @@ function useApiRef() {
 let CustomFooter = (props) => {
     return (
         <GridFooterContainer>
-            סה"כ ימי נסיעות:{props.travelingDays}
+            סה"כ ימי נסיעות: {props.travelingDays}
             <GridFooter sx={{
                 border: 'none', // To delete double border.
             }} />
@@ -302,13 +305,13 @@ const ReportDataManager = () => {
 
         if (currentUser) {
 
-            let courseIdparam = course?._id;
-            let teacherIdparam = teacher?._id;
-            let directorIdparam = director?._id;
+            let courseIdparam = course ?._id;
+            let teacherIdparam = teacher ?._id;
+            let directorIdparam = director ?._id;
             setReportsLoading(true);
             let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`;
             if (type == SearchTypes.Range)
-                url += `/${searchFrom?.$d}/${searchTo?.$d}`;
+                url += `/${searchFrom ?.$d}/${searchTo ?.$d}`;
             else url += `/${undefined}/${undefined}`;
             axios.get(url).then(res => {
 
@@ -327,14 +330,14 @@ const ReportDataManager = () => {
                         symbol: courseId.symbol,
                         tz: teacherId.tz,
                         workerNum: teacherId.workerNum,
-                        teacherName: teacherId.firstName + " " + teacherId.lastName,
+                        teacherName: teacherId.lastName + " " + teacherId.firstName,
                         courseName: courseId.name,
                         directorName: courseId.directorId.firstName + " " + courseId.directorId.lastName,
                         fromTime: fromTime && (fromTime.getHours() + ":" + fromTime.getMinutes()) || "00:00",
                         toTime: toTime && (toTime.getHours() + ":" + toTime.getMinutes()) || "00:00",
                         date: date,
                         reportDate: new Date(reportDate),
-                        type
+                        type:   type == "frontal" ? "פרונטלי" : type == "distance" ? "למידה מרחוק" : type == "absence" ? "היעדרות" : null
 
                     }
                 });
@@ -499,7 +502,9 @@ const ReportDataManager = () => {
 
                                     options={teachers || []}
                                     sx={{ m: 1, width: "22ch" }}
-                                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
+                                    getOptionLabel={(item) => item.firstName + " " + item.lastName + " - " + item.tz}
+                                    renderOption={(props, item) =>   
+                               <p {...props} style={{dispaly:"flex",justifyContent:"spaceBetween"}}><span  >{item.lastName + " " + item.firstName}</span> <span className="tz-autocomplete">{item.tz}</span></p>}
                                     value={teacher}
                                     onChange={(event, newValue) => {
                                         setTeacher(newValue);
@@ -609,6 +614,7 @@ const ReportDataManager = () => {
 
 
                         <DataGrid
+                
                             disableColumnMenu
                             initialState={{
 
@@ -630,14 +636,17 @@ const ReportDataManager = () => {
                             }}
                             componentsProps={{
                                 footer: { travelingDays },
-                                toolbar: { setSearchTerm }
+                                toolbar: { setSearchTerm },
+                                pagination: {
+                                    labelRowsPerPage: "מספר שורות בעמוד",
+                                  }
                             }}
                             hideFooterSelectedRowCount
 
-                            sx={{ mt: 0.5, flex: 1, minHeight: "70vh" }}
+                            sx={{ mt: 0.5, flex: 1, minHeight: "60vh" }}
                             loading={reportsLoading}
                             getRowId={(row) => row._id}
-                            autoPageSize
+                        
                             rows={reports}
                             columns={columns} />
 

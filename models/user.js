@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema({
     email: String,
     password: String,
     role: Number,
-    workerNum:Number
+    workerNum:Number,
+    // years: { type: [Number], default: [] },
+    status:{ type: Boolean, default: true}
 
 
 });

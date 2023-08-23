@@ -98,3 +98,11 @@ div#fc-dom-301 {
     background-image: linear-gradient(40deg, #ffffff 47.06%, #c9d0d4 47.06%, #c9d0d4 50%, #ffffff 50%, #ffffff 97.06%, #c9d0d4 97.06%, #c9d0d4 100%);
     background-size: 26.45px 22.19px 
 }
+
+
+.fc .fc-daygrid-day-number {
+    margin-right: 6px;
+}
+.css-1d3ml05-MuiPopper-root-MuiTooltip-popper {
+    z-index:111111 !important;
+}

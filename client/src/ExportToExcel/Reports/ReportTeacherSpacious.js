@@ -46,7 +46,7 @@ export default function ReportTeacherSpacious({ props }) {//
         const element = printRef.current;
         const canvas = await html2canvas(element);
 
-        var imgData = canvas.toDataURL('image/png');
+        var imgData = canvas.toDataURL("image/jpeg", 0.9);
         var imgWidth = 210;
         var pageHeight = 295;
         var imgHeight = canvas.height * imgWidth / canvas.width;
@@ -54,7 +54,7 @@ export default function ReportTeacherSpacious({ props }) {//
         var doc = new jsPDF('p', 'mm');
         var position = 0;
 
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight, undefined, "FAST");
         heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
@@ -101,7 +101,7 @@ export default function ReportTeacherSpacious({ props }) {//
         });
         return sum.toFixed(2);
     }
-    const countField = (field, arr,) => {
+    const countField = (field, arr, ) => {
         let sum = 0;
         arr.forEach(item => { sum++ });
         return sum;
@@ -121,7 +121,7 @@ export default function ReportTeacherSpacious({ props }) {//
     //         })
     //     b.push({ ...a[teacherTz][0], courses: courses, totalNumOfCourses: courses.length, totalNumHours: sumByField('totalNumHours', courses), totalFrontalDays: sumByField('totalFrontalDays', courses) })
     // }
-    const groupByDateGetGroupsCnt = (dateField, arr,) => {
+    const groupByDateGetGroupsCnt = (dateField, arr, ) => {
 
         let result = arr.reduce((a, c) => (a[c[dateField]] = (a[c[dateField]] || 0) + 1, a), Object.create(null));
         return Math.floor(Object.keys(result).length);
@@ -146,7 +146,7 @@ export default function ReportTeacherSpacious({ props }) {//
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
             exportToCSV(rep, fromDate && toDate ? `סכום שעות לקורס לפי מורה לתאריכים ${fromDate.$d.toLocaleDateString()}-${toDate.$d.toLocaleDateString()}: ` :
                 `  סכום שעות לקורס לפי מורה -${year}-${month}`,
-                [['שם מורה', "תז", "מספר עובד",  "שם קורס", "סמל קורס", "מספר שעות", "שם רכזת"]])
+                [['שם מורה', "תז", "מספר עובד", "שם קורס", "סמל קורס", "מספר שעות", "שם רכזת"]])
         }
     }
 
@@ -162,19 +162,20 @@ export default function ReportTeacherSpacious({ props }) {//
                 reports: [...a[teacherTz][courseId]],
                 totalNumHours: sumByField('numHours', a[teacherTz][courseId]),
                 totalDays: groupByDateGetGroupsCnt('date', a[teacherTz][courseId]),//.......group by date
-               totalFrontalDays: groupByDateGetGroupsCnt('date', a[teacherTz][courseId].filter(u => u.type == "frontal")),///.......group by date
-                totalFrontalHours: sumByField('numHours', a[teacherTz][courseId].filter(u => u.type == "frontal")),
+                totalFrontalDays: groupByDateGetGroupsCnt('date', a[teacherTz][courseId].filter(u => u.type == "פרונטלי")),///.......group by date
+                totalFrontalHours: sumByField('numHours', a[teacherTz][courseId].filter(u => u.type == "פרונטלי")),
 
 
             })
-        b.push({ ...a[teacherTz][0], courses: courses, totalNumOfCourses: courses.length, totalNumHours: sumByField('totalNumHours', courses), 
-        totalFrontalDays: sumByField('totalFrontalDays', courses), 
-       totalDays: sumByField('totalDays', courses),
-         totalFrontalHours: sumByField('totalFrontalHours', courses)
-         })
+        b.push({
+            ...a[teacherTz][0], courses: courses, totalNumOfCourses: courses.length, totalNumHours: sumByField('totalNumHours', courses),
+            totalFrontalDays: sumByField('totalFrontalDays', courses),
+            totalDays: sumByField('totalDays', courses),
+            totalFrontalHours: sumByField('totalFrontalHours', courses)
+        })
     }
     b.sort((a, b) => {
-        if (a.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[1] >= b.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[1])
+        if (a.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[0] >= b.courses[0].reports[0].teacherName.split(" ").filter(item => item != "")[0])
             return 1;
         return -1;
     });
@@ -194,7 +195,7 @@ export default function ReportTeacherSpacious({ props }) {//
                 <ul>
                     {b.map((item, index) => {
                         return <li key={index}><div className="depth1" >
-                            <h2>
+                            <h2 style={{ width: "50%", marginRight: "5%" }}>
                                 <span>   <b>{index + 1}</b>.</span>
                                 <span> מורה: {item.courses[0].reports[0].teacherName} </span>
 
@@ -207,13 +208,13 @@ export default function ReportTeacherSpacious({ props }) {//
                             </h2>
                             <table>
                                 <tr className="table-header">
-                                    <th>#</th>
-                                    <th>שם הקורס</th>
-                                    <th>סמל קורס</th>
-                                    <th>מספר שעות</th>
+                                    <th style={{ boxSizing: "border-box", width: "6%" }} className="w1">#</th>
+                                    <th style={{ boxSizing: "border-box", width: "29%" }} className="w6">שם הקורס</th>
+                                    <th style={{ boxSizing: "border-box", width: "15%" }} className="w3">סמל קורס</th>
+                                    <th style={{ boxSizing: "border-box", width: "15%" }} className="w3">שעות</th>
                                     {/* <th>מספר ימי נוכחות</th> */}
-                                    <th>מספר שעות פרונטליות</th>
-                                    <th>שם רכזת</th>
+                                    <th style={{ boxSizing: "border-box", width: "15%" }} className="w2">שעות פרונטליות</th>
+                                    <th style={{ boxSizing: "border-box", width: "20%" }} className="w2">שם רכזת</th>
                                 </tr>
                                 {item.courses.map((it, ind) => {
 
@@ -233,9 +234,12 @@ export default function ReportTeacherSpacious({ props }) {//
                                     <td></td>
                                     <td></td>
                                     <td>סה"כ</td>
-                                    <td>  שעות:{item.totalNumHours}</td>
+                                    {/*  <td>  שעות:{item.totalNumHours}</td>
                                     <td> שעות פרונטליות: {item.totalFrontalHours}</td>
-                                    <td> ימי נוכחות: {item.totalFrontalDays}</td>
+                            <td> ימי נוכחות: {item.totalFrontalDays}</td>*/}
+                                    <td>  {item.totalNumHours}</td>
+                                    <td> {item.totalFrontalHours}</td>
+                                    <td> ימי נוכחות:{item.totalFrontalDays}</td>
 
                                 </tr>
                             </table>  </div></li>

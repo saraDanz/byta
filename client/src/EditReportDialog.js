@@ -44,7 +44,9 @@ const reportSchema = Yup.object().shape({
     toTime: Yup.string()
         .required("שדה חובה")
     ,
-
+    numHours: Yup.number().when(["fromTime", "toTime"], (fromTime, toTime, Scme) => {
+        if (fromTime && toTime) return Scme.positive("סיום השיעור יהיה רק אחרי התחלתו")
+    }),
     numHours: Yup.number(),
     type: Yup.string().required("שדה חובה"),
     comment: Yup.string(),
@@ -59,8 +61,8 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
         if (fromTime && toTime) {
 
             // setNumHours(calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
-         let x= (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime), duration))
-         return x;
+            let x = (calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime), duration))
+            return x;
 
         }
         return 0;
@@ -124,8 +126,12 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                 //      console.log(details)
 
                 // details = { ...details }
-                handleEditSave(details)
-                onClose();
+               
+
+                let result =  handleEditSave(details)
+                if (result)
+                    onClose();
+               
             }}
 
             validate={values => {
@@ -182,11 +188,12 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         labelId="demo-simple-select-autowidth-label"
                                         id="demo-simple-select-autowidth"
                                         value={values.course}
-                                        onChange={(e)=>{handleChange(e);
-                                           // updateNumHours(values.fromTime,values.toTime,values.course);
+                                        onChange={(e) => {
+                                            handleChange(e);
+                                            // updateNumHours(values.fromTime,values.toTime,values.course);
                                             setFieldValue("numHours", updateNumHours(values.fromTime, values.toTime, e.target.value));
                                         }
-                                        
+
                                         }
 
                                         autoWidth
@@ -258,6 +265,9 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         label="מספר שעורים"
 
                                         sx={{ m: 1, width: '10ch' }}
+                                        error={(errors.numHours)}
+                                        helperText={errors.numHours ? errors.numHours : " "}
+
                                     />
 
                                     <RadioGroup

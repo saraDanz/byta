@@ -11,6 +11,9 @@ export const getCurrentViewMonthAndYear = () => {
 
   return { month, year };
 }
+export const calculateTimeByDate = (datetime) => {
+  return new Date(datetime).getHours() * 60 + new Date(datetime).getMinutes();
+}
 export const isDateEqualsCurrentViewYearAndMonth = (date) => {
   let { year, month } = getCurrentViewMonthAndYear();
   return year == date.getFullYear() && month == date.getMonth();
@@ -47,14 +50,15 @@ export const getDayByNumber = (num) => {
   return String.fromCharCode(1488 + num);
 }
 
-export const calculateLessons = (fromTime, toTime,lessonDuration) => {
+export const calculateLessons = (fromTime, toTime, lessonDuration) => {
   console.log(fromTime)
   let fullHours = toTime.getHours() - fromTime.getHours();
   let minutes = fullHours * 60 + toTime.getMinutes() - fromTime.getMinutes();
-  let breakes = Math.floor(minutes / 135);
-  if(lessonDuration==60)
-  breakes=Math.floor(minutes/180)
-  return ((minutes - breakes * 15) / lessonDuration).toFixed(2);
+  let breakes = Math.floor(Math.abs(minutes) / 135);
+  if (lessonDuration == 60)
+    breakes = Math.floor(Math.abs(minutes) / 180)
+  let result = ((minutes - breakes * 15) / lessonDuration).toFixed(2);
+  return result;
 }
 export const countTravelingDays = (reportsArr) => {
   //Nחשב את מספר הימים הפרונטליים אבל לא בודק מה קורה כאשר ישנם מספר שיעורים באותו יום

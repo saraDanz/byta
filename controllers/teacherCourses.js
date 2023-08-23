@@ -1,12 +1,104 @@
+const Report = require("../models/report").reportModel;
 const mongoose = require("mongoose");
-// const Course = require("../models/course").courseModel;
-// const User = require("../models/user").userModel;
 const TeacherCourses = require("../models/teachersCourses").teachersCoursesModel;
+const User = require("../models/user").userModel;
 const getAllTeacherCourses = async (req, res) => {
     try {
 
         const teachersCourses = await TeacherCourses.find().populate("courseId").populate("teacherId");
         return res.send(teachersCourses);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+
+}
+const getAllTeacherWithTheirCourses = async (req, res) => {
+    try {
+        /* 
+              // const teachersCourses = await TeacherCourses.find({},{fares:{$slice:-1}}).populate("courseId").populate("teacherId");
+              const teachersCourses = await TeacherCourses.find({}).populate("courseId").populate("teacherId");
+      
+              let teachers = new Map();
+              teachersCourses.forEach((item, index) => {
+                  if (!item.teacherId || !item.courseId) { console.log(index); return; }
+                  let { status, lessonDuration, symbol, description, name, startDate, directorId, _id }=item.courseId;
+                  if (!teachers.has[item.teacherId])
+                      teachers.set(item.teacherId, [{status, lessonDuration,  symbol, description, name, startDate, directorId, _id , fares: item.fares }])
+                  else
+                      teachers.set(item.teacherId, [...teachers.get(item.teacherId), { status, lessonDuration,  symbol, description, name, startDate, directorId, _id , fares: item.fares }]);
+      
+              })
+      
+              let arr = [];
+              // for (let x in teachers)
+              //     arr.push({...teachers[x][0], courses: [,...teachers[x]] })
+              // console.log(teachers)
+              for (const [key, value] of teachers) {
+      
+                  // console.log(key, value);
+                  let { _id,
+                      firstName,
+                      lastName,
+                      tz,
+                      address,
+                      phone,
+                      email,
+                      password,
+                      role } = key;
+                  arr.push({
+                      _id,
+                      firstName,
+                      lastName,
+                      tz,
+                      address,
+                      phone,
+                      email,
+                      password,
+                      role
+                      , courses: value
+                  })
+      
+              }
+              const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
+            
+      
+              return res.send(arr);*/
+        const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
+        const teachersCourses = await TeacherCourses.find().populate("courseId").populate("teacherId");
+        let arr = users.map((item) => {
+            let { _id,
+                firstName,
+                lastName,
+                tz,
+                address,
+                phone,
+                email,
+                password,
+                role,workerNum } = item;
+            return {
+                _id,
+                firstName,
+                lastName,
+                tz,
+                address,
+                phone,
+                email,
+                password,
+                role,workerNum,
+                courses: teachersCourses.filter((a) => {
+                    if (a.teacherId && a.teacherId._id.toString() == item._id.toString()) return true; return false
+                }).map((x, index) => {
+
+
+                    let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
+                    return { status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares }
+                })
+            }
+        })
+        return res.send(arr);
+
     }
     catch (e) {
         return res.status(400).send(e.message);
@@ -42,9 +134,31 @@ const getCoursesByTeacherId = async (req, res) => {
     }
 
 }
+// const addTeacherToCourse = async (req, res) => {
+//     try {
+//         let { teacherId, courseId, fare } = req.body;
+//         if (!mongoose.Types.ObjectId.isValid(teacherId))
+//             return res.status(400).send("teacher id is not valid");
+
+//         if (!mongoose.Types.ObjectId.isValid(courseId))
+//             return res.status(400).send("course id is not valid");
+//         let teacherInCourse = await TeacherCourses.findOne({ courseId, teacherId });
+//         if (teacherInCourse)
+//             return res.status(400).send("teacher already exists in this course");
+
+//         teacherInCourse = new TeacherCourses({ courseId, teacherId, fare[fare] });
+//         await teacherInCourse.save();
+//         return res.send(teacherInCourse);
+//     }
+//     catch (e) {
+//         return res.status(400).send(e.message);
+
+//     }
+
+// }
 const addTeacherToCourse = async (req, res) => {
     try {
-        let { teacherId, courseId } = req.body;
+        let { teacherId, courseId, fare } = req.body;
         if (!mongoose.Types.ObjectId.isValid(teacherId))
             return res.status(400).send("teacher id is not valid");
 
@@ -54,7 +168,7 @@ const addTeacherToCourse = async (req, res) => {
         if (teacherInCourse)
             return res.status(400).send("teacher already exists in this course");
 
-        teacherInCourse = new TeacherCourses({ courseId, teacherId });
+        teacherInCourse = new TeacherCourses({ courseId, teacherId, fares: [{ rate: fare, associationDate: new Date() }] });
         await teacherInCourse.save();
         return res.send(teacherInCourse);
     }
@@ -75,11 +189,36 @@ const deleteTecherFromCourse = async (req, res) => {
         let teacherInCourse = await TeacherCourses.findOne({ courseId, teacherId });
         if (!teacherInCourse)
             return res.status(400).send("teacher dosn'et exists on this course");
+        let reports = await Report.find({ teacherId, courseId });
+        if (reports && reports.length)
+            return res.status(409).send("cannot remove course from teacher becase there are reports for this association");
         //check
         //יש לבדוק שאין דיווחים על מורה בקורס זה
         //לבדוק שהמחיקה עובדת
-        await teacherInCourse.findOneAndDelete({ courseId, teacherId })
-        return res.send(teacherInCourse);
+        let t = await TeacherCourses.findOneAndDelete({ courseId, teacherId })
+        return res.send(t);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+
+}
+const updateFare = async (req, res) => {
+    try {
+        let { courseId, teacherId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(courseId))
+            return res.status(400).send("courseId is not valid");
+        if (!mongoose.Types.ObjectId.isValid(teacherId))
+            return res.status(400).send("teacherId is not valid");
+
+        const teacherInCourse = await TeacherCourses.findOne({ courseId, teacherId });
+        if (!teacherInCourse)
+            return res.status(404).send("no such teacher in course");
+        let newFare = { rate: req.body.fare, associationDate: new Date() };
+        let updated = await TeacherCourses.findOneAndUpdate({ _id: teacherInCourse._id }, { $push: { fares: newFare } }, { new: true });
+
+        return res.send(newFare);
     }
     catch (e) {
         return res.status(400).send(e.message);
@@ -88,8 +227,9 @@ const deleteTecherFromCourse = async (req, res) => {
 
 }
 module.exports = {
-    getCoursesByTeacherId,
+    getCoursesByTeacherId, updateFare,
     getTeacherCoursesByDirectorId,
+    getAllTeacherWithTheirCourses,
     addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse
 }
 // const addTeacherToCoure = async (req, res) => {
