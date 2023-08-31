@@ -55,7 +55,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
     // let [numHours, setNumHours] = useState(1);
     let courses = useSelector(st => st.index.courses);
     const updateNumHours = (fromTime, toTime, courseIndex) => {
-        let duration = courses[courseIndex].courseId.lessonDuration || 45;
+        let duration = courses[courseIndex].lessonDuration || 45;
         if (fromTime && toTime) {
 
             // setNumHours(calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
@@ -67,7 +67,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
     useEffect(() => {
         setIsLoading(false);
     }, [courses])
-    useEffect(() => { })
+    // useEffect(() => { })
     const [isLoading, setIsLoading] = useState(true);
     return <div className="add-report-form-not">
 
@@ -92,8 +92,8 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                 details = {
                     ...details,
                     course: {
-                        _id: courses[course].courseId._id,
-                        name: courses[course].courseId.name,
+                        _id: courses[course]._id,
+                        name: courses[course].name,
                     },
                     fromTime: convertToTime(details.fromTime),
                     toTime: convertToTime(details.toTime),
@@ -157,7 +157,7 @@ export default function AddReportDialog({ onClose, addReport, selectInfo }) {
                                                 helperText={touched.course && errors.course ? errors.course : " "}
 
                                             >
-                                                {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
+                                                {courses.map((item, index) => { return <MenuItem value={index} key={item._id}>  {item.name+"-"+item.description}</MenuItem> })}
 
                                             </Select> </FormControl>}
                                     <TextField

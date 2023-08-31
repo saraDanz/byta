@@ -166,10 +166,12 @@ export default function CourseList() {
                             <ListItemText
                                 primary={item.symbol}
                                 secondary={item.lessonDuration ? "אורך שיעור: " + item.lessonDuration + " דקות" : ""}
-                            /> <ListItemText
+                            /> 
+                         <ListItemText
                                 primary={item.directorId.firstName + " " + item.directorId.lastName}
                                 secondary={"רכזת"}
                             />
+                         
                             <IconButton edge="end" onClick={() => { openEditCourseDialoge(item) }}>
                                 <EditOutlinedIcon />
                             </IconButton>

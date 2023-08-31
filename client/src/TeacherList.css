@@ -14,3 +14,7 @@
     width: 60%;
     margin: auto;
 }
+/* color of print menu item */
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
+    color: #4183c4;
+}

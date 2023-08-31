@@ -4,7 +4,7 @@ import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
 import "./ReportDataManager.css";
-import PDFDocument from "./PdfDocument";
+// import PDFDocument from "./Reports/PdfDocument";
 import PrintFormat from "./PrintFormat";
 import { BASE_URL } from "../VARIABLES";
 import { getCurrentViewMonthAndYear, countTravelingDays } from "../Utils";
@@ -50,6 +50,8 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import { Button as BButton } from "semantic-ui-react";
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import {saveCoursesOfCurrentUser,saveAllTeachers} from "../store/actions/index"
+
 // import {FiberManualRecordIcon}from "@mui/icons-material";
 const getUnfilteredRows = ({ apiRef }) => gridSortedRowIdsSelector(apiRef);
 
@@ -177,7 +179,7 @@ let CustomFooter = (props) => {
     );
 }
 
-const ReportDataManager = () => {
+const ReportDataDirectorAdvanced = () => {
     const { apiRef, columns } = useApiRef();
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
@@ -189,23 +191,23 @@ const ReportDataManager = () => {
     const handlePdf = () => { console.log(apiRef.current.getRowModels()); }
     // const handlePdf = () => { ReactPDF.render(<MyDocument />, `${__dirname}/example.pdf`); }
 
-    const reduxDirectors = useSelector(st => st.index.directors);
-    const reduxTeachers = useSelector(st => st.index.teachers);
-    const reduxCourses = useSelector(st => st.index.courses);
-    const [courses, setCourses] = useState(reduxCourses);
-    const [teachers, setTeachers] = useState(reduxTeachers);
-    const [directors, setDirectors] = useState(reduxDirectors);
-    const [director, setDirector] = useState(null);
+const dispatch=useDispatch();
+    const teachers = useSelector(st => st.index.teachers);
+    const courses = useSelector(st => st.index.courses);
+    // const [courses, setCourses] = useState(reduxCourses);
+    // const [teachers, setTeachers] = useState(reduxTeachers);
+    
     const [teacherLoading, setTeacherLoading] = useState(false);
-    const [directorsLoading, setDirectorsLoading] = useState(false);
     const [reportsLoading, setReportsLoading] = useState(false);
     const [courseLoading, setCourseLoading] = useState(false);
     const [originalReports, setOriginalReports] = useState([]);
     const [reports, setReports] = useState([]);
     const [travelingDays, setTravelingDays] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
+
     // const [sortOrder, setSortOrder] = useState("asc");
     // const [sortBy, setSortBy] = useState("date");
+    let currentUser = useSelector(st => st.index.currentUser);
 
     useEffect(() => {
 
@@ -229,21 +231,16 @@ const ReportDataManager = () => {
         setReports(tempFilteredArrReports);
     }, [originalReports, searchTerm]);
 
-    // useEffect(() => {
-    //     let tempFilteredArrReports = sort(reports, sortBy, sortOrder);
-    //     setReports(tempFilteredArrReports);
-    // }, [sortBy, sortOrder])
-
-
 
     useEffect(() => {
-        if (!reduxTeachers || !reduxTeachers.length) {
+        if ((!teachers || !teachers.length)&&currentUser) {
             setTeacherLoading(true)
-            axios.get(BASE_URL + "users/teachers").
+            axios.get(BASE_URL + "users/byDirectorId/"+currentUser?._id).
                 then(res => {
                     console.log(res.data);
                     let t = res.data;
-                    setTeachers(res.data)
+                    // setTeachers(res.data)
+                   dispatch( saveAllTeachers(res.data))
 
                 }).
                 catch(err => {
@@ -253,35 +250,18 @@ const ReportDataManager = () => {
 
         }
 
-    }, [reduxTeachers]);
-    useEffect(() => {
-        if (!reduxDirectors || !reduxDirectors.length) {
-            setDirectorsLoading(true)
-            axios.get(BASE_URL + "users/directors").
-                then(res => {
-                    console.log(res.data);
-                    let t = res.data;
-                    setDirectors(res.data)
+    }, [currentUser]);
 
-
-                }).
-                catch(err => {
-                    console.log(err);
-                    alert("תקלה בהצגת הרכזות")
-                }).finally(() => { setDirectorsLoading(false) })
-
-        }
-
-    }, [reduxDirectors]);
 
     useEffect(() => {
-        if (!reduxCourses || !reduxCourses.length) {
+        if ((!courses || !courses.length)&&currentUser) {
             setCourseLoading(true);
-            axios.get(BASE_URL + "courses").
+            axios.get(BASE_URL + "courses/byDirectorId/"+currentUser?._id).
                 then(res => {
                     console.log(res.data);
                     let t = res.data;
-                    setCourses(res.data)
+                    // setCourses(res.data)
+                dispatch(    saveCoursesOfCurrentUser(res.data))
 
                 }).
                 catch(err => {
@@ -291,7 +271,7 @@ const ReportDataManager = () => {
         }
 
 
-    }, [reduxCourses]);
+    }, [currentUser]);
 
     let [year, setYear] = useState(getCurrentViewMonthAndYear().year);
 
@@ -301,7 +281,6 @@ const ReportDataManager = () => {
     const [searchTo, setSearchTo] = useState(null);
     let [teacher, setTeacher] = useState(null);
     let [course, setCourse] = useState(null);
-    let currentUser = useSelector(st => st.index.currentUser);
 
 
     const getData = (type) => {
@@ -311,7 +290,7 @@ const ReportDataManager = () => {
 
             let courseIdparam = course ?._id;
             let teacherIdparam = teacher ?._id;
-            let directorIdparam = director ?._id;
+            let directorIdparam = currentUser._id;
             setReportsLoading(true);
             let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`;
             if (type == SearchTypes.Range)
@@ -422,38 +401,14 @@ const ReportDataManager = () => {
     // //   window.open(url);
     // };
     return <>
-        {/* <ReportTeacherDense reports={reports}/>*/}
-       
+      
+
         <Outlet />
-        {/*reports.length > 0 &&
-            <>
-                <BButton><LinkRoute to="/allReports" state={{ reports: reports, searchFrom, searchTo, year, month }}>הורדת הדיווחים</LinkRoute>
-                </BButton>
-                <BButton>
-                 <LinkRoute to="/reportbyTeacherSpacious" state={{ reports: reports, searchFrom, searchTo, year, month }}>סיכום דווחים למורה לפי קורסים </LinkRoute>
-                </BButton>
-                <BButton>
-                    
-                    <LinkRoute to="/reportByTeacherSum" state={{ reports: reports, searchFrom, searchTo, year, month }}>סיכום דווחים למורה</LinkRoute>
-                </BButton>
-            </>
-        */}
+      
         <div>
-            {/* <button onClick={handleGeneratePDF}>Generate PDF</button> */}
-            {/* <button onClick={handleDownload}>Generate donload</button> */}
+           
         </div>
-        {/*{reports.length&&<button>
-  <PDFDownloadLink document={
-      <ReportCourseSpacious data={{ reports: reports ,searchFrom,searchTo,year,month}} />
-  } fileName="x.pdf">
-    {({ blob, url, loading, error }) =>{ 
-        console.log('blob:', blob);
-          console.log('url:', url);
-          console.log('loading:', loading);
-          console.log('error:', error);
-        return (error?<p>erorr.message</p>:loading ? "Loading document..." : "Download now!")}}
-  </PDFDownloadLink>
-</button>}*/}
+      
         <PrintFormat columns={minimumColumnsDetails}
             ref={componentRef} data={reports} />
 
@@ -462,7 +417,7 @@ const ReportDataManager = () => {
             <form>
 
                 <Paper sx={{ width: "87%", margin: "auto", mt: 1, padding: "20px", height: "90vh" }}>
-                    <Box sx={{ display: "flex", "flex-direction": "column",height:"100%" }}>
+                    <Box sx={{ display: "flex", "flex-direction": "column", height: "100%" }}>
                         <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
                             <Stack direction="row" >
                                 <FormControl sx={{ m: 1, width: "15ch" }}>
@@ -538,22 +493,7 @@ const ReportDataManager = () => {
 
                                     renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                                 />
-                                <Autocomplete
-                                    disablePortal
-
-                                    options={directors || []}
-                                    sx={{ m: 1, width: "22ch" }}
-                                    getOptionLabel={(item) => item.firstName + " " + item.lastName}
-                                    value={director}
-                                    onChange={(event, newValue) => {
-                                        setDirector(newValue);
-                                        console.log(newValue)
-
-                                    }}
-
-
-                                    renderInput={(params) => directorsLoading ? <CircularProgress /> : <TextField {...params} label="רכזת" />}
-                                />
+                               
 
                                 <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
                                     חפש
@@ -567,52 +507,40 @@ const ReportDataManager = () => {
                                 <Button type="button" startIcon={<LocalPrintshopOutlinedIcon />} variant="outlined" onClick={handlePrint} sx={{ m: 1 }} >
 
                                 </Button>*/}
-                                <ExportMenuContainer  items={
+                                <ExportMenuContainer items={
                                     <>
-                                        <MenuItem disabled={reports.length==0}>
-                                           
-                                                <LinkRoute to="/allReports" state={{ reports: reports, searchFrom, searchTo, year, month }}>
-                                                    <FileDownloadOutlinedIcon />
-                        
-                                                    הורדת הדיווחים
+                                        <MenuItem disabled={reports.length == 0}>
+
+                                            <LinkRoute to="/allReports" state={{ reports: reports, searchFrom, searchTo, year, month }}>
+                                                <FileDownloadOutlinedIcon />
+
+                                                הורדת הדיווחים
                                                 </LinkRoute>
-                                           
+
                                         </MenuItem>
-                                        <MenuItem disabled={reports.length==0}>
-                                           
-                                                <LinkRoute to="/reportbyTeacherSpacious" state={{ reports: reports, searchFrom, searchTo, year, month }}>
-                                                    <FileDownloadOutlinedIcon />
-                                                    הורדת סיכום דווחים למורה לפי קורסים </LinkRoute>
-                                            
+                                        <MenuItem disabled={reports.length == 0}>
+
+                                            <LinkRoute to="/reportbyTeacherSpacious" state={{ reports: reports, searchFrom, searchTo, year, month }}>
+                                                <FileDownloadOutlinedIcon />
+                                                הורדת סיכום דווחים למורה לפי קורסים </LinkRoute>
+
                                         </MenuItem>
-                                        <MenuItem disabled={reports.length==0}>
-                                           
-                                                <LinkRoute to="/reportByTeacherSum" state={{ reports: reports, searchFrom, searchTo, year, month }}>
-                                                    <FileDownloadOutlinedIcon />
-                                                    הורדת סיכום דווחים למורה</LinkRoute>
-                                           
+                                        <MenuItem disabled={reports.length == 0}>
+
+                                            <LinkRoute to="/reportByTeacherSum" state={{ reports: reports, searchFrom, searchTo, year, month }}>
+                                                <FileDownloadOutlinedIcon />
+                                                הורדת סיכום דווחים למורה</LinkRoute>
+
                                         </MenuItem>
-                                        <Divider/>
-                                        <MenuItem disabled={reports.length==0} onClick={handlePrint}>
-                                                               <PrintOutlinedIcon  />
+                                        <Divider />
+                                        <MenuItem disabled={reports.length == 0} onClick={handlePrint}>
+                                            <PrintOutlinedIcon />
                                             הדפסה
-                                     
+
                                 </MenuItem>
                                     </>
                                 } />
-                                {/*    {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
-                                    "teacherName", "fromTime",
-                                    "toTime",
-                                    "numHours",
-                                    "type", "directorName", "comment"]}
-                                    data={reports} />}
-                                    fileName={searchFrom ?.$d && searchTo ?.$d ? `report-${searchFrom ?.$d}-${searchTo ?.$d}.pdf` : `report-${month}-${year}.pdf`}>
-                                    {({ blob, url, loading, error }) => (loading ? <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" disabled="true" sx={{ m: 1 }} >      </Button> :
-                                        <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" onClick={handlePdf} sx={{ m: 1 }} >
-
-                                        </Button>)}
-                                </PDFDownloadLink>}*/}
-
+                             
 
                             </Stack>
                             <Stack direction="row" >
@@ -701,4 +629,4 @@ const ReportDataManager = () => {
         </div>
     </>;
 }
-export default ReportDataManager;
+export default ReportDataDirectorAdvanced;

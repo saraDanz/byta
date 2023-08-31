@@ -57,7 +57,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
     // let courses; 
 
     const updateNumHours = (fromTime, toTime, courseIndex) => {
-        let duration = courses[courseIndex].courseId.lessonDuration || 45;
+        let duration = courses[courseIndex].lessonDuration || 45;
         if (fromTime && toTime) {
 
             // setNumHours(calculateLessons(new Date("2000/10/1 " + fromTime), new Date("2000/10/1 " + toTime)))
@@ -74,7 +74,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
     useEffect(() => {
         // console.log(event, "event")
         let ind = courses.findIndex(o => {
-            if (o.courseId._id == event.event.extendedProps.courseId._id)
+            if (o._id == event.event.extendedProps.courseId._id)
                 return true;
             return false;
         });
@@ -117,8 +117,8 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                 details = {
                     ...details,
                     course: {
-                        _id: courses[course].courseId._id,
-                        name: courses[course].courseId.name,
+                        _id: courses[course]._id,
+                        name: courses[course].name,
                     },
                     fromTime: convertToTime(details.fromTime),
                     toTime: convertToTime(details.toTime),
@@ -201,7 +201,7 @@ export default function EditReportDialog({ onClose, event, handleEditSave }) {
                                         name="course"
                                         sx={{ m: 1, width: '25ch' }}
                                     >
-                                        {courses.map((item, index) => { return <MenuItem value={index} key={item.courseId._id}>  {item.courseId.name}</MenuItem> })}
+                                        {courses.map((item, index) => { return <MenuItem value={index} key={item._id}>  {item.name+"-"+item.description}</MenuItem> })}
 
                                     </Select>
 

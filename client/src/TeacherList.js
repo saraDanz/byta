@@ -257,9 +257,9 @@ export default function TeacherList() {
                 </ListItem>
 
                 </>} />*/}
-        <ExportMenu items={[
+        <ExportMenu disabled={teachers.length==0} items={[
             {
-                text: "מורות לexcel",
+                text: "excelמורות ל",
                 onClick: () => {
                     // let t = teachers.map(item => {
                     //     let { firstName, lastName, tz, address, email, password, phone, workerNum } = item;
@@ -286,7 +286,7 @@ export default function TeacherList() {
                 }, icon: <FileDownloadOutlinedIcon />
             }
             , {
-                text: "מורות וקורסים לexcel",
+                text: "excelמורות וקורסים ל",
                 onClick: () => {
 
 
@@ -300,9 +300,9 @@ export default function TeacherList() {
                 },
                 icon: <FileDownloadOutlinedIcon />
 
-            },
+            },{type:"divider"},
             {
-                text: "מורות לPDF",
+                text: "PDFמורות ל",
                 onClick: () => {
                     navigate("/printInformation", { state: { data: t, title: "פרטי מורות", fields: ["firstName", "lastName", "tz", "workerNum", "address", "phone", "email", "password"], headers: ["שם פרטי", "שם משפחה", "תז", "מספר עובד", "כתובת", "טלפון", "מייל", "סיסמא"] } })
 
@@ -310,7 +310,7 @@ export default function TeacherList() {
                 icon: <PictureAsPdfOutlinedIcon />
 
             }, {
-                text: "מורות וקורסים לPDF",
+                text: "PDFמורות וקורסים ל",
                 onClick: () => {
                     navigate("/printInformation", { state: { data: tWithCourses, title: "פרטי מורות וקורסים", fields: ["firstName", "lastName", "tz", "workerNum",  "email",  "name", 'description', "symbol",  "fares", ], headers: ["שם פרטי", "שם משפחה", "תז", "מספר עובד", "מייל", "שם", "תאור", "סמל קורס", "תעריף נסיעות"] } })
 
@@ -352,7 +352,7 @@ export default function TeacherList() {
             <Demo>
                 <List dense={false} dir="ltr">
                     {filteredTeacherList.map(item => {
-                        return <TeacherListItem editFare={updateFare} deleteTeacherFromCourse={deleteTeacherFromCourse} key={item._id} editTeacher={() => { setEditTeacherDialogVisible(item) }} deleteTeacher={deleteTeacher} item={item} />
+                        return <TeacherListItem withReports={true} editFare={updateFare} deleteTeacherFromCourse={deleteTeacherFromCourse} key={item._id} editTeacher={() => { setEditTeacherDialogVisible(item) }} deleteTeacher={deleteTeacher} item={item} />
                     })}
                 </List>
             </Demo>
