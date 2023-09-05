@@ -1,6 +1,6 @@
 import "./AddTeacherToCourse.css";
 import React, { useState, useEffect } from "react";
-
+import { saveCoursesOfCurrentUser } from "./store/actions/index"
 import { Formik } from "formik";
 // import * as EmailValidator from "email-validator";
 // import * as Yup from "yup";
@@ -21,23 +21,35 @@ const teacherInCourseSchema = Yup.object().shape({
     fare: Yup.string()
         .required("שדה חובה")
 });
-export default function AddTeacherToCourse() {
-
+export default function AddTeacherToCourseDirector() {
     let dispatch = useDispatch();
-    const [courses, setCourses] = useState([]);
+    const currentUser = useSelector(st => st.index.currentUser)
+    const courses = useSelector(st => st.index.courses)
     const defaultFare = useSelector(st => st.variable.defaultFare);
     const [teachers, setTeachers] = useState([]);
+    const [courseLoading, setCourseLoading] = useState(false)
+    useEffect(() => {
+        if ((!courses || !courses.length) && currentUser) {
+            setCourseLoading(true);
+            axios.get(BASE_URL + "courses/byDirectorId/" + currentUser ?._id).
+                then(res => {
+                    console.log(res.data);
+                    let t = res.data;
+                    // setCourses(res.data)
+                    dispatch(saveCoursesOfCurrentUser(res.data))
+
+                }).
+                catch(err => {
+                    console.log(err);
+                    alert("תקלה בהצגת הקורסים")
+                }).finally(() => { setCourseLoading(false) })
+        }
+
+
+    }, [courses, currentUser]);
     useEffect(() => {
 
-        axios.get(BASE_URL + "courses").
-            then(res => {
-                console.log(res.data);
-                setCourses(res.data);
-            }).
-            catch(err => {
-                console.log(err);
-                alert("תקלה בהצגת הקורסים")
-            })
+
         axios.get(BASE_URL + "users").
             then(res => {
                 console.log(res.data);
@@ -45,14 +57,15 @@ export default function AddTeacherToCourse() {
             }).
             catch(err => {
                 console.log(err);
-                alert("תקלה בהצגת הקורסים")
+                alert("תקלה בהצגת המורות")
             })
     }, []);
 
     return <div className="add-teacher-to-course">
         <Formik
             validationSchema={teacherInCourseSchema}
-            initialValues={{ courseId: "", teacherId: "", fare: defaultFare ? defaultFare.value : undefined }}
+            enableReinitialize={true}
+            initialValues={{ courseId: "", teacherId: "", fare: defaultFare ? defaultFare.value : null }}
             onSubmit={(values, { setSubmitting }) => {
                 if (!values.courseId && courses) values.courseId = courses[0]._id;
                 if (!values.teacherId && teachers) values.teacherId = teachers[0]._id;
@@ -133,9 +146,9 @@ export default function AddTeacherToCourse() {
                                     sx={{ m: 1, width: 300 }}
                                     getOptionLabel={(item) => item.firstName + " " + item.lastName + " " + item.tz}
                                     onChange={(event, newValue, reason) => {
-
                                         if (reason == "clear")
-                                            setFieldValue("courseId", undefined)
+                                            setFieldValue("teacherId", undefined)
+
                                         else if (newValue)
                                             setFieldValue("teacherId", newValue._id)
 
@@ -172,10 +185,8 @@ export default function AddTeacherToCourse() {
                                     sx={{ m: 1, width: 300 }}
                                     getOptionLabel={(course) => course.name + "-" + course.description + " - " + (course.symbol ? course.symbol : "")}
                                     onChange={(event, newValue, reason) => {
-                                        debugger;
                                         if (reason == "clear")
                                             setFieldValue("courseId", undefined)
-
                                         else if (newValue)
                                             setFieldValue("courseId", newValue._id)
 
@@ -203,8 +214,7 @@ export default function AddTeacherToCourse() {
                                     className={errors.fare && touched.fare && "error"}
                                 />
 
-
-                                <Button type="submit"  variant="outlined" sx={{ m: 1 }} className="button-add-teacher-to-course" disabled={isSubmitting}>
+                                <Button type="submit" variant="outlined" sx={{ m: 1 }} className="button-add-teacher-to-course" disabled={isSubmitting}>
                                     הוסף      </Button>
                             </Box></Paper>
 
@@ -214,5 +224,6 @@ export default function AddTeacherToCourse() {
             }}
         </Formik>
         );
+
     </div>
 }

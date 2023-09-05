@@ -136,7 +136,7 @@ const addNewCourse = async (req, res) => {
         // if (!teacher)
         //     return res.status(400).send("no such teacher");
         // let course = new Course({ name, description, directorId, startDate: startDate || Date.now(), teachers: [teacherId] })
-        course = new Course({ name, description, directorId, startDate: startDate || Date.now(), symbol, lessonDuration, years: [year] })
+        course = new Course({ name, description, directorId, startDate: startDate || Date.now(), symbol, lessonDuration })
         await course.save();
         return res.send(course);
     }

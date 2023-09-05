@@ -72,7 +72,7 @@ const AAAcopy = () => {
           dispatch(saveCoursesOfCurrentUser(res.data))
         }).catch(err => {
           console.log(err);
-          alert("תקלה בהצגת הקורסים האפשריים")
+          alert("תקלה בקליטת הקורסים ")
         })
 
       // axios.get(BASE_URL + "reports").then(res => {

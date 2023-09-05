@@ -7,7 +7,7 @@ import { Formik } from "formik";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { saveUser ,saveCoursesOfCurrentUser} from "./store/actions"
+import { saveUser, saveCoursesOfCurrentUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -22,14 +22,14 @@ const loginSchema = Yup.object().shape({
     tz: Yup.string()
         .min(8, 'תז חייבת להכיל 9 ספרות')
         .max(9, 'תז חייבת להכיל 9 ספרות')
-        .required('שדה חובה').matches(/^\d+$/,"מספר זהות מכיל רק ספרות"),
+        .required('שדה חובה').matches(/^\d+$/, "מספר זהות מכיל רק ספרות"),
     //    email: Yup.string()
     //      .email('כתובת ')
     //      .required('Required'),
     password: Yup.string()
         .required("שדה חובה")
-        .min(4,"סיסמא חייבת להכיל לפחות 4 תווים")
-        .max(16,"סיסמא יכולה להכיל לכל היותר 16 תווים")
+        .min(4, "סיסמא חייבת להכיל לפחות 4 תווים")
+        .max(16, "סיסמא יכולה להכיל לכל היותר 16 תווים")
 });
 
 export default function Login() {
@@ -49,15 +49,21 @@ export default function Login() {
                 axios.post(BASE_URL + "users/login", values).then(res => {
                     console.log(res)
                     console.log("Logging in", values);
+                    let result = window.confirm("רכזת  יקרה!\n האם תרצי לבצע כניסה כמרצה?")
+                    if (result) {
+                        res.data.role = 4;
+                    }
                     dispatch(saveUser(res.data))
-                 
+
                     setSubmitting(false);
                     setStorage(res.data)
 
-                    if (res.data.role == 1)
+                    if (res.data.role == 1 || res.data.role == 4)
                         navigate("/displayCalendar")
-                    else
-                        navigate("/director")
+                    else if (res.data.role == 2)
+                        navigate("/tableDirector")
+                    else if (res.data.role == 3)
+                        navigate("/tableManager")
 
 
                 }).catch(err => {

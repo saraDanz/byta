@@ -10,12 +10,14 @@ import AddCourse from "./AddCourse.js";
 import { saveConfigs } from './store/actions/config';
 
 import AddTeacherToCourse from "./AddTeacherToCourse";
+import AddTeacherToCourseDirector from "./AddTeacherToCourseDirector";
 import { useSelector, useDispatch } from "react-redux";
 import { logOut, saveUser } from "./store/actions/index.js";
 import ExportToExcel from "./ExportToExcel/ExportToExcel";
 import { Menu, Segment, Icon } from 'semantic-ui-react'
 import { removeStorage, getStorage } from "./storageUtils.js";
 import TeacherList from "./TeacherList.js";
+import TeacherListDirector from "./TeacherListDirector.js";
 import CourseList from "./CourseList.js";
 import Box from '@mui/material/Box';
 // import Avatar from '@mui/material/Avatar';
@@ -29,18 +31,18 @@ import Setting from './Setting';
 import Logout from '@mui/icons-material/Logout';
 import DirectorList from "./DirectorList";
 // import { AppBar } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Avatar, Typography } from "@mui/material";
-import DisplayCalendar from "./DisplayCalendar";
+// import DisplayCalendar from "./DisplayCalendar";
 // import AddVariable from "./AddVariable";
 import VariableList from "./DataVariables/VariableList";
-import ExportToExcelManager from "./ExportToExcel/ExportToExcelManager.js";
+// import ExportToExcelManager from "./ExportToExcel/ExportToExcelManager.js";
 import NavBar from "./NavBar/NavBar.js";
 import axios from "axios";
 import { BASE_URL } from "./VARIABLES.js";
 import { saveCurrentStatus } from "./store/actions/setting.js";
 import ReportDataManager from "./ExportToExcel/ReportDataManager"
-import ReportDataManagerDirector from "./ExportToExcel/ReportDataManagerDirector"
+// import ReportDataManagerDirector from "./ExportToExcel/ReportDataManagerDirector"
 import AllReports from "./ExportToExcel/Reports/AllReports";
 import ReportTeacherSpacious from "./ExportToExcel/Reports/ReportTeacherSpacious";
 import ReportCourseSpacious from "./ExportToExcel/Reports/ReportCourseSpacious.js";
@@ -50,9 +52,12 @@ import {
     createRoutesFromElements,
     // Route,
     RouterProvider,
-  } from "react-router-dom";
+} from "react-router-dom";
 import { saveDefaultFare } from "./store/actions/variable.js";
 import ReportInformation from "./ExportToExcel/Reports/ReportInformation.js";
+import ReportDataTeacherAdvanced from "./ExportToExcel/ReportDataTeacher-advanced.js";
+import ReportDataDirectorAdvanced from "./ExportToExcel/ReportDataDirector-advanced.js";
+import AddCourseDirector from "./AddCourseDirector.js";
 
 // import {} from "./Prompt";
 export default function App() {
@@ -84,14 +89,14 @@ export default function App() {
                 console.log(err);
                 alert("תקלה בקליטת ההגדרות")
             })
-            axios.get(BASE_URL + "variables/fare/defaultFare").then((res) => {
-                dispatch( saveDefaultFare(res.data));
-                console.log(res.data)
-    
-            })  .catch(err => {
-                    console.log(err);
-                    alert("תקלה בקליטת תעריף ברירת מחדל")
-                })
+        axios.get(BASE_URL + "variables/fare/defaultFare").then((res) => {
+            dispatch(saveDefaultFare(res.data));
+            console.log(res.data)
+
+        }).catch(err => {
+            console.log(err);
+            alert("תקלה בקליטת תעריף ברירת מחדל")
+        })
     }, []);
 
     return (<>
@@ -194,7 +199,7 @@ export default function App() {
         </M>
 
 
-      
+
 
 
         <Routes>
@@ -206,21 +211,23 @@ export default function App() {
             <Route path="allReports" element={<AllReports />} />
 
             <Route path="directorList" element={<DirectorList />} />
-            <Route path="tableManager" element={<ReportDataManager />} >
+            <Route path="tableManager" element={<ReportDataManager />} />
+            <Route path="tableDirector" element={<ReportDataDirectorAdvanced />} />
 
-
-            </Route>
-            <Route path="tableDirector" element={<ReportDataManagerDirector />} />
-            <Route path="export" element={<ExportToExcel />} />
+            <Route path="tableTeacher" element={<ReportDataTeacherAdvanced />} />
+            {/* <Route path="export" element={<ExportToExcel />} />
             <Route path="exportManager"  element={<ExportToExcelManager />} />
-            <Route path="setting" element={<Setting />} />
+        */}    <Route path="setting" element={<Setting />} />
             <Route path="addUser" element={<AddTeacher />} />
             <Route path="addCourse" element={<AddCourse />} />
+            <Route path="addCoursedirector" element={<AddCourseDirector/>} />
             <Route path="teacherList" element={<TeacherList />} />
+            <Route path="teacherListDirector" element={<TeacherListDirector />} />
             <Route path="variableList" element={<VariableList />} />
             <Route path="courseList" element={<CourseList />} />
             <Route path="displayCalendar" element={<AAAcopy />} />
             <Route path="addTeacherToCourse" element={<AddTeacherToCourse />} />
+            <Route path="addTeacherToCourseDirector" element={<AddTeacherToCourseDirector />} />
             <Route path="printInformation" element={<ReportInformation />} />
 
 

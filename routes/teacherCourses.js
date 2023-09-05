@@ -4,6 +4,7 @@ const teacherCoursesController = require("../controllers/teacherCourses");
 router.get("/byDirectorId/:directorId", teacherCoursesController.getTeacherCoursesByDirectorId);
 router.get("", teacherCoursesController.getAllTeacherCourses);
 router.get("/withTheirCourses", teacherCoursesController.getAllTeacherWithTheirCourses);
+router.get("/withTheirCoursesByDirectorId/:directorId", teacherCoursesController.getAllTeacherByDirectorIdWithTheirCourses);
 router.get("/:teacherId", teacherCoursesController.getCoursesByTeacherId);
 router.put("/updateFare/:courseId/:teacherId", teacherCoursesController.updateFare);
 

@@ -239,7 +239,7 @@ const ReportDataManagerDirector = () => {
         }
 
     }, [reduxTeachers]);
-   
+
 
     useEffect(() => {
         if (!reduxCourses || !reduxCourses.length) {
@@ -278,7 +278,7 @@ const ReportDataManagerDirector = () => {
 
             let courseIdparam = course ?._id;
             let teacherIdparam = teacher ?._id;
-  
+
             setReportsLoading(true);
             let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${currentUser._id}/${courseIdparam}/${teacherIdparam}`;
             if (type == SearchTypes.Range)
@@ -413,7 +413,7 @@ const ReportDataManagerDirector = () => {
 
                                     options={teachers || []}
                                     sx={{ m: 1, width: "22ch" }}
-                                    getOptionLabel={(item) => item.firstName + " " + item.lastName+" "+item.tz}
+                                    getOptionLabel={(item) => item.firstName + " " + item.lastName + " " + item.tz}
                                     value={teacher}
                                     onChange={(event, newValue) => {
                                         setTeacher(newValue);
@@ -438,7 +438,7 @@ const ReportDataManagerDirector = () => {
 
                                     renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                                 />
-                              
+
 
                                 <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
                                     חפש
@@ -452,19 +452,20 @@ const ReportDataManagerDirector = () => {
                                 <Button type="button" startIcon={<LocalPrintshopOutlinedIcon />} variant="outlined" onClick={handlePrint} sx={{ m: 1 }} >
 
                                 </Button>
-                               {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
+                                {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",
                                     "teacherName", "fromTime",
                                     "toTime",
                                     "numHours",
                                     "type", "directorName", "comment"]}
                                     data={reports} />}
                                     fileName={searchFrom ?.$d && searchTo ?.$d ? `report-${searchFrom ?.$d}-${searchTo ?.$d}.pdf` : `report-${month}-${year}.pdf`}>
-                                    {({ blob, url, loading, error }) =>{
+                                    {({ blob, url, loading, error }) => {
                                         debugger;
                                         return (loading ? <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" disabled="true" sx={{ m: 1 }} >      </Button> :
-                                        <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" onClick={handlePdf} sx={{ m: 1 }} >
+                                            <Button type="button" startIcon={<PictureAsPdfOutlinedIcon />} variant="outlined" onClick={handlePdf} sx={{ m: 1 }} >
 
-                                        </Button>)}}
+                                            </Button>)
+                                    }}
                                 </PDFDownloadLink>}
 
 

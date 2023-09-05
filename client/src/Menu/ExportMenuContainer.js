@@ -2,9 +2,9 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Divider } from '@mui/material';
+import "./ExportMenuContainer.css";
 
-export default function ExportMenu({ items, disabled }) {
+export default function ExportMenuContainer({ items }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -17,14 +17,15 @@ export default function ExportMenu({ items, disabled }) {
     return (
         <div>
             <Button
-                disabled={disabled || false}
+            variant="outlined"
+            sx={{ m: 1, width: "10ch" ,minHeight:'1.4375em' }}
                 id="basic-button"
                 aria-controls={open ? 'basic-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
             >
-                הורדה
+                ייצוא
       </Button>
             <Menu
                 id="basic-menu"
@@ -35,11 +36,7 @@ export default function ExportMenu({ items, disabled }) {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                {items.map((item, index) => {
-                    if(item.type=="divider")return <Divider/>
-                    return <MenuItem key={index} onClick={item.onClick}>
-                        {item.icon}{item.text}</MenuItem>
-                })}
+                {items}
 
             </Menu>
         </div>)

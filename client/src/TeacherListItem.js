@@ -29,7 +29,7 @@ import { BASE_URL } from './VARIABLES';
 import EditIcon from '@mui/icons-material/Edit';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Typography } from '@mui/material';
-export default function TeacherListItem({ item, deleteTeacher,editFare, editTeacher, deleteTeacherFromCourse }) {
+export default function TeacherListItem({ item, deleteTeacher, editFare, editTeacher, deleteTeacherFromCourse,withReports }) {
     const [open, setOpen] = useState(false);
     const deleteCourse = (course) => {
         if (window.confirm("האם המורה לא מלמדת בקורס " + course.name)) {
@@ -71,12 +71,20 @@ export default function TeacherListItem({ item, deleteTeacher,editFare, editTeac
 
         />
         <ListItemText
-            primary={item.email}
-            secondary={item.address}
+            primary={item.email||"-"}
+            secondary={item.address||"-"}
         /> <ListItemText
-            primary={item.password}
-            secondary={item.workerNum}
+            primary={item.password||"-"}
+            secondary={item.workerNum||"-"}
         />
+        {withReports&&<ListItemText
+            primaryTypographyProps={item.numReports == 0 ? { backgroundColor: 'green' } : {}}
+            secondaryTypographyProps={item.courses && item.courses.reduce((accumulator, object) => {
+                return accumulator + object.numReports;
+            }, 0) != item.numReports ? { backgroundColor: 'red' } : {}}
+            primary={"מספר דיווחים"}
+            secondary={item.numReports}
+        />}
 
         <IconButton onClick={() => setOpen(!open)}>
             <KeyboardArrowDown
@@ -93,7 +101,7 @@ export default function TeacherListItem({ item, deleteTeacher,editFare, editTeac
             <EditOutlinedIcon />
         </IconButton>
     </ListItem>
-        {open && item.courses && (
+        {(open && item.courses && item.courses.length > 0) && (
             <TableContainer component={Paper}>
                 <Table >
                     <TableHead>
@@ -103,6 +111,7 @@ export default function TeacherListItem({ item, deleteTeacher,editFare, editTeac
                             <TableCell align="right">תאור</TableCell>
                             <TableCell align="right">סמל</TableCell>
                             <TableCell align="right">תעריף נסיעות</TableCell>
+                            {withReports&&<TableCell align="right">מספר דיווחים</TableCell>}
                             <TableCell component="th" scope="row">
                             </TableCell>
                         </TableRow>
@@ -121,15 +130,19 @@ export default function TeacherListItem({ item, deleteTeacher,editFare, editTeac
                                     {row.symbol}
                                 </TableCell>
                                 <TableCell style={{ width: 160 }} align="right">
-                                    {row.fares && row.fares.length ? row.fares[row.fares.length - 1].rate : ""}
-                                </TableCell>
+                                {row.fares && row.fares.length ? row.fares[row.fares.length - 1].rate : "-"}
+                            </TableCell>
+                            {withReports&& <TableCell style={{ width: 160 }} align="right">
+                                    {row.numReports}
+                                </TableCell>}
+                  
                                 <TableCell style={{ width: 160 }} align="right">
                                     <IconButton edge="end" aria-label="delete" onClick={() => { deleteCourse(row) }}>
                                         <DeleteOutlineIcon size="small" />
                                     </IconButton>
-                                    <IconButton edge="end" aria-label="delete" onClick={() => { editFare(row,item) }}>
-                                     
-                                    <EditOutlinedIcon  size="small"/>
+                                    <IconButton edge="end" aria-label="delete" onClick={() => { editFare(row, item) }}>
+
+                                        <EditOutlinedIcon size="small" />
                                     </IconButton>
                                 </TableCell>
 
@@ -141,7 +154,6 @@ export default function TeacherListItem({ item, deleteTeacher,editFare, editTeac
 
                 </Table>
             </TableContainer>
-
 
 
 
@@ -179,6 +191,16 @@ export default function TeacherListItem({ item, deleteTeacher,editFare, editTeac
                 secondary={c.fares[c.fares.length - 1].rate}
             />}
         </ListItem>)*/
-        )}</>
+        )}
+        {open && item.courses && item.courses.length == 0 && (
+            <Paper>
+
+                <Typography style={{ textAlign: "center", padding: 15 }} >מורה זו אינה משוייכת לקורסים</Typography>
+
+            </Paper>
+
+        )
+        }
+    </>
 
 }
