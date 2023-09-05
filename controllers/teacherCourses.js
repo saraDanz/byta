@@ -126,12 +126,12 @@ const getAllTeacherWithTheirCourses = async (req, res) => {
                     if (a.teacherId && a.teacherId._id.toString() == item._id.toString()) return true; return false
                 }).map((x, index) => {
 
-
-                    let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
+                    if (!x.courseId) { console.log(index, x)  }
+                  else{  let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
                     return {
                         status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares,
                         numReports: reports.filter((item) => item.teacherId.toString() == _idOfTeacher.toString() && item.courseId.toString() == _id.toString()).length
-                    }
+                    }}
                 })
             }
         })
@@ -175,7 +175,7 @@ const getAllTeacherByDirectorIdWithTheirCourses = async (req, res) => {
             })
 
         }
-     arr.sort((a,b)=>{return a.lastName+" "+a.firstName>b.lastName+" "+b.firstName?1:-1})
+        arr.sort((a, b) => { return a.lastName + " " + a.firstName > b.lastName + " " + b.firstName ? 1 : -1 })
         return res.send(arr);
     }
     catch (e) {
@@ -306,7 +306,7 @@ const updateFare = async (req, res) => {
 module.exports = {
     getCoursesByTeacherId, updateFare,
     getTeacherCoursesByDirectorId,
-    getAllTeacherWithTheirCourses,getAllTeacherByDirectorIdWithTheirCourses,
+    getAllTeacherWithTheirCourses, getAllTeacherByDirectorIdWithTheirCourses,
     addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse
 }
 // const addTeacherToCoure = async (req, res) => {

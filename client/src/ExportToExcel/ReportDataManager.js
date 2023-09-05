@@ -326,7 +326,7 @@ const ReportDataManager = () => {
                     let { courseId, teacherId, fromTime, type, toTime, date, reportDate, ...x } = item;
                     fromTime = new Date(fromTime);
                     toTime = new Date(toTime);
-                    date = new Date(date)
+                    date = new Date(date);
                     return {
                         ...x,
                         courseId: courseId,

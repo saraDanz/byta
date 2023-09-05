@@ -7,7 +7,7 @@ import { Formik } from "formik";
 import { Paper, Box, Button, Typography } from "@mui/material";
 
 import axios from "axios";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { saveUser } from "./store/actions"
 import { BASE_URL } from "./VARIABLES";
@@ -16,18 +16,19 @@ import { Autocomplete, TextField } from "@mui/material";
 import * as Yup from "yup";
 
 const teacherInCourseSchema = Yup.object().shape({
-   
-    defaultFare: Yup.string()
+    teacherId: Yup.string().required("שדה חובה"),
+    courseId: Yup.string().required("שדה חובה"),
+    fare: Yup.string()
         .required("שדה חובה")
 });
 export default function AddTeacherToCourse() {
-    
+
     let dispatch = useDispatch();
     const [courses, setCourses] = useState([]);
-    const defaultFare=useSelector(st=>st.variable.defaultFare);
-      const [teachers, setTeachers] = useState([]);
+    const defaultFare = useSelector(st => st.variable.defaultFare);
+    const [teachers, setTeachers] = useState([]);
     useEffect(() => {
-        
+
         axios.get(BASE_URL + "courses").
             then(res => {
                 console.log(res.data);
@@ -47,12 +48,11 @@ export default function AddTeacherToCourse() {
                 alert("תקלה בהצגת הקורסים")
             })
     }, []);
-  
+
     return <div className="add-teacher-to-course">
-        <Formik 
-        validationSchema={teacherInCourseSchema}
-        enableReinitialize={true} 
-            initialValues={{ courseId: "", teacherId: "", fare: defaultFare?defaultFare.value:null }}
+        <Formik
+            validationSchema={teacherInCourseSchema}
+            initialValues={{ courseId: "", teacherId: "", fare: defaultFare ? defaultFare.value : undefined }}
             onSubmit={(values, { setSubmitting }) => {
                 if (!values.courseId && courses) values.courseId = courses[0]._id;
                 if (!values.teacherId && teachers) values.teacherId = teachers[0]._id;
@@ -131,11 +131,12 @@ export default function AddTeacherToCourse() {
 
 
                                     sx={{ m: 1, width: 300 }}
-                                    getOptionLabel={(item) => item.firstName + " " + item.lastName+" "+item.tz}
-                                    onChange={(event, newValue) => {
-                                        debugger;
-                                        console.log(newValue)
-                                        if (newValue)
+                                    getOptionLabel={(item) => item.firstName + " " + item.lastName + " " + item.tz}
+                                    onChange={(event, newValue, reason) => {
+
+                                        if (reason == "clear")
+                                            setFieldValue("courseId", undefined)
+                                        else if (newValue)
                                             setFieldValue("teacherId", newValue._id)
 
                                     }}
@@ -144,7 +145,7 @@ export default function AddTeacherToCourse() {
                                     renderInput={(params) => <TextField {...params} label="מורה" />}
                                 />
                                 {errors.teacherId && touched.teacherId && (
-                                    <div className="input-feedback">{errors.teacherId}</div>
+                                    <div className="error">{errors.teacherId}</div>
                                 )}
 
 
@@ -170,10 +171,12 @@ export default function AddTeacherToCourse() {
 
                                     sx={{ m: 1, width: 300 }}
                                     getOptionLabel={(course) => course.name + "-" + course.description + " - " + (course.symbol ? course.symbol : "")}
-                                    onChange={(event, newValue) => {
+                                    onChange={(event, newValue, reason) => {
                                         debugger;
-                                        console.log(newValue)
-                                        if (newValue)
+                                        if (reason == "clear")
+                                            setFieldValue("courseId", undefined)
+
+                                        else if (newValue)
                                             setFieldValue("courseId", newValue._id)
 
                                     }}
@@ -182,7 +185,7 @@ export default function AddTeacherToCourse() {
                                     renderInput={(params) => <TextField {...params} label="קורס" />}
                                 />
                                 {errors.courseId && touched.courseId && (
-                                    <div className="input-feedback">{errors.courseId}</div>
+                                    <div className="error">{errors.courseId}</div>
                                 )}
 
 
@@ -200,7 +203,8 @@ export default function AddTeacherToCourse() {
                                     className={errors.fare && touched.fare && "error"}
                                 />
 
-                                <Button type="submit" variant="outlined" sx={{ m: 1 }} className="button-add-teacher-to-course" disabled={isSubmitting}>
+
+                                <Button type="submit"  variant="outlined" sx={{ m: 1 }} className="button-add-teacher-to-course" disabled={isSubmitting}>
                                     הוסף      </Button>
                             </Box></Paper>
 

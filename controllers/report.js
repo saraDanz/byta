@@ -3,7 +3,7 @@ const Report = require("../models/report").reportModel;
 const User = require("../models/user").userModel;
 const Course = require("../models/course").courseModel;
 
-const fs=require('fs')
+const fs = require('fs')
 
 const getAllReports = async (req, res) => {
     try {
@@ -81,7 +81,7 @@ const searchByParameters = async (req, res) => {
 
     // let prev = getDateXDaysAgo(1, new Date(year, month-1, 0));
     let prev, next;
-    if (searchFrom&&searchFrom!="undefined" && searchTo&&searchTo!="undefined") {
+    if (searchFrom && searchFrom != "undefined" && searchTo && searchTo != "undefined") {
         prev = getDateXDaysAgo(1, new Date(searchFrom));
         next = new Date(searchTo);
     }
@@ -105,12 +105,17 @@ const searchByParameters = async (req, res) => {
         let ob = { courseId, teacherId, };
         ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
         reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName tz workerNum -_id " }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
+        reports.forEach((item,index) => {
+            if (!item.teacherId)
+                console.log(item, index,item.courseId);
+        })
         if (directorId != 'null' && directorId != 'undefined' && directorId)
-            reports = reports.filter(item => {
+            reports = reports.filter((item) => {
+
                 return !item.courseId || !item.courseId.directorId || item.courseId.directorId._id == directorId;
 
             });
-            fs.writeFileSync("allreports.json", JSON.stringify(reports), 'utf8')
+        fs.writeFileSync("allreports.json", JSON.stringify(reports), 'utf8')
         console.log(reports)
         return res.send(reports);
     }

@@ -16,8 +16,9 @@ import { Autocomplete, TextField } from "@mui/material";
 import * as Yup from "yup";
 
 const teacherInCourseSchema = Yup.object().shape({
-
-    defaultFare: Yup.string()
+    teacherId: Yup.string().required("שדה חובה"),
+    courseId: Yup.string().required("שדה חובה"),
+    fare: Yup.string()
         .required("שדה חובה")
 });
 export default function AddTeacherToCourseDirector() {
@@ -144,10 +145,11 @@ export default function AddTeacherToCourseDirector() {
 
                                     sx={{ m: 1, width: 300 }}
                                     getOptionLabel={(item) => item.firstName + " " + item.lastName + " " + item.tz}
-                                    onChange={(event, newValue) => {
-                                        debugger;
-                                        console.log(newValue)
-                                        if (newValue)
+                                    onChange={(event, newValue, reason) => {
+                                        if (reason == "clear")
+                                            setFieldValue("teacherId", undefined)
+
+                                        else if (newValue)
                                             setFieldValue("teacherId", newValue._id)
 
                                     }}
@@ -156,7 +158,7 @@ export default function AddTeacherToCourseDirector() {
                                     renderInput={(params) => <TextField {...params} label="מורה" />}
                                 />
                                 {errors.teacherId && touched.teacherId && (
-                                    <div className="input-feedback">{errors.teacherId}</div>
+                                    <div className="error">{errors.teacherId}</div>
                                 )}
 
 
@@ -182,10 +184,10 @@ export default function AddTeacherToCourseDirector() {
 
                                     sx={{ m: 1, width: 300 }}
                                     getOptionLabel={(course) => course.name + "-" + course.description + " - " + (course.symbol ? course.symbol : "")}
-                                    onChange={(event, newValue) => {
-                                        debugger;
-                                        console.log(newValue)
-                                        if (newValue)
+                                    onChange={(event, newValue, reason) => {
+                                        if (reason == "clear")
+                                            setFieldValue("courseId", undefined)
+                                        else if (newValue)
                                             setFieldValue("courseId", newValue._id)
 
                                     }}
@@ -194,7 +196,7 @@ export default function AddTeacherToCourseDirector() {
                                     renderInput={(params) => <TextField {...params} label="קורס" />}
                                 />
                                 {errors.courseId && touched.courseId && (
-                                    <div className="input-feedback">{errors.courseId}</div>
+                                    <div className="error">{errors.courseId}</div>
                                 )}
 
 
