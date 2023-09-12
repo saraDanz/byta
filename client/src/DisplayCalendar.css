@@ -91,7 +91,7 @@ div#fc-dom-301 {
     z-index: 1;
 }
 .css-1xjiak {
-    z-index: 2;
+    z-index: 99999;
 
 }
 .fc-day-other{
