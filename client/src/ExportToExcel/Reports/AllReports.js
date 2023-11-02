@@ -24,9 +24,9 @@ export default function AllReports({ props }) {//spacious
 
         if (reports.length) {
             let rep = reports.map((item, index) => {
-                let { tz, teacherName, workerNum, courseName, symbol, numHours, directorName, fromTime, toTime, date, type } = item;
+                let { tz, teacherName, workerNum, courseName, symbol, numHours, directorName, fromTime, toTime, date, type,comment } = item;
                 return {
-                    tz, teacherName, workerNum, courseName, symbol, date, fromTime, toTime, numHours, type, directorName
+                    tz, teacherName, workerNum, courseName, symbol, date, fromTime, toTime, numHours, type, directorName,comment
 
                 }
             })
@@ -34,7 +34,7 @@ export default function AllReports({ props }) {//spacious
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
             exportToCSV(rep, fromDate && toDate ? `סכום שעות  לתאריכים ${fromDate.$d.toLocaleDateString()}-${toDate.$d.toLocaleDateString()}: ` :
                 `דווח שעות לחודש -${year}-${month}`,
-                [['תז', "שם מורה", "מספר עובד", "שם קורס", "סמל קורס", "תאריך", "משעה", "עד שעה", "שעות", "סוג", "שם רכזת"]],
+                [['תז', "שם מורה", "מספר עובד", "שם קורס", "סמל קורס", "תאריך", "משעה", "עד שעה", "שעות", "סוג", "שם רכזת","הערות"]],
                  [
                     { wch: 9},
                     { wch: 17 },
@@ -46,6 +46,7 @@ export default function AllReports({ props }) {//spacious
                     { wch: 7 },
                     { wch: 6 },
                     { wch: 10 },
+                    { wch: 15 },
                     { wch: 15 },
                 ]
             )
@@ -124,6 +125,7 @@ export default function AllReports({ props }) {//spacious
                         {/* <th>נסיעות</th> */}
                         <th>סוג</th>
                         <th>שם רכזת</th>
+                        <th>הערות</th>
 
                     </tr>
                     {reports.map((item, index) => {
@@ -145,6 +147,7 @@ export default function AllReports({ props }) {//spacious
                             {/* <td>{item.travel ? item.travel : 0}</td> */}
                             <td className="flex4">{ item.type}</td>
                             <td className="flex5">{item.directorName}</td>
+                            <td className="flex5">{item.comment}</td>
                         </tr>
                     })}
                 </table></div>

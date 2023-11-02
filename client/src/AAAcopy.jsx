@@ -429,6 +429,7 @@ const AAAcopy = () => {
           selectMirror={true}
           dayMaxEvents={true}
 
+
           weekends={weekendsVisible}
           events={eve}
           // alternatively, use the `events` setting to fetch from a feed
