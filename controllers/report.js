@@ -60,7 +60,7 @@ const getAllReportsByYearAndMonth = async (req, res) => {
 const searchByParameters = async (req, res) => {
     //לא בדקתי לפי מורה וקורס יחד
 
-    let { year, month, directorId, courseId, teacherId, searchFrom, searchTo } = req.params;
+    let { year, month, directorId, courseId, teacherId, searchFrom, searchTo,type } = req.params;
 
     // let first = new Date(year, month -1,0,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
@@ -102,7 +102,7 @@ const searchByParameters = async (req, res) => {
         //     else if (courseId) reports = await Report.find({ date: { $gt: prev, $lt: next }, courseId: courseId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         //    else 
         // let ob = { courseId, teacherId, directorId };
-        let ob = { courseId, teacherId, };
+        let ob = { courseId, teacherId, type};
         ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
         reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName tz workerNum -_id " }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
         reports.forEach((item,index) => {
@@ -115,7 +115,7 @@ const searchByParameters = async (req, res) => {
                 return !item.courseId || !item.courseId.directorId || item.courseId.directorId._id == directorId;
 
             });
-        fs.writeFileSync("allreports.json", JSON.stringify(reports), 'utf8')
+        //fs.writeFileSync("allreports.json", JSON.stringify(reports), 'utf8')
         console.log(reports)
         return res.send(reports);
     }

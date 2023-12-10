@@ -37,6 +37,8 @@ import {
 } from "@mui/material";
 import LocalPrintshopOutlinedIcon from '@mui/icons-material/LocalPrintshopOutlined';
 
+import { lessonTypes } from "./lessonTypes";
+
 // import { PDFDocumentt } from 'pdf-lib';
 // import { PDFDocumentt } from 'react-pdf'
 import SearchIcon from '@mui/icons-material/Search';
@@ -204,6 +206,7 @@ const dispatch=useDispatch();
     const [reports, setReports] = useState([]);
     const [travelingDays, setTravelingDays] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
+    let [lessonType, setLessonType] = useState("all");
 
     // const [sortOrder, setSortOrder] = useState("asc");
     // const [sortBy, setSortBy] = useState("date");
@@ -296,6 +299,7 @@ const dispatch=useDispatch();
             if (type == SearchTypes.Range)
                 url += `/${searchFrom ?.$d}/${searchTo ?.$d}`;
             else url += `/${undefined}/${undefined}`;
+            url += `/${lessonType == "all" ? undefined : lessonType}`;
             axios.get(url).then(res => {
 
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
@@ -494,7 +498,18 @@ const dispatch=useDispatch();
                                     renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                                 />
                                
-
+                               <FormControl sx={{ m: 1, width: "13ch" }} >
+                                    <InputLabel id="demo-simple-select-label">סוג השיעור</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={lessonType}
+                                        label="סוג השיעור"
+                                        onChange={(e) => { setLessonType(e.target.value) }}
+                                    >
+                                        {lessonTypes.map(item => { return <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem> })}
+                                    </Select>
+                                </FormControl>
                                 <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
                                     חפש
                                 </Button>

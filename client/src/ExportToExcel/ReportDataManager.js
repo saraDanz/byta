@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import axios from "axios";
+import { lessonTypes } from "./lessonTypes";
 import "./ReportDataManager.css";
 import PDFDocument from "./PdfDocument";
 import PrintFormat from "./PrintFormat";
@@ -301,6 +302,7 @@ const ReportDataManager = () => {
     const [searchTo, setSearchTo] = useState(null);
     let [teacher, setTeacher] = useState(null);
     let [course, setCourse] = useState(null);
+    let [lessonType, setLessonType] = useState("all");
     let currentUser = useSelector(st => st.index.currentUser);
 
 
@@ -309,14 +311,16 @@ const ReportDataManager = () => {
 
         if (currentUser) {
 
-            let courseIdparam = course ?._id;
-            let teacherIdparam = teacher ?._id;
-            let directorIdparam = director ?._id;
+            let courseIdparam = course?._id;
+            let teacherIdparam = teacher?._id;
+            let directorIdparam = director?._id;
+
             setReportsLoading(true);
             let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${directorIdparam}/${courseIdparam}/${teacherIdparam}`;
             if (type == SearchTypes.Range)
-                url += `/${searchFrom ?.$d}/${searchTo ?.$d}`;
+                url += `/${searchFrom?.$d}/${searchTo?.$d}`;
             else url += `/${undefined}/${undefined}`;
+            url += `/${lessonType == "all" ? undefined : lessonType}`;
             axios.get(url).then(res => {
 
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
@@ -423,7 +427,7 @@ const ReportDataManager = () => {
     // };
     return <>
         {/* <ReportTeacherDense reports={reports}/>*/}
-       
+
         <Outlet />
         {/*reports.length > 0 &&
             <>
@@ -462,7 +466,7 @@ const ReportDataManager = () => {
             <form>
 
                 <Paper sx={{ width: "87%", margin: "auto", mt: 1, padding: "20px", height: "90vh" }}>
-                    <Box sx={{ display: "flex", "flex-direction": "column",height:"100%" }}>
+                    <Box sx={{ display: "flex", "flex-direction": "column", height: "100%" }}>
                         <Box sx={{ display: "flex", 'flexWrap': 'wrap', "justifyContent": "center", "alignItems": "center" }}>
                             <Stack direction="row" >
                                 <FormControl sx={{ m: 1, width: "15ch" }}>
@@ -555,6 +559,18 @@ const ReportDataManager = () => {
                                     renderInput={(params) => directorsLoading ? <CircularProgress /> : <TextField {...params} label="רכזת" />}
                                 />
 
+                                <FormControl sx={{ m: 1, width: "13ch" }} >
+                                    <InputLabel id="demo-simple-select-label">סוג השיעור</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={lessonType}
+                                        label="סוג השיעור"
+                                        onChange={(e) => { setLessonType(e.target.value) }}
+                                    >
+                                        {lessonTypes.map(item => { return <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem> })}
+                                    </Select>
+                                </FormControl>
                                 <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
                                     חפש
                                 </Button>
@@ -567,37 +583,38 @@ const ReportDataManager = () => {
                                 <Button type="button" startIcon={<LocalPrintshopOutlinedIcon />} variant="outlined" onClick={handlePrint} sx={{ m: 1 }} >
 
                                 </Button>*/}
-                                <ExportMenuContainer  items={
+
+                                <ExportMenuContainer items={
                                     <>
-                                        <MenuItem disabled={reports.length==0}>
-                                           
-                                                <LinkRoute to="/allReports" state={{ reports: reports, searchFrom, searchTo, year, month }}>
-                                                    <FileDownloadOutlinedIcon />
-                        
-                                                    הורדת הדיווחים
-                                                </LinkRoute>
-                                           
+                                        <MenuItem disabled={reports.length == 0}>
+
+                                            <LinkRoute to="/allReports" state={{ reports: reports, searchFrom, searchTo, year, month }}>
+                                                <FileDownloadOutlinedIcon />
+
+                                                הורדת הדיווחים
+                                            </LinkRoute>
+
                                         </MenuItem>
-                                        <MenuItem disabled={reports.length==0}>
-                                           
-                                                <LinkRoute to="/reportbyTeacherSpacious" state={{ reports: reports, searchFrom, searchTo, year, month }}>
-                                                    <FileDownloadOutlinedIcon />
-                                                    הורדת סיכום דווחים למורה לפי קורסים </LinkRoute>
-                                            
+                                        <MenuItem disabled={reports.length == 0}>
+
+                                            <LinkRoute to="/reportbyTeacherSpacious" state={{ reports: reports, searchFrom, searchTo, year, month }}>
+                                                <FileDownloadOutlinedIcon />
+                                                הורדת סיכום דווחים למורה לפי קורסים </LinkRoute>
+
                                         </MenuItem>
-                                        <MenuItem disabled={reports.length==0}>
-                                           
-                                                <LinkRoute to="/reportByTeacherSum" state={{ reports: reports, searchFrom, searchTo, year, month }}>
-                                                    <FileDownloadOutlinedIcon />
-                                                    הורדת סיכום דווחים למורה</LinkRoute>
-                                           
+                                        <MenuItem disabled={reports.length == 0}>
+
+                                            <LinkRoute to="/reportByTeacherSum" state={{ reports: reports, searchFrom, searchTo, year, month }}>
+                                                <FileDownloadOutlinedIcon />
+                                                הורדת סיכום דווחים למורה</LinkRoute>
+
                                         </MenuItem>
-                                        <Divider/>
-                                        <MenuItem disabled={reports.length==0} onClick={handlePrint}>
-                                                               <PrintOutlinedIcon  />
+                                        <Divider />
+                                        <MenuItem disabled={reports.length == 0} onClick={handlePrint}>
+                                            <PrintOutlinedIcon />
                                             הדפסה
-                                     
-                                </MenuItem>
+
+                                        </MenuItem>
                                     </>
                                 } />
                                 {/*    {!reportsLoading && <PDFDownloadLink document={<PDFDocument columns={["courseName",

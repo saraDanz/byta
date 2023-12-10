@@ -52,6 +52,8 @@ import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import { Button as BButton } from "semantic-ui-react";
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import { lessonTypes } from "./lessonTypes";
+
 // import {FiberManualRecordIcon}from "@mui/icons-material";
 const getUnfilteredRows = ({ apiRef }) => gridSortedRowIdsSelector(apiRef);
 
@@ -206,6 +208,8 @@ const ReportDataTeacherAdvanced = () => {
     const [reports, setReports] = useState([]);
     const [travelingDays, setTravelingDays] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
+    let [lessonType, setLessonType] = useState("all");
+
     let currentUser = useSelector(st => st.index.currentUser);
     let dispatch = useDispatch();
     useEffect(() => {
@@ -278,7 +282,7 @@ const ReportDataTeacherAdvanced = () => {
     const [searchTo, setSearchTo] = useState(null);
     let [teacher, setTeacher] = useState(null);
     let [course, setCourse] = useState(null);
-  
+
 
 
     const getData = (type) => {
@@ -286,14 +290,15 @@ const ReportDataTeacherAdvanced = () => {
 
         if (currentUser) {
 
-            let courseIdparam = course ?._id;
+            let courseIdparam = course?._id;
             let teacherIdparam = currentUser._id;
 
             setReportsLoading(true);
             let url = `${BASE_URL}reports/searchByParameters/${year}/${month}/${undefined}/${courseIdparam}/${teacherIdparam}`;
             if (type == SearchTypes.Range)
-                url += `/${searchFrom ?.$d}/${searchTo ?.$d}`;
+                url += `/${searchFrom?.$d}/${searchTo?.$d}`;
             else url += `/${undefined}/${undefined}`;
+            url += `/${lessonType == "all" ? undefined : lessonType}`;
             axios.get(url).then(res => {
 
                 console.log(res);
@@ -436,7 +441,18 @@ const ReportDataTeacherAdvanced = () => {
 
                                     renderInput={(params) => courseLoading ? <CircularProgress /> : <TextField {...params} label="קורס" />}
                                 />
-
+                                <FormControl sx={{ m: 1, width: "13ch" }} >
+                                    <InputLabel id="demo-simple-select-label">סוג השיעור</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={lessonType}
+                                        label="סוג השיעור"
+                                        onChange={(e) => { setLessonType(e.target.value) }}
+                                    >
+                                        {lessonTypes.map(item => { return <MenuItem key={item.value} value={item.value}>{item.text}</MenuItem> })}
+                                    </Select>
+                                </FormControl>
 
                                 <Button type="button" variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '10ch' }} onClick={() => { getData(SearchTypes.YearMonth) }}>
                                     חפש
@@ -490,7 +506,7 @@ const ReportDataTeacherAdvanced = () => {
                                                 <FileDownloadOutlinedIcon />
 
                                                 הורדת הדיווחים
-                                                </LinkRoute>
+                                            </LinkRoute>
 
                                         </MenuItem>
                                         <MenuItem disabled={reports.length == 0}>
@@ -506,7 +522,7 @@ const ReportDataTeacherAdvanced = () => {
                                             <PrintOutlinedIcon />
                                             הדפסה
 
-                                </MenuItem>
+                                        </MenuItem>
                                     </>
                                 } />
                             </Stack>
