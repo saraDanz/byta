@@ -49,9 +49,11 @@ export default function Login() {
                 axios.post(BASE_URL + "users/login", values).then(res => {
                     console.log(res)
                     console.log("Logging in", values);
-                    let result = window.confirm("רכזת  יקרה!\n האם תרצי לבצע כניסה כמרצה?")
-                    if (result) {
-                        res.data.role = 4;
+                    if (res.data.role == 2) {
+                        let result = window.confirm("רכזת  יקרה!\n האם תרצי לבצע כניסה כמרצה?")
+                        if (result) {
+                            res.data.role = 4;
+                        }
                     }
                     dispatch(saveUser(res.data))
 
@@ -173,7 +175,7 @@ export default function Login() {
 
                                 <Button type="submit" variant="outlined" sx={{ m: 1 }} disabled={isSubmitting}>
                                     הכנס
-      </Button>
+                                </Button>
                             </Box>
                         </Paper>
 
