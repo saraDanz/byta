@@ -10,7 +10,8 @@ export const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 currentUser: action.payload,
-                courses: []
+                courses: [],
+                teachers:[]
 
             }
 
@@ -18,7 +19,8 @@ export const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 currentUser: null,
-                courses: []
+                courses: [],
+                teachers:[]
             }
         case ActionTypes.SAVE_COURSES_OF_CURRENT_USER:
             return {

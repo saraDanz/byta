@@ -7,7 +7,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { logOut, saveCoursesOfCurrentUser } from './store/actions';
+import {  saveCoursesOfCurrentUser } from './store/actions';
 import { BASE_URL } from './VARIABLES';
 import { useNavigate } from 'react-router';
 import AddReportForm from './AddReportFormNot';
