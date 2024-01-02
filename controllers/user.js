@@ -33,7 +33,7 @@ const getAllDirectorsAndCourses = async (req, res) => {
 }
 const getAllDirectors = async (req, res) => {
     try {
-        const users = await User.find({ role: 2 }).sort({ "lastName": 1, "firstName": 1 });
+        const users = await User.find({ role: 2,status:true }).sort({ "lastName": 1, "firstName": 1 });
         return res.send(users);
     }
     catch (e) {

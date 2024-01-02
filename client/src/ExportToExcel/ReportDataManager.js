@@ -360,17 +360,17 @@ const ReportDataManager = () => {
             }).finally(() => { setReportsLoading(false) })
         }
     }
-    const exportToExcel = () => {
-        if (reports.length) {
-            let rep = reports.map(item => {
-                let { symbol, courseName, teacherName, workerNum, date, fromTime, toTime, numHours, type, directorName, reportDate, comment } = item; return {
-                    symbol, courseName, teacherName, workerNum, date: date ? new Date(date) : date, fromTime, toTime, numHours, type, directorName, reportDate: reportDate ? reportDate.toLocaleDateString() : reportDate, comment
-                }
-            })
-            //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
-            exportToCSV(rep, `report-${year}-${month}`, [['סמל קורס', 'קורס', 'מורה', 'מספר עובד', 'תאריך', "משעה", "עד שעה", "מספר שעות", "סוג", "רכזת", "תאריך דוח", "הערות"]])
-        }
-    }
+    // const exportToExcel = () => {
+    //     if (reports.length) {
+    //         let rep = reports.map(item => {
+    //             let { symbol, courseName, teacherName, workerNum, date, fromTime, toTime, numHours, type, directorName, reportDate, comment } = item; return {
+    //                 symbol, courseName, teacherName, workerNum, date: date ? new Date(date) : date, fromTime, toTime, numHours, type, directorName, reportDate: reportDate ? reportDate.toLocaleDateString() : reportDate, comment
+    //             }
+    //         })
+    //         //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
+    //         exportToCSV(rep, `report-${year}-${month}`, [['סמל קורס', 'קורס', 'מורה', 'מספר עובד', 'תאריך', "משעה", "עד שעה", "מספר שעות", "סוג", "רכזת", "תאריך דוח", "הערות"]])
+    //     }
+    // }
 
 
     const exportToCSV = (csvData, fileName, heading) => {

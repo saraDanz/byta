@@ -1,0 +1,1 @@
+export const columns = [{ title: "", field: "subject" }]
