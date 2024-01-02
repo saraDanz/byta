@@ -32,15 +32,16 @@ export default function AllReports({ props }) {//spacious
         //     })
         if (reports.length) {
             let rep = reports.map((item, index) => {
-                // let obj={};
-                // columns.forEach(element => {
-                //     obj[element.field]=item[element.field];
-                // });
-                let { tz, teacherName, workerNum, courseName, symbol, numHours, directorName, fromTime, toTime, date, type,comment ,reportDate} = item;
-                return {
-                    tz, teacherName, workerNum, courseName, symbol, date, fromTime, toTime, numHours, type, directorName,comment,reportDate
+                let obj={};
+                columns.forEach(element => {
+                    obj[element.field]=item[element.field];
+                });
+                // let { tz, teacherName, workerNum, courseName, symbol, numHours, directorName, fromTime, toTime, date, type,comment ,reportDate} = item;
+                // return {
+                //     tz, teacherName, workerNum, courseName, symbol, date, fromTime, toTime, numHours, type, directorName,comment,reportDate
 
-                }
+                // }
+                return obj;
             })
             //לסנן עמודות לא רלוונטיות ולשלוח כפרמטר שמות לעמודות
             exportToCSV(rep, fromDate && toDate ? `סכום שעות  לתאריכים ${fromDate.$d.toLocaleDateString()}-${toDate.$d.toLocaleDateString()}: ` :
