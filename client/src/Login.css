@@ -1,0 +1,64 @@
+/* .App {
+    font-family: sans-serif;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  .login form {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .login  label,
+  .login input {
+    display: block;
+    width: 100%;
+  }
+  
+  .login label {
+    margin-bottom: 5px;
+    height: 22px;
+  }
+  
+  .login input {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 3px;
+    border: 1px solid #777;
+  }
+  
+  .login input.error {
+    border-color: red;
+  }
+  
+  .login .input-feedback {
+    color: rgb(235, 54, 54);
+    margin-top: -15px;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .login button {
+    padding: 10px 15px;
+    background-color: rgb(255 165 0);
+    color: white;
+    border: 1px solid rgb(255 165 0);
+    transition: ease-in-out background-color 250ms, ease-in-out color 250ms;
+}
+  
+  .login button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: rgb(70, 153, 179);
+  }
+  i.teal.icon {
+    color: orange;
+} */
+
+.MuiTextField-root p {
+  text-align: center;
+  color: red;
+}
