@@ -22,9 +22,9 @@ const ManagerNavBar = () => {
         <Menu.Item >
             <Link to="setting" title="הגדרות"><SettingsOutlinedIcon /></Link>
         </Menu.Item>
-      {/*  <Menu.Item >
+       <Menu.Item >
             <Link to="variableList" title="משתני מערכת"><DataObjectOutlinedIcon /></Link>
-      </Menu.Item>*/}
+      </Menu.Item>
 
     </>
 }
