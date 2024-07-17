@@ -352,7 +352,7 @@ export default function TeacherList() {
             <Demo>
                 <List dense={false} dir="ltr">
                     {filteredTeacherList.map(item => {
-                        return <TeacherListItem withReports={true} editFare={updateFare} deleteTeacherFromCourse={deleteTeacherFromCourse} key={item._id} editTeacher={() => { setEditTeacherDialogVisible(item) }} deleteTeacher={deleteTeacher} item={item} />
+                        return <TeacherListItem withReports={false} editFare={updateFare} deleteTeacherFromCourse={deleteTeacherFromCourse} key={item._id} editTeacher={() => { setEditTeacherDialogVisible(item) }} deleteTeacher={deleteTeacher} item={item} />
                     })}
                 </List>
             </Demo>

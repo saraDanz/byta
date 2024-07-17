@@ -222,6 +222,7 @@ export default function App() {
             <Route path="addCourse" element={<AddCourse />} />
             <Route path="addCoursedirector" element={<AddCourseDirector/>} />
             <Route path="teacherList" element={<TeacherList />} />
+           
             <Route path="teacherListDirector" element={<TeacherListDirector />} />
             <Route path="variableList" element={<VariableList />} />
             <Route path="courseList" element={<CourseList />} />

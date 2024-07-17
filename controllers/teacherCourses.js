@@ -15,107 +15,107 @@ const getAllTeacherCourses = async (req, res) => {
     }
 
 }
-// const getAllTeacherWithTheirCourses = async (req, res) => {
-//     try {
-//         /* 
-//               // const teachersCourses = await TeacherCourses.find({},{fares:{$slice:-1}}).populate("courseId").populate("teacherId");
-//               const teachersCourses = await TeacherCourses.find({}).populate("courseId").populate("teacherId");
-
-//               let teachers = new Map();
-//               teachersCourses.forEach((item, index) => {
-//                   if (!item.teacherId || !item.courseId) { console.log(index); return; }
-//                   let { status, lessonDuration, symbol, description, name, startDate, directorId, _id }=item.courseId;
-//                   if (!teachers.has[item.teacherId])
-//                       teachers.set(item.teacherId, [{status, lessonDuration,  symbol, description, name, startDate, directorId, _id , fares: item.fares }])
-//                   else
-//                       teachers.set(item.teacherId, [...teachers.get(item.teacherId), { status, lessonDuration,  symbol, description, name, startDate, directorId, _id , fares: item.fares }]);
-
-//               })
-
-//               let arr = [];
-//               // for (let x in teachers)
-//               //     arr.push({...teachers[x][0], courses: [,...teachers[x]] })
-//               // console.log(teachers)
-//               for (const [key, value] of teachers) {
-
-//                   // console.log(key, value);
-//                   let { _id,
-//                       firstName,
-//                       lastName,
-//                       tz,
-//                       address,
-//                       phone,
-//                       email,
-//                       password,
-//                       role } = key;
-//                   arr.push({
-//                       _id,
-//                       firstName,
-//                       lastName,
-//                       tz,
-//                       address,
-//                       phone,
-//                       email,
-//                       password,
-//                       role
-//                       , courses: value
-//                   })
-
-//               }
-//               const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
-
-
-//               return res.send(arr);*/
-//         const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
-//         const teachersCourses = await TeacherCourses.find().populate("courseId").populate("teacherId");
-//         let arr = users.map((item) => {
-//             let { _id,
-//                 firstName,
-//                 lastName,
-//                 tz,
-//                 address,
-//                 phone,
-//                 email,
-//                 password,
-//                 role,workerNum } = item;
-//             return {
-//                 _id,
-//                 firstName,
-//                 lastName,
-//                 tz,
-//                 address,
-//                 phone,
-//                 email,
-//                 password,
-//                 role,workerNum,
-//                 courses: teachersCourses.filter((a) => {
-//                     if (a.teacherId && a.teacherId._id.toString() == item._id.toString()) return true; return false
-//                 }).map((x, index) => {
-
-
-//                     let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
-//                     return { status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares }
-//                 })
-//             }
-//         })
-//         return res.send(arr);
-
-//     }
-//     catch (e) {
-//         return res.status(400).send(e.message);
-
-//     }
-
-// }
 const getAllTeacherWithTheirCourses = async (req, res) => {
+    try {
+        /* 
+              // const teachersCourses = await TeacherCourses.find({},{fares:{$slice:-1}}).populate("courseId").populate("teacherId");
+              const teachersCourses = await TeacherCourses.find({}).populate("courseId").populate("teacherId");
+
+              let teachers = new Map();
+              teachersCourses.forEach((item, index) => {
+                  if (!item.teacherId || !item.courseId) { console.log(index); return; }
+                  let { status, lessonDuration, symbol, description, name, startDate, directorId, _id }=item.courseId;
+                  if (!teachers.has[item.teacherId])
+                      teachers.set(item.teacherId, [{status, lessonDuration,  symbol, description, name, startDate, directorId, _id , fares: item.fares }])
+                  else
+                      teachers.set(item.teacherId, [...teachers.get(item.teacherId), { status, lessonDuration,  symbol, description, name, startDate, directorId, _id , fares: item.fares }]);
+
+              })
+
+              let arr = [];
+              // for (let x in teachers)
+              //     arr.push({...teachers[x][0], courses: [,...teachers[x]] })
+              // console.log(teachers)
+              for (const [key, value] of teachers) {
+
+                  // console.log(key, value);
+                  let { _id,
+                      firstName,
+                      lastName,
+                      tz,
+                      address,
+                      phone,
+                      email,
+                      password,
+                      role } = key;
+                  arr.push({
+                      _id,
+                      firstName,
+                      lastName,
+                      tz,
+                      address,
+                      phone,
+                      email,
+                      password,
+                      role
+                      , courses: value
+                  })
+
+              }
+              const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
+
+
+              return res.send(arr);*/
+         const [users,teachersCourses]=await Promise.all([User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 }),TeacherCourses.find().populate("courseId").populate("teacherId")])
+
+        let arr = users.map((item) => {
+            let { _id,
+                firstName,
+                lastName,
+                tz,
+                address,
+                phone,
+                email,
+                password,
+                role,workerNum } = item;
+            return {
+                _id,
+                firstName,
+                lastName,
+                tz,
+                address,
+                phone,
+                email,
+                password,
+                role,workerNum,
+                courses: teachersCourses.filter((a) => {
+                    if (a.teacherId && a.teacherId._id.toString() == item._id.toString()) return true; return false
+                }).map((x, index) => {
+
+
+                    let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
+                    return { status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares }
+                })
+            }
+        })
+        return res.send(arr);
+
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+
+}
+const getAllTeacherWithTheirCoursesOldGoodButSlow = async (req, res) => {
     //פונקציה זו בוריאציה הקודמת טובה יותר , רק כעת באופן זמני
     //שלפתי לזהבה עבור כל מורה וכל קורס כמה דיווחים יש בו
     try {
 
-        const users = await User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 });
-        const reports = await Report.find();
-        const teachersCourses = await TeacherCourses.find().populate("courseId").populate("teacherId");
-
+        // const users = await 
+        // const reports = await Report.find();
+        // const teachersCourses = await TeacherCourses.find().populate("courseId").populate("teacherId");
+const [users,reports,teachersCourses]=await Promise.all([User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 }), Report.find(),TeacherCourses.find().populate("courseId").populate("teacherId")])
         let arr = users.map((item) => {
             let { _id: _idOfTeacher,
                 firstName, lastName, tz, address, phone, email, password, role, workerNum } = item;
@@ -141,6 +141,7 @@ const getAllTeacherWithTheirCourses = async (req, res) => {
         return res.status(400).send(e.message);
     }
 }
+
 const getAllTeacherByDirectorIdWithTheirCourses = async (req, res) => {
     //פונקציה זו בוריאציה הקודמת טובה יותר , רק כעת באופן זמני
     //שלפתי לזהבה עבור כל מורה וכל קורס כמה דיווחים יש בו
