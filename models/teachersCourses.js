@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const rateSchema = new mongoose.Schema({
     rate: Number,
-  
+
     associationDate: { type: Date, default: new Date() }
 
 
@@ -14,7 +14,8 @@ const teachersCoursesSchema = new mongoose.Schema({
     teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 
     fares: { type: [rateSchema], default: [] },
-    rate: { type: [rateSchema], default: [] }
+    rate: { type: [rateSchema], default: [] },
+    isActive: { type: Boolean, default: true }
 
 
 });

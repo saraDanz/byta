@@ -245,6 +245,33 @@ const addNewDirector = async (req, res) => {
     }
 
 }
+const getTotalTeacherPages = async (req, res) => {
+let {s}=req.query;
+    try {
+        const count = await User.countDocuments({ role: { $in: [1, 2] },
+            $or: [
+                { firstName: { $regex: s, $options: "i" } },
+                { lastName: { $regex: s, $options: "i" } },
+                {
+                  $expr: {
+                    $regexMatch: {
+                      input: { $concat: ["$firstName", " ", "$lastName"] },
+                      regex: s,
+                      options: "i"
+                    }
+                  }
+                }
+              ]
+        })
+        console.log(Math.ceil(count / 30))
+        return res.status(200).json({totalPages:Math.ceil(count / 30)})
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+    }
+
+
+}
 module.exports = {
     login, addNewTeacher,
     getAllDirectorsAndCourses,
@@ -252,5 +279,5 @@ module.exports = {
     getAllUsers, updateUser,
     addNewUser, addNewDirector,
     deleteUser, getAllTeachers,
-    getAllDirectors
+    getAllDirectors,getTotalTeacherPages
 }

@@ -15,6 +15,22 @@ const getAllTeacherCourses = async (req, res) => {
     }
 
 }
+const updateTeacherCourseStatus = async (req, res) => {
+    let { courseId, teacherId } = req.params;
+    try {
+        let { status } = req.body;
+
+        const update = await TeacherCourses.findOneAndUpdate({ courseId, teacherId }, { isActive: status }, { new: true });
+        if (!update) {
+            return res.status(404).json({ message: 'לא נמצא שיוך מורה לקורס עם כזה קוד' });
+        }
+        return res.status(200).json({ message: "סטטוס עודכן בהצלחה", course: update });
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+
+    }
+}
 const getAllTeacherWithTheirCourses = async (req, res) => {
     try {
         /* 
@@ -66,39 +82,76 @@ const getAllTeacherWithTheirCourses = async (req, res) => {
 
 
               return res.send(arr);*/
-         const [users,teachersCourses]=await Promise.all([User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 }),TeacherCourses.find().populate("courseId").populate("teacherId")])
+        /*האופציה הבאה עובדת  מעולה אך איטית
+                const [users, teachersCourses] = await Promise.all([User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 }), TeacherCourses.find().populate("courseId").populate("teacherId")])
+  
+          let arr = users.map((item) => {
+              let { _id,
+                  firstName,
+                  lastName,
+                  tz,
+                  address,
+                  phone,
+                  email,
+                  password,
+                  role, workerNum } = item;
+              return {
+                  _id,
+                  firstName,
+                  lastName,
+                  tz,
+                  address,
+                  phone,
+                  email,
+                  password,
+                  role, workerNum,
+                  courses: teachersCourses.filter((a) => {
+                      if (a.teacherId && a.teacherId._id.toString() == item._id.toString()) return true; return false
+                  }).map((x, index) => {
+  
+  
+                      let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
+                      return { status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares }
+                  })
+              }
+          })*/
 
-        let arr = users.map((item) => {
-            let { _id,
-                firstName,
-                lastName,
-                tz,
-                address,
-                phone,
-                email,
-                password,
-                role,workerNum } = item;
-            return {
-                _id,
-                firstName,
-                lastName,
-                tz,
-                address,
-                phone,
-                email,
-                password,
-                role,workerNum,
-                courses: teachersCourses.filter((a) => {
-                    if (a.teacherId && a.teacherId._id.toString() == item._id.toString()) return true; return false
-                }).map((x, index) => {
+        const teachersWithCourses = await User.aggregate([
+            // Match only users with role === 1 (assuming 1 is the teacher role)
+            {
+                $match: {
+                    role: { $in: [1, 2] },
+                }
+            },
+            { $sort: { "lastName": 1, firstName: 1 } },
 
-
-                    let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
-                    return { status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares }
-                })
+            {
+                $lookup: {
+                    from: 'teacherscourses', // Collection to join with
+                    localField: '_id', // Field from 'users' collection
+                    foreignField: 'teacherId', // Field from 'teachers_courses' collection
+                    as: 'coursesd' // Output array field
+                }
+            },
+            // Populate courses using courseId from teachersCoursesSchema
+            {
+                $lookup: {
+                    from: 'courses', // Collection to join with
+                    localField: 'coursesd.courseId', // Field from 'teachers_courses' collection
+                    foreignField: '_id', // Field from 'courses' collection
+                    as: 'courses' // Output array field
+                }
+            },
+            // Project to reshape the output documents
+            {
+                $project: {
+                    'courses.teachers': 0,
+                    coursesd: 0 // Replace 'courses' array with populatedCourses
+                }
             }
-        })
-        return res.send(arr);
+        ])
+
+        return res.send(teachersWithCourses);
 
     }
     catch (e) {
@@ -115,7 +168,7 @@ const getAllTeacherWithTheirCoursesOldGoodButSlow = async (req, res) => {
         // const users = await 
         // const reports = await Report.find();
         // const teachersCourses = await TeacherCourses.find().populate("courseId").populate("teacherId");
-const [users,reports,teachersCourses]=await Promise.all([User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 }), Report.find(),TeacherCourses.find().populate("courseId").populate("teacherId")])
+        const [users, reports, teachersCourses] = await Promise.all([User.find({ role: { $in: [1, 2] } }).sort({ "lastName": 1, "firstName": 1 }), Report.find(), TeacherCourses.find().populate("courseId").populate("teacherId")])
         let arr = users.map((item) => {
             let { _id: _idOfTeacher,
                 firstName, lastName, tz, address, phone, email, password, role, workerNum } = item;
@@ -126,12 +179,14 @@ const [users,reports,teachersCourses]=await Promise.all([User.find({ role: { $in
                     if (a.teacherId && a.teacherId._id.toString() == item._id.toString()) return true; return false
                 }).map((x, index) => {
 
-                    if (!x.courseId) { console.log(index, x)  }
-                  else{  let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
-                    return {
-                        status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares,
-                        numReports: reports.filter((item) => item.teacherId.toString() == _idOfTeacher.toString() && item.courseId.toString() == _id.toString()).length
-                    }}
+                    if (!x.courseId) { console.log(index, x) }
+                    else {
+                        let { status, lessonDuration, symbol, description, name, startDate, directorId, _id } = x.courseId;
+                        return {
+                            status, lessonDuration, symbol, description, name, startDate, directorId, _id, fares: x.fares,
+                            numReports: reports.filter((item) => item.teacherId.toString() == _idOfTeacher.toString() && item.courseId.toString() == _id.toString()).length
+                        }
+                    }
                 })
             }
         })
@@ -202,7 +257,7 @@ const getCoursesByTeacherId = async (req, res) => {
         let { teacherId } = req.params;
         if (!mongoose.Types.ObjectId.isValid(teacherId))
             return res.status(400).send("teacher id is not valid");
-        const courses = await TeacherCourses.find({ teacherId }).select("-_id -teacherId").populate({ path: "courseId" });
+        const courses = await TeacherCourses.find({ teacherId,$or:[{isActive:true},{isActive:{$exists:false}}]}).select("-_id -teacherId").populate({ path: "courseId" });
         let c = courses.map(item => item.courseId)
         return res.send(c);
     }
@@ -304,11 +359,230 @@ const updateFare = async (req, res) => {
     }
 
 }
+
+/*const getTeacherLimit = async (req, res) => { עבד מצוין אך לא שלף את הסטטוס שיוך של מורה לקורס
+    const { page, s } = req.query;
+    try {
+        const teachersWithCourses = await User.aggregate([
+            // Match only users with role === 1 or 2 (assuming 1 is the teacher role)
+            {
+                $match: {
+                    role: { $in: [1, 2] },
+                    $or: [
+                        { firstName: { $regex: s, $options: "i" } },
+                        { lastName: { $regex: s, $options: "i" } },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { $concat: ["$firstName", " ", "$lastName"] },
+                                    regex: s,
+                                    options: "i"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            { $sort: { lastName: 1, firstName: 1 } },
+            { $skip: (page - 1) * 30 },
+            { $limit: 30 },
+            {
+                $lookup: {
+                    from: 'teacherscourses', // Collection name in MongoDB
+                    localField: '_id', // Field from 'users' collection
+                    foreignField: 'teacherId', // Field from 'teacherscourses' collection
+                    as: 'teacherCourses' // Output field
+                }
+            },
+            {
+                $lookup: {
+                    from: 'courses', // Collection name in MongoDB
+                    localField: 'teacherCourses.courseId', // Field from 'teacherscourses' collection
+                    foreignField: '_id', // Field from 'courses' collection
+                    as: 'courseDetails' // Output field
+                }
+            },
+            {
+                $addFields: {
+                    courses: {
+                        $map: {
+                            input: '$courseDetails',
+                            as: 'course',
+                            in: {
+                                _id: '$$course._id',
+                                name: '$$course.name',
+
+                                description: '$$course.description',
+                                symbol: '$$course.symbol',
+                                startDate: '$$course.startDate',
+                                lessonDuration: '$$course.lessonDuration',
+                                status: '$$course.status',
+                                fares: {
+                                    $arrayElemAt: [
+                                        {
+                                            $filter: {
+                                                input: '$teacherCourses.fares',
+                                                as: 'fare',
+                                                cond: { $eq: ['$$fare.courseId', '$$course._id'] }
+                                            }
+                                        },
+                                        0
+                                    ],
+                                }, isActive: {
+                                    $arrayElemAt: [{
+                                        $filter: {
+                                            input: '$teacherCourses.isActive',
+                                            as: 'connection',
+                                            cond: { $eq: ['$$connection.courseId', '$$course._id'] }
+                                        }
+                                    }, 0]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+         
+        ]);
+
+
+
+
+        console.log(teachersWithCourses.length)
+        return res.send(teachersWithCourses);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+    }
+}
+*/
+const getTeacherLimit = async (req, res) => {
+    const { page, s } = req.query;
+    try {
+        const teachersWithCourses = await TeacherCourses.aggregate([
+
+            {
+                $lookup: {
+                    from: 'courses',
+                    localField: 'courseId',
+                    foreignField: '_id',
+                    as: 'course'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'teacherId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$course',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $group: {
+                    _id: '$user._id',
+                    firstName: { $first: '$user.firstName' },
+                    lastName: { $first: '$user.lastName' },
+                    tz: { $first: '$user.tz' },
+                    phone: { $first: '$user.phone' },
+                    email: { $first: '$user.email' },
+                    role: { $first: '$user.role' },
+                    address: { $first: '$user.address' },
+                    password: { $first: '$user.password' },
+                    courses: {
+                        $push: {
+                            fares: '$fares',
+                            isActive: '$isActive',
+                            _id: '$courseId',
+                            name: '$course.name',
+                            symbol: "$course.symbol",
+                            description: '$course.description',
+                            startDate: '$course.startDate',
+                            directorId: '$course.directorId'
+                        }
+                    }
+                }
+            },
+            { $sort: { lastName: 1, firstName: 1 } },
+            {
+                $unionWith: {
+                    coll: 'users',
+                    pipeline: [
+                        {
+                            $project: {
+                                firstName: 1,
+                                lastName: 1,
+                                address: 1,
+                                tz: 1,
+                                role: 1,
+                                phone: 1,
+                                email: 1,
+                                password: 1,
+                                courses: []
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'teacherscourses',
+                                localField: '_id',
+                                foreignField: 'teacherId',
+                                as: 'coursesw'
+                            }
+                        },
+                        { $match: { coursesw: { $size: 0 } } },
+                        { $project: { coursesw: 0 } }
+                    ]
+                }
+            },
+
+            {
+                $match: {
+                    role: { $in: [1, 2] },
+                    $or: [
+                        { firstName: { $regex: s, $options: "i" } },
+                        { lastName: { $regex: s, $options: "i" } },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { $concat: ["$firstName", " ", "$lastName"] },
+                                    regex: s,
+                                    options: "i"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }, { $sort: { lastName: 1, firstName: 1 } },
+            { $skip: (page - 1) * 30 },
+            { $limit: 30 },
+
+        ], { maxTimeMS: 60000, allowDiskUse: true }
+
+        );
+        console.log(teachersWithCourses.length)
+        return res.send(teachersWithCourses);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+    }
+}
 module.exports = {
     getCoursesByTeacherId, updateFare,
     getTeacherCoursesByDirectorId,
     getAllTeacherWithTheirCourses, getAllTeacherByDirectorIdWithTheirCourses,
-    addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse
+    addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse,
+    getTeacherLimit, updateTeacherCourseStatus
 }
 // const addTeacherToCoure = async (req, res) => {
 //     try {
