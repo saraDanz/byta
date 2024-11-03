@@ -246,25 +246,100 @@ const addNewDirector = async (req, res) => {
 
 }
 const getTotalTeacherPages = async (req, res) => {
-let {s}=req.query;
+    let { s } = req.query;
     try {
-        const count = await User.countDocuments({ role: { $in: [1, 2] },
+        const count = await User.countDocuments({
+            role: { $in: [1, 2] },
             $or: [
                 { firstName: { $regex: s, $options: "i" } },
                 { lastName: { $regex: s, $options: "i" } },
                 {
-                  $expr: {
-                    $regexMatch: {
-                      input: { $concat: ["$firstName", " ", "$lastName"] },
-                      regex: s,
-                      options: "i"
+                    $expr: {
+                        $regexMatch: {
+                            input: { $concat: ["$firstName", " ", "$lastName"] },
+                            regex: s,
+                            options: "i"
+                        }
                     }
-                  }
                 }
-              ]
+            ]
         })
         console.log(Math.ceil(count / 30))
-        return res.status(200).json({totalPages:Math.ceil(count / 30)})
+        return res.status(200).json({ totalPages: Math.ceil(count / 30) })
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+    }
+
+
+}
+const getTotalTeacherByDirectorIDPages = async (req, res) => {
+    let { s } = req.query;
+    const {directorId} =req.params;
+    try {
+        const countee = await Course.aggregate([
+            // Step 1: Match courses with the specified directorId and project only the _id
+            {
+                $match: { directorId: mongoose.Types.ObjectId( directorId) }
+            },
+            {
+                $project: { _id: 1 }
+            },
+            // Step 2: Lookup in teachersCourses to find associated teachers, with match on isActive directly in lookup
+            {
+                $lookup: {
+                    from: "teacherscourses",
+                    let: { courseId: "$_id" },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ["$courseId", "$$courseId"] } } },
+                        { $project: { teacherId: 1, isActive: 1 } }
+                    ],
+                    as: "teacherCourses"
+                }
+            },
+            // Step 3: Unwind teacherCourses to get individual teacher entries
+            { $unwind: "$teacherCourses" },
+            // Step 4: Lookup in users collection to find teacher details and filter only needed fields
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "teacherCourses.teacherId",
+                    foreignField: "_id",
+                    as: "teacherDetails"
+                }
+            },
+            // Step 5: Unwind teacherDetails to access individual teacher documents
+            { $unwind: "$teacherDetails" },
+            // Step 6: Match teachers based on role and name filter criteria
+            {
+                $match: {
+                    "teacherDetails.role": { $in: [1, 2] },
+                    $or: [
+                        { "teacherDetails.firstName": { $regex: s, $options: "i" } },
+                        { "teacherDetails.lastName": { $regex: s, $options: "i" } },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { $concat: ["$teacherDetails.firstName", " ", "$teacherDetails.lastName"] },
+                                    regex: s,
+                                    options: "i"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            // Step 7: Group by unique teacherId to avoid duplicate teachers
+            {
+                $group: {
+                    _id: "$teacherDetails._id"
+                }
+            },
+            // Step 8: Count distinct teacherIds
+            { $count: "teacherCount" }
+        ]);
+        console.log(Math.ceil(countee[0].teacherCount / 30))
+        return res.status(200).json({ totalPages: Math.ceil(countee[0].teacherCount / 30) })
     }
     catch (e) {
         return res.status(400).send(e.message);
@@ -279,5 +354,5 @@ module.exports = {
     getAllUsers, updateUser,
     addNewUser, addNewDirector,
     deleteUser, getAllTeachers,
-    getAllDirectors,getTotalTeacherPages
+    getAllDirectors, getTotalTeacherPages,getTotalTeacherByDirectorIDPages
 }

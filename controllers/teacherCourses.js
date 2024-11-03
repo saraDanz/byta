@@ -577,12 +577,151 @@ const getTeacherLimit = async (req, res) => {
         return res.status(400).send(e.message);
     }
 }
+const getTeacherByDirectorIdLimit = async (req, res) => {
+    const {directorId} =req.params;
+    const { page, s } = req.query;
+    try {
+        const teachersWithCourses = await TeacherCourses.aggregate([
+            {
+              $lookup: {
+                from: "courses",
+                localField: "courseId",
+                foreignField: "_id",
+                as: "course"
+              }
+            },
+            {
+              $match:
+                /**
+                 * query: The query in MQL.
+                 */
+                {
+                  "course.directorId": mongoose.Types.ObjectId(
+                    directorId
+                  )
+                }
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "teacherId",
+                foreignField: "_id",
+                as: "user"
+              }
+            },
+            {
+              $unwind: {
+                path: "$course",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $unwind: {
+                path: "$user",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $group: {
+                _id: "$user._id",
+                firstName: {
+                  $first: "$user.firstName"
+                },
+                lastName: {
+                  $first: "$user.lastName"
+                },
+                tz: {
+                  $first: "$user.tz"
+                },
+                phone: {
+                  $first: "$user.phone"
+                },
+                email: {
+                  $first: "$user.email"
+                },
+                role: {
+                  $first: "$user.role"
+                },
+                address: {
+                  $first: "$user.address"
+                },
+                password: {
+                  $first: "$user.password"
+                },
+                courses: {
+                  $push: {
+                    fares: "$fares",
+                    isActive: "$isActive",
+                    _id: "$courseId",
+                    name: "$course.name",
+                    symbol: "$course.symbol",
+                    description: "$course.description",
+                    startDate: "$course.startDate",
+                    directorId: "$course.directorId"
+                  }
+                }
+              }
+            },
+            {
+              $sort: {
+                lastName: 1,
+                firstName: 1
+              }
+            },
+           
+            {
+              $match: {
+                role: {
+                  $in: [1, 2]
+                }
+              }
+            },{
+                $match: {
+                    role: { $in: [1, 2] },
+                    $or: [
+                        { firstName: { $regex: s, $options: "i" } },
+                        { lastName: { $regex: s, $options: "i" } },
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { $concat: ["$firstName", " ", "$lastName"] },
+                                    regex: s,
+                                    options: "i"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+              $sort: {
+                lastName: 1,
+                firstName: 1
+              }
+            },
+         
+          
+            { $skip: (page - 1) * 30 },
+            { $limit: 30 },
+
+        ], { maxTimeMS: 60000, allowDiskUse: true }
+
+        );
+        console.log(teachersWithCourses.length)
+        return res.send(teachersWithCourses);
+    }
+    catch (e) {
+        return res.status(400).send(e.message);
+    }
+}
+
+
 module.exports = {
     getCoursesByTeacherId, updateFare,
     getTeacherCoursesByDirectorId,
     getAllTeacherWithTheirCourses, getAllTeacherByDirectorIdWithTheirCourses,
     addTeacherToCourse, getAllTeacherCourses, deleteTecherFromCourse,
-    getTeacherLimit, updateTeacherCourseStatus
+    getTeacherLimit,getTeacherByDirectorIdLimit, updateTeacherCourseStatus
 }
 // const addTeacherToCoure = async (req, res) => {
 //     try {

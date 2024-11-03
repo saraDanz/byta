@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userController = require("../controllers/user");
 router.get("", userController.getAllUsers);
 router.get("/totalTeacherPages", userController.getTotalTeacherPages);
+router.get("/totalTeacherByDirectorIdPages/:directorId", userController.getTotalTeacherByDirectorIDPages);
 router.delete("/:id", userController.deleteUser);
 router.get("/directors", userController.getAllDirectors);
 router.get("/directorsAndCourses", userController.getAllDirectorsAndCourses);

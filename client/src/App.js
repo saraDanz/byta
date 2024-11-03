@@ -59,6 +59,7 @@ import ReportDataTeacherAdvanced from "./ExportToExcel/ReportDataTeacher-advance
 import ReportDataDirectorAdvanced from "./ExportToExcel/ReportDataDirector-advanced.js";
 import AddCourseDirector from "./AddCourseDirector.js";
 import TeacherListQuick from "./TeacherListQuick.js";
+import TeacherListQuickDirector from "./TeacherListQuickDirector.js";
 
 // import {} from "./Prompt";
 export default function App() {
@@ -224,6 +225,7 @@ export default function App() {
             <Route path="addCoursedirector" element={<AddCourseDirector/>} />
             <Route path="teacherList" element={<TeacherList />} />
             <Route path="teacherListQuick" element={<TeacherListQuick />} />
+            <Route path="teacherListQuickDirector" element={<TeacherListQuickDirector />} />
            
             <Route path="teacherListDirector" element={<TeacherListDirector />} />
             <Route path="variableList" element={<VariableList />} />

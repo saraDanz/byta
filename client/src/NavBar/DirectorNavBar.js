@@ -8,6 +8,7 @@ const DirectorNavBar = () => {
         <Menu.Item >     <Link to="addCourseDirector" >הוספת קורס</Link></Menu.Item>
         <Menu.Item >     <Link to="addTeacherToCourseDirector" >הוספת מורה לקורס</Link></Menu.Item>
         <Menu.Item >     <Link to="teacherListDirector" >מורות</Link></Menu.Item>
+        <Menu.Item >     <Link to="teacherListQuickDirector" >  מורות מהיר</Link></Menu.Item>
         <Menu.Item >     <Link to="courseList" >קורסים</Link></Menu.Item>
         <Menu.Item >
             <Link to="tableDirector" title="הורדת דיווחים">

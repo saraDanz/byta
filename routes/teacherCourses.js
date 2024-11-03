@@ -5,6 +5,7 @@ router.get("/byDirectorId/:directorId", teacherCoursesController.getTeacherCours
 router.get("", teacherCoursesController.getAllTeacherCourses);
 router.get("/withTheirCourses", teacherCoursesController.getAllTeacherWithTheirCourses);
 router.get("/withTheirCoursesLimit", teacherCoursesController.getTeacherLimit);
+router.get("/withTheirCoursesByDirectorIdimit/:directorId", teacherCoursesController.getTeacherByDirectorIdLimit);
 router.get("/withTheirCoursesByDirectorId/:directorId", teacherCoursesController.getAllTeacherByDirectorIdWithTheirCourses);
 router.get("/:teacherId", teacherCoursesController.getCoursesByTeacherId);
 router.put("/updateFare/:courseId/:teacherId", teacherCoursesController.updateFare);
