@@ -11,7 +11,7 @@ const getConfigsByYear = async (req, res) => {
         let now = new Date();
         if (year == now.getFullYear())
             tilMonth = now.getMonth();
-        let arr = new Array(tilMonth).fill(false);
+        let arr = new Array(tilMonth+1).fill(false);
         let newConfigs = [];
         configs.forEach(element => {
             arr[element.month] = true;
