@@ -60,8 +60,8 @@ const getAllReportsByYearAndMonth = async (req, res) => {
 const searchByParameters = async (req, res) => {
     //לא בדקתי לפי מורה וקורס יחד
 
-    let { year, month, directorId, courseId, teacherId, searchFrom, searchTo,type } = req.params;
-
+    let { year, month, directorId, courseId, teacherId, searchFrom, searchTo, type } = req.params;
+    let { reportDateFrom, reportDateTo } = req.query;
     // let first = new Date(year, month -1,0,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
     // let last = new Date(year, month,0,0,0,0,0);
@@ -92,7 +92,13 @@ const searchByParameters = async (req, res) => {
 
     console.log(prev)
     console.log(next)
+    let reportDatePrev;
+    let reportDateNext;
+    if (reportDateFrom && reportDateTo) {
+        reportDatePrev = getDateXDaysAgo(1, new Date(reportDateFrom))
 
+        reportDateNext = new Date(reportDateTo)
+    }
     try {
 
         let reports;
@@ -102,12 +108,15 @@ const searchByParameters = async (req, res) => {
         //     else if (courseId) reports = await Report.find({ date: { $gt: prev, $lt: next }, courseId: courseId }).populate({ path: "teacherId", select: "firstName lastName -_id" }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName -_id" } });
         //    else 
         // let ob = { courseId, teacherId, directorId };
-        let ob = { courseId, teacherId, type};
+        let ob = { courseId, teacherId, type };
         ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
-        reports = await Report.find({ date: { $gt: prev, $lte: next }, ...ob }).populate({ path: "teacherId", select: "firstName lastName tz workerNum -_id " }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
-        reports.forEach((item,index) => {
+        let query = { date: { $gt: prev, $lte: next }, ...ob };
+        if (reportDatePrev && reportDateNext)
+            query = { date: { $gt: prev, $lte: next }, ...ob, reportDate: { $gt: reportDatePrev, $lte: reportDateNext } };
+        reports = await Report.find(query).populate({ path: "teacherId", select: "firstName lastName tz workerNum -_id " }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
+        reports.forEach((item, index) => {
             if (!item.teacherId)
-                console.log(item, index,item.courseId);
+                console.log(item, index, item.courseId);
         })
         if (directorId != 'null' && directorId != 'undefined' && directorId)
             reports = reports.filter((item) => {
