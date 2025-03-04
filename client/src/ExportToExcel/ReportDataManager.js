@@ -33,7 +33,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
     Stack,
     Autocomplete
-    , Tooltip, Paper, TablePagination,
+    , Tooltip, Paper, TablePagination,FormHelperText,
     TextField, MenuItem, Select, FormControl, InputLabel, Button, CircularProgress, Box
 } from "@mui/material";
 import LocalPrintshopOutlinedIcon from '@mui/icons-material/LocalPrintshopOutlined';
@@ -304,6 +304,8 @@ const ReportDataManager = () => {
     let [course, setCourse] = useState(null);
     let [lessonType, setLessonType] = useState("all");
     let currentUser = useSelector(st => st.index.currentUser);
+    const [reportDateFrom, setReportDateFrom] = useState(null);
+    const [reportDateTo, setReportDateTo] = useState(null);
 
 
     const getData = (type) => {
@@ -321,6 +323,8 @@ const ReportDataManager = () => {
                 url += `/${searchFrom?.$d}/${searchTo?.$d}`;
             else url += `/${undefined}/${undefined}`;
             url += `/${lessonType == "all" ? undefined : lessonType}`;
+            if (reportDateFrom && reportDateTo)
+                url += `?reportDateFrom=${reportDateFrom}&reportDateTo=${reportDateTo}`;
             axios.get(url).then(res => {
 
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
@@ -584,7 +588,7 @@ const ReportDataManager = () => {
 
                                 </Button>*/}
 
-                                 <ExportMenuContainer items={
+                                <ExportMenuContainer items={
                                     <>
                                         <MenuItem disabled={reports.length == 0}>
 
@@ -667,6 +671,40 @@ const ReportDataManager = () => {
                                 <Button type="button" disabled={!searchFrom || !searchTo} variant="contained" endIcon={<SearchIcon />} sx={{ height: "53.13px", m: 1, width: '13ch' }} onClick={() => { getData(SearchTypes.Range) }}>
                                     חפש בין תאריכים
                                 </Button>
+
+                                <FormControl sx={{ m: 1, width: "20ch" }}>
+
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            inputFormat="DD/MM/YYYY"
+                                            label="דווח מ"
+                                            maxDate={reportDateTo}
+                                            value={reportDateFrom}
+                                            onChange={(newValue) => {
+                                                setReportDateFrom(newValue);
+                                            }}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </FormControl>
+                                <FormControl sx={{ m: 1, width: "20ch" }}>
+
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            inputFormat="DD/MM/YYYY"
+                                            minDate={reportDateFrom}
+                                            label="דווח עד"
+                                            disabled={!reportDateFrom}
+                                            value={reportDateTo}
+                                            onChange={(newValue) => {
+                                                setReportDateTo(newValue);
+                                            }}
+                                            renderInput={(params) => <TextField {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                
+                                </FormControl>
+                        {(reportDateFrom&&!reportDateTo||reportDateTo&&!reportDateFrom)&&        <FormHelperText id="my-helper-text">כדי לסנן ע"פ תאריך דווח <br/>יש למלא טווח תאריכי דווח</FormHelperText>}
                             </Stack>
 
                         </Box>
