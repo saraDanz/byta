@@ -130,7 +130,10 @@ const searchByParameters = async (req, res) => {
     }
 
     catch (e) {
+        console.log("=======================================")     ;
+          console.log(e , "error report seaarch by parameters",req,res)
         return res.status(400).send(e.message);
+
 
     }
 }
