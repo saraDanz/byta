@@ -59,7 +59,8 @@ const getAllReportsByYearAndMonth = async (req, res) => {
 }
 const searchByParameters = async (req, res) => {
     //לא בדקתי לפי מורה וקורס יחד
-
+    console.log("search")
+    console.log(req)
     let { year, month, directorId, courseId, teacherId, searchFrom, searchTo, type } = req.params;
     let { reportDateFrom, reportDateTo } = req.query;
  
@@ -131,6 +132,7 @@ const searchByParameters = async (req, res) => {
     }
 
     catch (e) {
+        console.log(e)
 
         return res.status(400).send(e.message);
 
