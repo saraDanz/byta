@@ -62,8 +62,7 @@ const searchByParameters = async (req, res) => {
 
     let { year, month, directorId, courseId, teacherId, searchFrom, searchTo, type } = req.params;
     let { reportDateFrom, reportDateTo } = req.query;
-    console.log("=======================================")     ;
-    console.log(e , "information report seaarch by parameters",req,res)
+ 
     // let first = new Date(year, month -1,0,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
     // let last = new Date(year, month,0,0,0,0,0);
@@ -132,8 +131,7 @@ const searchByParameters = async (req, res) => {
     }
 
     catch (e) {
-        console.log("=======================================")     ;
-          console.log(e , "error report seaarch by parameters",req,res)
+
         return res.status(400).send(e.message);
 
 
