@@ -139,6 +139,8 @@ const searchByParameters = async (req, res) => {
 }
 const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
     let { year, month, directorId } = req.params;
+    console.log(req)
+
     // let first = new Date(year, month -1,0,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
     // let last = new Date(year, month,0,0,0,0,0);
@@ -181,6 +183,7 @@ const getAllReportsByDirectorIdYearAndMonth = async (req, res) => {
     //     return res.send(reports);
     // }
     catch (e) {
+        console.log(e)
         return res.status(400).send(e.message);
 
     }
