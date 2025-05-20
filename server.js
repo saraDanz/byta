@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-
+const path = require("path")
+const schedule = require('node-schedule');
 
 const userRoute = require("./routes/user");
 const reportRoute = require("./routes/report");
@@ -10,12 +11,14 @@ const settingsRoute = require("./routes/settings");
 const configsRoute = require("./routes/config");
 const variablesRoute = require("./routes/variables");
 const teacherCoursesRoute = require("./routes/teacherCourses");
-const path = require("path")
 
-// ... other app.use middleware 
+const scheduleClosingPrevMonth = require("./schedules/closingPrevMonth")
 
-// ...
-// Right before your app.listen(), add this:
+
+
+schedule.scheduleJob('56 11 20 * *', () => {
+    scheduleClosingPrevMonth()
+});
 
 require("dotenv").config();
 const app = express();

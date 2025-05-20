@@ -330,16 +330,18 @@ const ReportDataManager = () => {
                 // axios.get(`${BASE_URL}reports/byYearAndMonth/${year}/${month}`).then(res => {
                 console.log(res);
 
-                let reports = res.data.map(item => {
+                let reports = res.data.map((item,index) => {
                     let { courseId, teacherId, fromTime, type, toTime, date, reportDate, ...x } = item;
                     fromTime = new Date(fromTime);
                     toTime = new Date(toTime);
                     date = new Date(date);
+                  
+
                     return {
                         ...x,
                         courseId: courseId,
                         teacherId: teacherId,
-                        symbol: courseId.symbol,
+                        symbol: courseId?.symbol,
                         tz: teacherId.tz,
                         workerNum: teacherId.workerNum,
                         teacherName: teacherId.lastName + " " + teacherId.firstName,

@@ -29,15 +29,12 @@ const bull = (
 
 export const EventTooltipContent = (props) => {
 
-    useEffect(() => {
-        console.log(props.event, "event")
-    }, [props.event]);
 
     // <b>{shortStr(eventInfo.event.extendedProps.courseId.name)}</b>
     //     <i className="time">{eventInfo.event.extendedProps.fromTime ? dateStringToTimeString(eventInfo.event.extendedProps.fromTime) : 0}-{eventInfo.event.extendedProps.toTime ? dateStringToTimeString(eventInfo.event.extendedProps.toTime) : 0}</i>
 
     //     <i className="hours" dir="rtl"> {eventInfo.event.extendedProps.numHours + "שע'"} </i>
-    console.log(props);
+
     return <Card sx={{ minWidth: "200px" }} >
 
         <CardContent>

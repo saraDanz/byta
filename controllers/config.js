@@ -11,7 +11,7 @@ const getConfigsByYear = async (req, res) => {
         let now = new Date();
         if (year == now.getFullYear())
             tilMonth = now.getMonth();
-        let arr = new Array(tilMonth+1).fill(false);
+        let arr = new Array(tilMonth).fill(false);
         let newConfigs = [];
         configs.forEach(element => {
             arr[element.month] = true;
@@ -59,7 +59,7 @@ const addNewconfig = async (req, res) => {
 
             if (config.isOpen == isOpen)
                 return res.status(409).send("nothing to update");
-            config =await Config.findOneAndUpdate({ year, month }, { isOpen })
+            config = await Config.findOneAndUpdate({ year, month }, { isOpen })
             // await config.save();
             let configs = await Config.find({ year }).populate("userId", "firstName lastName").sort({ "year": 1, "month": -1 });
 
