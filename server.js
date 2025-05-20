@@ -16,7 +16,7 @@ const scheduleClosingPrevMonth = require("./schedules/closingPrevMonth")
 
 
 
-schedule.scheduleJob('56 11 20 * *', () => {
+schedule.scheduleJob('0 0 1 * *', () => {
     scheduleClosingPrevMonth()
 });
 
