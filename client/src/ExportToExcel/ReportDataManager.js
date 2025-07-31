@@ -27,9 +27,10 @@ import {
 import ExportMenuContainer from "../Menu/ExportMenuContainer";
 import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
 // import { useDemoData } from '@mui/x-data-grid-generator';
-import { LinearProgress, Divider } from '@mui/material';
+import { LinearProgress, Divider, Typography } from '@mui/material';
 // import {ExportIcon} from "@mui/material/Icon"
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import {
     Stack,
     Autocomplete
@@ -675,37 +676,46 @@ const ReportDataManager = () => {
                                 </Button>
 
                                 <FormControl sx={{ m: 1, width: "20ch" }}>
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <DatePicker
+      inputFormat="DD/MM/YYYY"
+      label="דווח מ"
+      maxDate={reportDateTo}
+      value={reportDateFrom ? dayjs(reportDateFrom) : null}
+      onChange={(newValue) => {
+        if (newValue) {
+          const formatted = newValue.format('YYYY-MM-DD');
+          setReportDateFrom(formatted);
+        } else {
+          setReportDateFrom(null);
+        }
+      }}
+      renderInput={(params) => <TextField {...params} />}
+    />
+  </LocalizationProvider>
+</FormControl>
 
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker
-                                            inputFormat="DD/MM/YYYY"
-                                            label="דווח מ"
-                                            maxDate={reportDateTo}
-                                            value={reportDateFrom}
-                                            onChange={(newValue) => {
-                                                setReportDateFrom(newValue);
-                                            }}
-                                            renderInput={(params) => <TextField {...params} />}
-                                        />
-                                    </LocalizationProvider>
-                                </FormControl>
-                                <FormControl sx={{ m: 1, width: "20ch" }}>
-
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <DatePicker
-                                            inputFormat="DD/MM/YYYY"
-                                            minDate={reportDateFrom}
-                                            label="דווח עד"
-                                            disabled={!reportDateFrom}
-                                            value={reportDateTo}
-                                            onChange={(newValue) => {
-                                                setReportDateTo(newValue);
-                                            }}
-                                            renderInput={(params) => <TextField {...params} />}
-                                        />
-                                    </LocalizationProvider>
-                                
-                                </FormControl>
+<FormControl sx={{ m: 1, width: "20ch" }}>
+  <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <DatePicker
+      inputFormat="DD/MM/YYYY"
+      minDate={reportDateFrom ? dayjs(reportDateFrom) : null}
+      label="דווח עד"
+      disabled={!reportDateFrom}
+      value={reportDateTo ? dayjs(reportDateTo) : null}
+      onChange={(newValue) => {
+        if (newValue) {
+          const formatted = newValue.format('YYYY-MM-DD');
+          setReportDateTo(formatted);
+          
+        } else {
+          setReportDateTo(null);
+        }
+      }}
+      renderInput={(params) => <TextField {...params} />}
+    />
+  </LocalizationProvider>
+</FormControl>
                         {(reportDateFrom&&!reportDateTo||reportDateTo&&!reportDateFrom)&&        <FormHelperText id="my-helper-text">כדי לסנן ע"פ תאריך דווח <br/>יש למלא טווח תאריכי דווח</FormHelperText>}
                             </Stack>
 
@@ -750,6 +760,8 @@ const ReportDataManager = () => {
                             columns={columns} />
 
                     </Box>
+                    <Typography>תכלס תאריך דווח מ{reportDateFrom} ------------- תאריך דווח ל{reportDateTo}</Typography>
+                 
 
 
 

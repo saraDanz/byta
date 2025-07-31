@@ -63,7 +63,7 @@ const searchByParameters = async (req, res) => {
     console.log(req)
     let { year, month, directorId, courseId, teacherId, searchFrom, searchTo, type } = req.params;
     let { reportDateFrom, reportDateTo } = req.query;
- 
+
     // let first = new Date(year, month -1,0,0,0,0,0,0);
     // first=new Date(first.getFullYear(),first.getMonth(),first.getDate()-1)
     // let last = new Date(year, month,0,0,0,0,0);
@@ -96,11 +96,12 @@ const searchByParameters = async (req, res) => {
     console.log(next)
     let reportDatePrev;
     let reportDateNext;
-    if (reportDateFrom && reportDateTo) {
-        reportDatePrev = getDateXDaysAgo(1, new Date(reportDateFrom))
+    // if (reportDateFrom && reportDateTo) {
+    //     reportDatePrev = getDateXDaysAgo(1, new Date(reportDateFrom))
 
-        reportDateNext = new Date(reportDateTo)
-    }
+    //     reportDateNext = new Date(reportDateTo)
+    // }
+  
     try {
 
         let reports;
@@ -112,9 +113,14 @@ const searchByParameters = async (req, res) => {
         // let ob = { courseId, teacherId, directorId };
         let ob = { courseId, teacherId, type };
         ob = Object.fromEntries(Object.entries(ob).filter(([_, v]) => v != 'null' && v != 'undefined' && v != null && v != undefined && v != ''));
-        let query = { date: { $gt: prev, $lte: next }, ...ob };
-        if (reportDatePrev && reportDateNext)
-            query = { date: { $gt: prev, $lte: next }, ...ob, reportDate: { $gt: reportDatePrev, $lte: reportDateNext } };
+        let query = { date: { $gte: prev, $lte: next }, ...ob };
+
+        if (reportDateFrom && reportDateTo) {
+            // שנה מ-Z לסופי יום בישראל
+            reportDatePrev = new Date(`${reportDateFrom}T00:00:00+03:00`);
+            reportDateNext = new Date(`${reportDateTo}T23:59:59.999+03:00`);
+            query.reportDate = { $gte: reportDatePrev, $lte: reportDateNext };
+        }
         reports = await Report.find(query).populate({ path: "teacherId", select: "firstName lastName tz workerNum -_id " }).populate({ path: "courseId", populate: { path: "directorId", select: "firstName lastName " } });
         reports.forEach((item, index) => {
             if (!item.teacherId)
