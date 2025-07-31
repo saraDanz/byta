@@ -760,7 +760,7 @@ const ReportDataManager = () => {
                             columns={columns} />
 
                     </Box>
-                    <Typography>תכלס תאריך דווח מ{reportDateFrom} ------------- תאריך דווח ל{reportDateTo}</Typography>
+                
                  
 
 
